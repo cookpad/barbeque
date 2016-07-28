@@ -11,11 +11,6 @@ class JobRetry < ApplicationRecord
     retried: 3,
   }
 
-  # @return [Hash] - A hash created by `JobExecutor::Retry#log_result`
-  def execution_log
-    @execution_log ||= JobExecutor::Storage.load(execution: self)
-  end
-
   def to_resource
     Api::JobRetryResource.new(self)
   end
