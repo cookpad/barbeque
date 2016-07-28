@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = Barbeque::VERSION
   s.authors     = ["Takashi Kokubun"]
   s.email       = ["takashi-kokubun@cookpad.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Barbeque."
-  s.description = "TODO: Description of Barbeque."
+  s.homepage    = "https://github.com/cookpad/barbeque"
+  s.summary     = "Job queue interface to run job with Docker"
+  s.description = "Job queue interface to run job with Docker"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
