@@ -16,8 +16,12 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
+  s.add_dependency "aws-sdk"
   s.add_dependency "rails", "~> 5.0.0"
   s.add_dependency "the_garage"
 
+  s.add_development_dependency "factory_girl_rails"
+  s.add_development_dependency "listen"
   s.add_development_dependency "mysql2"
+  s.add_development_dependency "rspec-rails"
 end
