@@ -1,3 +1,4 @@
+require 'rails_helper'
 require 'job_executor/storage'
 
 describe JobExecutor::Storage do

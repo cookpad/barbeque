@@ -1,3 +1,5 @@
+require 'active_support/core_ext/module/delegation'
+
 module JobExecutor
   class Storage
     DEFAULT_S3_BUCKET_NAME = 'barbeque'
