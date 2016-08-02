@@ -1,7 +1,7 @@
 require 'rails_helper'
-require 'job_executor/storage'
+require 'execution_log'
 
-describe JobExecutor::Storage do
+describe ExecutionLog do
   let(:job_execution) { create(:job_execution, status: status) }
   let(:s3_client) { double('Aws::S3::Client') }
   let(:s3_object) do
@@ -30,7 +30,7 @@ describe JobExecutor::Storage do
       end
 
       it 'fetches log from S3 for the job_execution' do
-        expect(JobExecutor::Storage.load(execution: job_execution)).to eq({
+        expect(ExecutionLog.load(execution: job_execution)).to eq({
           'message' => message,
           'stdout'  => stdout,
           'stderr'  => stderr,
@@ -50,7 +50,7 @@ describe JobExecutor::Storage do
       end
 
       it 'returns empty hash' do
-        expect(JobExecutor::Storage.load(execution: job_execution)).to eq({})
+        expect(ExecutionLog.load(execution: job_execution)).to eq({})
       end
     end
 
@@ -66,7 +66,7 @@ describe JobExecutor::Storage do
       end
 
       it 'fetches log from S3 for the job_retry' do
-        expect(JobExecutor::Storage.load(execution: job_retry)).to eq({
+        expect(ExecutionLog.load(execution: job_retry)).to eq({
           'message' => message,
           'stdout'  => stdout,
           'stderr'  => stderr,
