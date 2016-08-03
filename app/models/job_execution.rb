@@ -1,4 +1,4 @@
-require 'job_executor/storage'
+require 'execution_log'
 
 class JobExecution < ApplicationRecord
   belongs_to :job_definition
@@ -15,6 +15,11 @@ class JobExecution < ApplicationRecord
   }
 
   paginates_per 15
+
+  # @return [Hash] - A hash created by `JobExecutor::Job#log_result`
+  def execution_log
+    @execution_log ||= ExecutionLog.load(execution: self)
+  end
 
   def to_resource
     Api::JobExecutionResource.new(self)
