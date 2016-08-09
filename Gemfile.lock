@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    barbeque (0.0.1)
+    barbeque (0.0.2)
       aws-sdk
       kaminari
       rails (~> 5.0.0)
@@ -48,12 +48,12 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
     arel (7.1.1)
-    aws-sdk (2.4.2)
-      aws-sdk-resources (= 2.4.2)
-    aws-sdk-core (2.4.2)
+    aws-sdk (2.5.1)
+      aws-sdk-resources (= 2.5.1)
+    aws-sdk-core (2.5.1)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.4.2)
-      aws-sdk-core (= 2.4.2)
+    aws-sdk-resources (2.5.1)
+      aws-sdk-core (= 2.5.1)
     builder (3.2.2)
     byebug (9.0.5)
     coderay (1.1.1)
