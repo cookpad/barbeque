@@ -1,4 +1,4 @@
-class Api::JobExecutionsController < Api::ApplicationController
+class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationController
   include Garage::RestfulActions
 
   validates :create do
@@ -11,7 +11,7 @@ class Api::JobExecutionsController < Api::ApplicationController
   private
 
   def require_resources
-    protect_resource_as Api::JobExecutionResource
+    protect_resource_as Barbeque::Api::JobExecutionResource
   end
 
   def require_resource

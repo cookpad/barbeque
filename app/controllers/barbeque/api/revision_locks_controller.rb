@@ -1,6 +1,6 @@
 require 'docker_image'
 
-class Api::RevisionLocksController < Api::ApplicationController
+class Barbeque::Api::RevisionLocksController < Barbeque::Api::ApplicationController
   include Garage::RestfulActions
 
   validates :create do
@@ -10,7 +10,7 @@ class Api::RevisionLocksController < Api::ApplicationController
   private
 
   def require_resources
-    protect_resource_as Api::RevisionLockResource
+    protect_resource_as Barbeque::Api::RevisionLockResource
   end
 
   def require_resource
@@ -23,7 +23,7 @@ class Api::RevisionLocksController < Api::ApplicationController
     image.tag = params[:revision]
     app.update!(docker_image: image.to_s)
 
-    Api::RevisionLockResource.new(app)
+    Barbeque::Api::RevisionLockResource.new(app)
   end
 
   def destroy_resource
@@ -31,6 +31,6 @@ class Api::RevisionLocksController < Api::ApplicationController
     image.tag = 'latest'
     @resource.update!(docker_image: image.to_s)
 
-    Api::RevisionLockResource.new(@resource)
+    Barbeque::Api::RevisionLockResource.new(@resource)
   end
 end

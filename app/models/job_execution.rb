@@ -22,6 +22,6 @@ class JobExecution < ApplicationRecord
   end
 
   def to_resource
-    Api::JobExecutionResource.new(self)
+    Barbeque::Api::JobExecutionResource.new(self)
   end
 end

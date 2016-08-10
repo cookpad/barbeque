@@ -1,4 +1,4 @@
-class Api::JobRetriesController < Api::ApplicationController
+class Barbeque::Api::JobRetriesController < Barbeque::Api::ApplicationController
   include Garage::RestfulActions
 
   # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
@@ -11,7 +11,7 @@ class Api::JobRetriesController < Api::ApplicationController
   private
 
   def require_resources
-    protect_resource_as Api::JobRetryResource
+    protect_resource_as Barbeque::Api::JobRetryResource
   end
 
   def create_resource
