@@ -6,6 +6,7 @@ PATH
       kaminari
       rails (~> 5.0.0)
       the_garage
+      weak_parameters
 
 GEM
   remote: https://rubygems.org/
@@ -208,6 +209,8 @@ GEM
     tilt (2.0.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    weak_parameters (0.4.0)
+      rails (>= 4.0.0)
     websocket-driver (0.6.4)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
