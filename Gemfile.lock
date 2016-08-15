@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    barbeque (0.0.3)
+    barbeque (0.0.4)
       aws-sdk
       kaminari
       rails (~> 5.0.0)
