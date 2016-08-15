@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe MessageEnqueuingService do
+describe Barbeque::MessageEnqueuingService do
   describe '#run' do
     let(:application) { 'cookpad' }
     let(:job) { 'PostToCuenoteJob' }
@@ -26,7 +26,7 @@ describe MessageEnqueuingService do
         }.to_json,
       ).and_return(send_message_result)
 
-      result = MessageEnqueuingService.new(
+      result = Barbeque::MessageEnqueuingService.new(
         job:     job,
         queue:   job_queue.name,
         message: message,
@@ -41,7 +41,7 @@ describe MessageEnqueuingService do
       it 'does not enqueue a message' do
         expect(sqs_client).to_not receive(:send_message)
         expect {
-          MessageEnqueuingService.new(
+          Barbeque::MessageEnqueuingService.new(
             job:     job,
             queue:   queue_name,
             message: message,

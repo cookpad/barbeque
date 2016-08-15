@@ -20,7 +20,7 @@ class Barbeque::Api::JobRetriesController < Barbeque::Api::ApplicationController
   end
 
   def retry_message
-    MessageRetryingService.new(
+    Barbeque::MessageRetryingService.new(
       message_id: params[:job_execution_message_id],
       delay_seconds: params[:delay_seconds].to_i,
     ).run

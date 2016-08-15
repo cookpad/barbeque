@@ -25,7 +25,7 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
 
   # @return [String] id of a message queued to SQS.
   def enqueue_message
-    MessageEnqueuingService.new(
+    Barbeque::MessageEnqueuingService.new(
       application: params[:application],
       job:         params[:job],
       queue:       params[:queue],

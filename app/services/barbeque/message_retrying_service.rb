@@ -1,6 +1,6 @@
 require 'aws-sdk'
 
-class MessageRetryingService
+class Barbeque::MessageRetryingService
   DEFAULT_DELAY_SECONDS = 0
 
   def initialize(message_id:, delay_seconds: nil)

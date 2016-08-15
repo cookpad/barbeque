@@ -32,7 +32,7 @@ describe 'job_executions' do
   end
 
   describe 'POST /v2/job_executions' do
-    let(:enqueuing_service) { double('MessageEnqueuingService') }
+    let(:enqueuing_service) { double('Barbeque::MessageEnqueuingService') }
     let(:message_id) { SecureRandom.uuid }
     let(:job_queue)   { create(:job_queue) }
     let(:queue_name)  { job_queue.name }
@@ -49,7 +49,7 @@ describe 'job_executions' do
     end
 
     it 'enqueues a job execution', :autodoc do
-      expect(MessageEnqueuingService).to receive(:new).with(
+      expect(Barbeque::MessageEnqueuingService).to receive(:new).with(
         application: application,
         job:     job,
         queue:   job_queue.name,

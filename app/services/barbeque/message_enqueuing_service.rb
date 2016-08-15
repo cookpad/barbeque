@@ -1,6 +1,6 @@
 require 'aws-sdk'
 
-class MessageEnqueuingService
+class Barbeque::MessageEnqueuingService
   DEFAULT_QUEUE = ENV['BARBEQUE_DEFAULT_QUEUE'] || 'default'
 
   # @param [String] application
