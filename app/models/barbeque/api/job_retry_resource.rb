@@ -1,4 +1,4 @@
-class Api::JobRetryResource < Api::ApplicationResource
+class Barbeque::Api::JobRetryResource < Barbeque::Api::ApplicationResource
   property :message_id
 
   property :status

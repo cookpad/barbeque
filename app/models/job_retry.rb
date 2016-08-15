@@ -17,6 +17,6 @@ class JobRetry < ApplicationRecord
   end
 
   def to_resource
-    Api::JobRetryResource.new(self)
+    Barbeque::Api::JobRetryResource.new(self)
   end
 end

@@ -1,4 +1,6 @@
-class Api::ApplicationResource
+require 'garage'
+
+class Barbeque::Api::ApplicationResource
   include Garage::Representer
   include Garage::Authorizable
 
