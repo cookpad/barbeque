@@ -13,3 +13,7 @@ gemspec
 group :development, :test do
   gem 'pry-byebug'
 end
+
+group :test do
+  gem "rails-controller-testing"
+end
