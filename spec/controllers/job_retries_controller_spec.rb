@@ -2,6 +2,8 @@ require 'rails_helper'
 require 'execution_log'
 
 describe JobRetriesController do
+  routes { Barbeque::Engine.routes }
+
   describe '#show' do
     let(:job_retry)     { create(:job_retry, job_execution: job_execution) }
     let(:job_execution) { create(:job_execution) }

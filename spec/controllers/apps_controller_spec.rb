@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe AppsController do
+  routes { Barbeque::Engine.routes }
+
   describe '#index' do
     let!(:app) { create(:app) }
 

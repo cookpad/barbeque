@@ -2,6 +2,8 @@ require 'rails_helper'
 require 'execution_log'
 
 describe JobExecutionsController do
+  routes { Barbeque::Engine.routes }
+
   describe '#show' do
     let(:job_execution) { create(:job_execution) }
     let(:execution_log) do

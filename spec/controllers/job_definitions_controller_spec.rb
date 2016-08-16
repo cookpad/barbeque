@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe JobDefinitionsController do
+  routes { Barbeque::Engine.routes }
+
   describe '#index' do
     let!(:job_definition) { create(:job_definition) }
 
