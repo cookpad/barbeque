@@ -1,4 +1,4 @@
-class JobDefinitionsController < ApplicationController
+class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   def index
     @job_definitions = JobDefinition.all
   end

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe JobQueuesController do
+describe Barbeque::JobQueuesController do
   routes { Barbeque::Engine.routes }
 
   describe '#index' do

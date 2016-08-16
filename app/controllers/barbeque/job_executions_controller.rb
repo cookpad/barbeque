@@ -1,4 +1,4 @@
-class JobExecutionsController < ApplicationController
+class Barbeque::JobExecutionsController < Barbeque::ApplicationController
   def show
     @job_execution = JobExecution.find(params[:id])
     log = @job_execution.execution_log

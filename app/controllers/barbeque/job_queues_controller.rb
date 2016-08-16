@@ -1,4 +1,4 @@
-class JobQueuesController < ApplicationController
+class Barbeque::JobQueuesController < Barbeque::ApplicationController
   def index
     @job_queues = JobQueue.all
   end

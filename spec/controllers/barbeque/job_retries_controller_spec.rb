@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'execution_log'
 
-describe JobRetriesController do
+describe Barbeque::JobRetriesController do
   routes { Barbeque::Engine.routes }
 
   describe '#show' do

@@ -1,4 +1,4 @@
-class JobRetriesController < ApplicationController
+class Barbeque::JobRetriesController < Barbeque::ApplicationController
   def show
     @job_execution = JobExecution.find(params[:job_execution_id])
     @message = @job_execution.execution_log['message']

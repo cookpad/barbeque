@@ -1,4 +1,4 @@
-class AppsController < ApplicationController
+class Barbeque::AppsController < Barbeque::ApplicationController
   def index
     @apps = App.all
   end
