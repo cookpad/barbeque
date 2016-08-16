@@ -1,0 +1,22 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      Job Queue Details
+
+  .box-body
+    %p#notice= notice
+
+    %table.table.table-bordered
+      %tbody
+        %tr
+          %th Name
+          %td= @job_queue.name
+        %tr
+          %th Description
+          %td= @job_queue.description
+
+    = link_to 'Edit', edit_job_queue_path(@job_queue), class: 'btn btn-primary'
+    = link_to 'Destroy', job_queue_path(@job_queue),
+      class: 'btn', method: :delete, data: { confirm: 'Are you sure to delete queue?' }
+
+= link_to 'Back', job_queues_path

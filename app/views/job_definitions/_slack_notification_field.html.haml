@@ -1,0 +1,35 @@
+= fields_for job_definition do |job_definition_f|
+  = job_definition_f.fields_for :slack_notification do |f|
+    = f.hidden_field :id
+
+    .row
+      .col-md-8
+        %label Slack Notification
+
+    - use_slack_notification = f.object.persisted?
+    .row.form-group
+      .col-md-8.use_slack_notification_wrapper
+        = f.label :_destroy_true do
+          = f.radio_button :_destroy, true, class: 'use_slack_notification', checked: !use_slack_notification
+          No
+        = f.label :_destroy_false do
+          = f.radio_button :_destroy, false, class: 'use_slack_notification', checked: use_slack_notification
+          Yes
+
+    .slack_notification_field{ class: ('active' if use_slack_notification) }
+      .row.form-group
+        .col-md-8
+          = f.text_field :channel, placeholder: '#slack-channel', class: 'form-control'
+
+      .row.form-group
+        .col-md-8
+          = f.check_box :notify_success
+          = f.label :notify_success, 'Notify success event to Slack'
+
+      .row
+        .col-md-8
+          Failure notification text
+      .row.form-group
+        .col-md-8
+          = f.text_field :failure_notification_text,
+            placeholder: '@YourName', class: 'form-control'

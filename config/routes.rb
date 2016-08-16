@@ -1,4 +1,18 @@
 Barbeque::Engine.routes.draw do
+  root to: 'apps#index'
+
+  resources :apps, except: :index
+
+  resources :job_definitions
+
+  resources :job_executions, only: :show do
+    post :retry
+
+    resources :job_retries, only: :show
+  end
+
+  resources :job_queues
+
   scope :v1, module: 'api', as: :v1 do
     resources :apps, only: [], param: :name, constraints: { name: /[\w-]+/ } do
       resource :revision_lock, only: [:create, :destroy]

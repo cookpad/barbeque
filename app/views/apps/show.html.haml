@@ -1,0 +1,47 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      Application Details
+
+  .box-body
+    %p#notice= notice
+
+    %table.table.table-bordered
+      %tbody
+        %tr
+          %th Name
+          %td= @app.name
+        %tr
+          %th Docker image
+          %td= @app.docker_image
+        %tr
+          %th Description
+          %td= @app.description
+
+    = link_to 'Edit', edit_app_path(@app), class: 'btn btn-primary'
+    = link_to 'Destroy', app_path(@app),
+      class: 'btn', method: :delete, data: { confirm: 'Are you sure to delete application?' }
+
+.box
+  .box-header
+    %h3.box-title.with_padding Job Definitions
+    = link_to 'New Job Definition', new_job_definition_path(job_definition: { app_id: @app.id }), class: 'btn btn-primary pull-right'
+  .box-body
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th Application
+          %th Job
+          %th Description
+          %th
+
+      %tbody
+        - @app.job_definitions.each do |job_definition|
+          %tr
+            %td= job_definition.app.name
+            %td= job_definition.job
+            %td= job_definition.description
+            %td
+              = link_to 'View Details', job_definition, class: 'btn btn-default btn-sm'
+
+= link_to 'Back', root_path
