@@ -14,8 +14,8 @@
 
   %body.skin-blue.sidebar-mini{ class: "#{controller_path.parameterize(separator: '_')}_controller #{action_name}_action" }
     .wrapper
-      = render partial: 'layouts/header'
-      = render partial: 'layouts/sidebar'
+      = render partial: 'layouts/barbeque/header'
+      = render partial: 'layouts/barbeque/sidebar'
       .content-wrapper
         - if content_for?(:header)
           %section.content-header
