@@ -1,0 +1,85 @@
+.row
+  .col-sm-7
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Job Definition Details
+
+      .box-body
+        %p#notice= notice
+
+        %table.table.table-bordered
+          %tbody
+            %tr
+              %th Application
+              %td= link_to(@job_definition.app.name, app_path(@job_definition.app.id))
+            %tr
+              %th Job
+              %td= @job_definition.job
+            %tr
+              %th Command
+              %td= Shellwords.join(@job_definition.command)
+            %tr
+              %th Description
+              %td= @job_definition.description
+            %tr
+              %th Slack Notification
+              %td
+                - if @job_definition.slack_notification
+                  Yes (#{@job_definition.slack_notification.channel})
+                - else
+                  No
+
+        = link_to 'Edit', edit_job_definition_path(@job_definition), class: 'btn btn-primary'
+        = link_to 'Destroy', job_definition_path(@job_definition),
+          class: 'btn', method: :delete, data: { confirm: 'Are you sure to delete job definition?' }
+
+  .col-sm-5
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Job Executions
+
+      .box-body
+        - if @job_executions.present?
+          %table.table.table-bordered
+            %thead
+              %tr
+                %th ID
+                %th Status
+                %th Started At
+                %th Elapsed Time
+                %th
+            %tbody
+              - @job_executions.each do |job_execution|
+                %tr
+                  %td= job_execution.id
+                  %td= status_label(job_execution.status)
+                  %td= l(job_execution.created_at, format: :short)
+                  %td= distance_of_time(job_execution.created_at, job_execution.finished_at)
+                  %td
+                    .btn-group
+                      = link_to job_execution_path(job_execution), class: 'btn btn-default btn-sm btn-flat' do
+                        %i.fa.fa-chevron-right
+                        Details
+                      - if job_execution.failed?
+                        = link_to job_execution_retry_path(job_execution), method: :post, class: 'btn btn-default btn-sm btn-flat',
+                          data: { disable_with: 'retrying...', confirm: "Are you sure to retry #{@job_definition.job} ##{job_execution.id}?" } do
+                          %i.fa.fa-refresh
+                          Retry
+          .row
+            .col-xs-4
+              = link_to url_for(page: @job_executions.prev_page),
+                class: "btn btn-default btn-sm btn-block #{'disabled' unless @job_executions.prev_page}" do
+                %i.fa.fa-angle-left
+                New
+            .col-xs-4.col-xs-offset-4
+              = link_to url_for(page: @job_executions.next_page),
+                class: "btn btn-default btn-sm btn-block #{'disabled' unless @job_executions.next_page}" do
+                Old
+                %i.fa.fa-angle-right
+
+        - else
+          No job execution
+
+= link_to 'Back', job_definitions_path

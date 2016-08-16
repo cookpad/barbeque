@@ -1,0 +1,24 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      All Applications
+    = link_to new_app_path, class: 'btn btn-primary pull-right' do
+      New Application
+
+  .box-body
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th Name
+          %th Docker image
+          %th Description
+          %th
+
+      %tbody
+        - @apps.each do |app|
+          %tr
+            %td= app.name
+            %td= app.docker_image
+            %td= app.description
+            %td
+              = link_to 'View Details', app, class: 'btn btn-default btn-sm'

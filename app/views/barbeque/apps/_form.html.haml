@@ -1,0 +1,34 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      #{action_name.capitalize} Application
+
+  .box-body
+    = form_for @app do |f|
+      - if @app.errors.any?
+        %strong #{pluralize(@app.errors.count, 'error')} prohibited this application from being saved:
+        %ul
+          - @app.errors.full_messages.each do |msg|
+            %li= msg
+
+      .row.form-group
+        .col-md-4
+          = f.label :name
+          - if @app.persisted?
+            -# Name can't be changed after it's created.
+            .app_name= @app.name
+          - else
+            = f.text_field :name, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :docker_image
+          = f.text_field :docker_image, class: 'form-control'
+
+      .row.form-group
+        .col-md-8
+          = f.label :description
+          = f.text_area :description, class: 'form-control', rows: 10
+
+      .form-group
+        = f.submit 'Save', class: 'btn btn-primary'

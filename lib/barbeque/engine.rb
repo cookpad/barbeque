@@ -3,6 +3,7 @@ module Barbeque
     isolate_namespace Barbeque
 
     config.before_configuration do
+      require 'hamlit'
       require 'kaminari'
       require 'weak_parameters'
     end

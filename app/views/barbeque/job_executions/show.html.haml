@@ -1,0 +1,92 @@
+.row
+  .col-sm-7
+    .box.box-primary
+      .box-header
+        .row
+          .col-md-10
+            %h3.box-title.with_padding
+              \##{@job_execution.id} of
+              = link_to @job_execution.job_definition do
+                #{@job_execution.job_definition.job}
+          - if @job_execution.failed?
+            .col-md-2
+              = link_to job_execution_retry_path(@job_execution), method: :post, class: 'btn btn-default btn-block pull-right',
+                data: { disable_with: 'retrying...', confirm: "Are you sure to retry #{@job_execution.job_definition.job} ##{@job_execution.id}?" } do
+                Retry
+
+      .box-body
+        %table.table.table-bordered
+          %tbody
+            %tr
+              %th Execution ID
+              %td= @job_execution.id
+            %tr
+              %th Status
+              %td= status_label(@job_execution.status)
+            %tr
+              %th Created at
+              %td= @job_execution.created_at
+            %tr
+              %th Finished at
+              %td= @job_execution.finished_at
+            %tr
+              %th Elapsed time
+              %td= distance_of_time(@job_execution.created_at, @job_execution.finished_at)
+            %tr
+              %th Message ID
+              %td= @job_execution.message_id
+            %tr
+              %th Message
+              %td
+                %code= @message
+  .col-sm-5
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Retries
+
+      .box-body
+        - if @job_execution.job_retries.present?
+          %table.table.table-bordered
+            %thead
+              %tr
+                %th ID
+                %th Status
+                %th Started At
+                %th Elapsed Time
+                %th
+            %tbody
+              - @job_execution.job_retries.each do |job_retry|
+                %tr
+                  %td= job_retry.id
+                  %td= status_label(job_retry.status)
+                  %td= l(job_retry.created_at, format: :short)
+                  %td= distance_of_time(job_retry.created_at, job_retry.finished_at)
+                  %td
+                    .btn-group
+                      = link_to job_execution_job_retry_path(@job_execution, job_retry), class: 'btn btn-default btn-sm btn-flat' do
+                        %i.fa.fa-chevron-right
+                        Details
+        - else
+          Not retried.
+
+.row
+  .col-sm-6
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Stdout
+
+      .box-body
+        %pre= @stdout
+
+  .col-sm-6
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Stderr
+
+      .box-body
+        %pre= @stderr
+
+= link_to 'Back', job_definition_path(@job_execution.job_definition)

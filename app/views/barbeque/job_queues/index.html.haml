@@ -1,0 +1,22 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      All Job Queues
+    = link_to new_job_queue_path, class: 'btn btn-primary pull-right' do
+      New Job Queue
+
+  .box-body
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th Name
+          %th Description
+          %th
+
+      %tbody
+        - @job_queues.each do |job_queue|
+          %tr
+            %td= job_queue.name
+            %td= job_queue.description
+            %td
+              = link_to 'View Details', job_queue, class: 'btn btn-default btn-sm'

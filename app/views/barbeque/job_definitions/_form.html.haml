@@ -1,0 +1,45 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      #{action_name.capitalize} Job Definition
+
+  .box-body
+    = form_for @job_definition do |f|
+      - if @job_definition.errors.any?
+        %strong #{pluralize(@job_definition.errors.count, 'error')} prohibited this job_definition from being saved:
+        %ul
+          - @job_definition.errors.full_messages.each do |msg|
+            %li= msg
+
+      .row.form-group
+        .col-md-4
+          = f.label :app_id
+          - if @job_definition.persisted?
+            .job_definition_app_name= @job_definition.app.name
+          - else
+            = f.collection_select :app_id, App.pluck(:id, :name), :first, :second,
+              { prompt: true }, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :job
+          - if @job_definition.persisted?
+            .job_definition_job= @job_definition.job
+          - else
+            = f.text_field :job, class: 'form-control', placeholder: 'SomeAsyncJob'
+
+      .row.form-group
+        .col-md-8
+          = f.label :command
+          = f.text_field :command, value: Shellwords.join(@job_definition.command),
+            class: 'form-control', placeholder: 'bundle exec rake ...'
+
+      .row.form-group
+        .col-md-8
+          = f.label :description
+          = f.text_area :description, class: 'form-control', rows: 10
+
+      = render 'slack_notification_field', job_definition: @job_definition
+
+      .form-group
+        = f.submit 'Save', class: 'btn btn-primary'

@@ -1,0 +1,59 @@
+.row
+  .col-sm-12
+    .box.box-primary
+      .box-header
+        .row
+          .col-md-10
+            %h3.box-title.with_padding
+              Retry ##{@job_retry.id} of
+              = link_to @job_retry.job_definition do
+                #{@job_retry.job_definition.job}
+              = link_to @job_execution do
+                \##{@job_execution.id}
+
+      .box-body
+        %table.table.table-bordered
+          %tbody
+            %tr
+              %th Execution ID
+              %td= @job_retry.id
+            %tr
+              %th Status
+              %td= status_label(@job_retry.status)
+            %tr
+              %th Created at
+              %td= @job_retry.created_at
+            %tr
+              %th Finished at
+              %td= @job_retry.finished_at
+            %tr
+              %th Elapsed time
+              %td= distance_of_time(@job_retry.created_at, @job_retry.finished_at)
+            %tr
+              %th Message ID
+              %td= @job_retry.message_id
+            %tr
+              %th Message
+              %td
+                %code= @message
+
+.row
+  .col-sm-6
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Stdout
+
+      .box-body
+        %pre= @stdout
+
+  .col-sm-6
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          Stderr
+
+      .box-body
+        %pre= @stderr
+
+= link_to 'Back', job_execution_path(@job_execution)
