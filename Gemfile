@@ -18,5 +18,5 @@ end
 # It should be loaded on `Bundler.require` or `before_configuration`,
 # and I don't want to to load them on `before_configuration` for test environment.
 group :test do
-  gem "rails-controller-testing"
+  gem 'rails-controller-testing'
 end
