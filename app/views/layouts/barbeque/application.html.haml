@@ -8,8 +8,8 @@
     -# FIXME: Don't rely on others' CDN
     %link{ href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css', rel: 'stylesheet', type: 'text/css' }
     %link{ href: 'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css', rel: 'stylesheet', type: 'text/css' }
-    = stylesheet_link_tag    'application', media: 'all'
-    = javascript_include_tag 'application'
+    = stylesheet_link_tag    'barbeque/application', media: 'all'
+    = javascript_include_tag 'barbeque/application'
     = csrf_meta_tags
 
   %body.skin-blue.sidebar-mini{ class: "#{controller_path.parameterize(separator: '_')}_controller #{action_name}_action" }
