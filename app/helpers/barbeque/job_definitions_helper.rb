@@ -1,4 +1,4 @@
-module JobDefinitionsHelper
+module Barbeque::JobDefinitionsHelper
   def distance_of_time(from, to)
     return '' if from.nil? || to.nil?
 
