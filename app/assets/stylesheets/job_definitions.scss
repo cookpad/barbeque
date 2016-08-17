@@ -1,0 +1,21 @@
+.job_definitions_controller {
+  .use_slack_notification_wrapper label {
+    font-weight: normal;
+  }
+
+  .use_slack_notification {
+    margin: 0 2px 0 8px;
+  }
+
+  .slack_notification_field {
+    display: none;
+
+    label {
+      font-weight: normal;
+    }
+
+    &.active {
+      display: block;
+    }
+  }
+}
