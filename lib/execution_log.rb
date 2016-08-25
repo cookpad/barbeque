@@ -1,4 +1,6 @@
 require 'aws-sdk'
+require 'active_support'
+require 'active_support/core_ext'
 
 class ExecutionLog
   DEFAULT_S3_BUCKET_NAME = 'barbeque'
