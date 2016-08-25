@@ -1,5 +1,6 @@
 require 'erb'
 require 'yaml'
+require 'hashie'
 
 module Barbeque
   module Configuration
