@@ -1,6 +1,5 @@
 require 'barbeque/message_handler'
 require 'barbeque/message_queue'
-require 'execution_log'
 require 'serverengine'
 
 module Barbeque

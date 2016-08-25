@@ -1,7 +1,6 @@
 require 'rails_helper'
 require 'aws-sdk'
 require 'barbeque'
-require 'execution_log'
 
 describe Barbeque::MessageHandler::JobExecution do
   describe '#run' do
@@ -25,7 +24,7 @@ describe Barbeque::MessageHandler::JobExecution do
       docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
       allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
       allow(Barbeque::Runner::Docker).to receive(:new).with(docker_image: docker_image).and_return(runner)
-      allow(ExecutionLog).to receive(:save)
+      allow(Barbeque::ExecutionLog).to receive(:save)
     end
 
     around do |example|
@@ -42,7 +41,7 @@ describe Barbeque::MessageHandler::JobExecution do
     end
 
     it 'logs message, stdout and stderr to S3' do
-      expect(ExecutionLog).to receive(:save).with(
+      expect(Barbeque::ExecutionLog).to receive(:save).with(
         execution: a_kind_of(JobExecution),
         log: { message: message.body.to_json, stdout: 'stdout', stderr: 'stderr' },
       )

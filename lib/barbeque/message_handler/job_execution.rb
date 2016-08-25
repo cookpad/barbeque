@@ -1,4 +1,5 @@
 require 'barbeque/docker_image'
+require 'barbeque/execution_log'
 require 'barbeque/runner'
 require 'slack_client'
 
@@ -28,7 +29,7 @@ module Barbeque
 
       def log_result(execution, stdout, stderr)
         log = { message: @message.body.to_json, stdout: stdout, stderr: stderr }
-        ExecutionLog.save(execution: execution, log: log)
+        Barbeque::ExecutionLog.save(execution: execution, log: log)
       end
 
       def notify_slack(job_execution, status)

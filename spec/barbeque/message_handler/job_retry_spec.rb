@@ -1,7 +1,6 @@
 require 'rails_helper'
 require 'aws-sdk'
 require 'barbeque'
-require 'execution_log'
 
 describe Barbeque::MessageHandler::JobRetry do
   describe '#run' do
@@ -20,8 +19,8 @@ describe Barbeque::MessageHandler::JobRetry do
     let(:runner) { double('Barbeque::Runner::Docker', run: ['stdout', 'stderr', status]) }
 
     before do
-      allow(ExecutionLog).to receive(:save)
-      allow(ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
+      allow(Barbeque::ExecutionLog).to receive(:save)
+      allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
 
       docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
       allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
@@ -49,7 +48,7 @@ describe Barbeque::MessageHandler::JobRetry do
     end
 
     it 'logs stdout and stderr to S3' do
-      expect(ExecutionLog).to receive(:save).with(
+      expect(Barbeque::ExecutionLog).to receive(:save).with(
         execution: a_kind_of(JobRetry),
         log: { stdout: 'stdout', stderr: 'stderr' },
       )

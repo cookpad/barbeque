@@ -1,4 +1,7 @@
-require 'barbeque'
+require 'barbeque/docker_image'
+require 'barbeque/execution_log'
+require 'barbeque/runner'
+require 'slack_client'
 
 module Barbeque
   module MessageHandler
@@ -28,7 +31,7 @@ module Barbeque
 
       def log_result(job_retry, stdout, stderr)
         log = { stdout: stdout, stderr: stderr }
-        ExecutionLog.save(execution: job_retry, log: log)
+        Barbeque::ExecutionLog.save(execution: job_retry, log: log)
       end
 
       # @param [JobRetry] job_retry

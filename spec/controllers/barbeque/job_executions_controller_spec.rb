@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'execution_log'
+require 'barbeque/execution_log'
 
 describe Barbeque::JobExecutionsController do
   routes { Barbeque::Engine.routes }
@@ -14,7 +14,7 @@ describe Barbeque::JobExecutionsController do
     let(:stderr)  { 'stderr' }
 
     before do
-      allow(ExecutionLog).to receive(:load).
+      allow(Barbeque::ExecutionLog).to receive(:load).
         with(execution: job_execution).and_return(execution_log)
     end
 
@@ -38,7 +38,7 @@ describe Barbeque::JobExecutionsController do
     let(:result) { double('Aws::SQS::Types::SendMessageResult', message_id: SecureRandom.uuid) }
 
     before do
-      allow(ExecutionLog).to receive(:load).and_return({ 'message' => message })
+      allow(Barbeque::ExecutionLog).to receive(:load).and_return({ 'message' => message })
       allow(retrying_service).to receive(:run).and_return(result)
     end
 
