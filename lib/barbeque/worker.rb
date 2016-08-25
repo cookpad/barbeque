@@ -1,12 +1,28 @@
 require 'barbeque/message_handler'
 require 'barbeque/message_queue'
 require 'execution_log'
+require 'serverengine'
 
 module Barbeque
   module Worker
     class UnexpectedMessageType < StandardError; end
 
     DEFAULT_QUEUE = 'default'
+
+    def self.run
+      options = {
+        worker_type: 'process',
+        workers:     (ENV['BARBEQUE_WORKER_NUM'] || 4).to_i,
+        daemonize:   ENV['DAEMONIZE_BARBEQUE'] == '1',
+        log:         Rails.env.production? ? Rails.root.join("log/barbeque_worker.log").to_s : $stdout,
+        log_level:   Rails.env.production? ? :info : :debug,
+        pid_path:    Rails.root.join('tmp/pids/barbeque_worker.pid').to_s,
+        supervisor:  Rails.env.production?,
+      }
+
+      worker = ServerEngine.create(nil, Barbeque::Worker, options)
+      worker.run
+    end
 
     def initialize
       @queue_name = ENV['BARBEQUE_QUEUE'] || DEFAULT_QUEUE
