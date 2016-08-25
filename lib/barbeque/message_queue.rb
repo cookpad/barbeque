@@ -1,7 +1,7 @@
 require 'aws-sdk'
 require 'barbeque/message'
 
-module JobExecutor
+module Barbeque
   class MessageQueue
     attr_reader :job_queue
 

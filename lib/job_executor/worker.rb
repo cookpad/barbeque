@@ -1,5 +1,5 @@
 require 'barbeque/message_handler'
-require 'job_executor/message_queue'
+require 'barbeque/message_queue'
 require 'execution_log'
 
 module JobExecutor
@@ -37,7 +37,7 @@ module JobExecutor
     private
 
     def message_queue
-      @message_queue ||= MessageQueue.new(@queue_name)
+      @message_queue ||= Barbeque::MessageQueue.new(@queue_name)
     end
   end
 end

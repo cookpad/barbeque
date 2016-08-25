@@ -1,10 +1,11 @@
 require 'rails_helper'
+require 'barbeque'
 require 'job_executor/worker'
 
 describe JobExecutor::Worker do
   let!(:job_execution) { create(:job_execution, message_id: message_id, status: 'pending') }
   let(:job_queue) { create(:job_queue) }
-  let(:message_queue) { double('JobExecutor::MessageQueue', dequeue: message, job_queue: job_queue) }
+  let(:message_queue) { double('Barbeque::MessageQueue', dequeue: message, job_queue: job_queue) }
   let(:message_body) { '{}' }
   let(:message_id) { SecureRandom.uuid }
   let(:is_success) { true }
@@ -19,7 +20,7 @@ describe JobExecutor::Worker do
   end
 
   before do
-    allow(JobExecutor::MessageQueue).to receive(:new).and_return(message_queue)
+    allow(Barbeque::MessageQueue).to receive(:new).and_return(message_queue)
     allow(Barbeque::MessageHandler::JobExecution).to receive(:new).with(message: message, job_queue: job_queue).and_return(job)
   end
 

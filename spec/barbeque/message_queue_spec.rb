@@ -1,10 +1,10 @@
 require 'rails_helper'
-require 'job_executor/message_queue'
+require 'barbeque'
 
-describe JobExecutor::MessageQueue do
+describe Barbeque::MessageQueue do
   describe '#dequeue' do
     let(:job_queue) { create(:job_queue) }
-    let(:message_queue) { JobExecutor::MessageQueue.new(job_queue.name) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
     let(:client) { double('Aws::SQS::Client') }
     let(:result) { Aws::SQS::Types::ReceiveMessageResult.new(messages: [raw_message]) }
     let(:message_id) { SecureRandom.uuid }
