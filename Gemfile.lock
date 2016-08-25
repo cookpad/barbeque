@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    barbeque (0.0.7)
+    barbeque (0.0.8)
       adminlte2-rails
       aws-sdk
       coffee-rails
