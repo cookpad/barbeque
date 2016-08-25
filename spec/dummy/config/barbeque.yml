@@ -1,0 +1,11 @@
+default: &default
+  runner: Docker
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
