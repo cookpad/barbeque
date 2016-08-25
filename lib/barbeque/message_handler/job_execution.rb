@@ -1,4 +1,4 @@
-require 'docker_image'
+require 'barbeque/docker_image'
 require 'barbeque/runner'
 require 'slack_client'
 
@@ -60,7 +60,7 @@ module Barbeque
       # @return [Process::Status] status
       def run_command
         image  = DockerImage.new(job_definition.app.docker_image)
-        runner = Barbeque::Runner.create(docker_image: image)
+        runner = Runner.create(docker_image: image)
         runner.run(job_definition.command, job_envs)
       end
 

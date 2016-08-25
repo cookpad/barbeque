@@ -1,4 +1,3 @@
-require 'docker_image'
 require 'barbeque'
 
 module Barbeque
@@ -63,7 +62,7 @@ module Barbeque
 
       def run_command
         image  = DockerImage.new(job_execution.app.docker_image)
-        runner = Barbeque::Runner.create(docker_image: image)
+        runner = Runner.create(docker_image: image)
         runner.run(job_execution.job_definition.command, job_envs)
       end
 

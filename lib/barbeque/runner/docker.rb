@@ -3,7 +3,7 @@ require 'open3'
 module Barbeque
   module Runner
     class Docker
-      # @param [DockerImage] docker_image
+      # @param [Barbeque::DockerImage] docker_image
       def initialize(docker_image:)
         @docker_image = docker_image.to_s
       end

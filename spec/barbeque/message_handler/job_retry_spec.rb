@@ -1,7 +1,6 @@
 require 'rails_helper'
 require 'aws-sdk'
 require 'barbeque'
-require 'docker_image'
 require 'execution_log'
 
 describe Barbeque::MessageHandler::JobRetry do
@@ -24,8 +23,8 @@ describe Barbeque::MessageHandler::JobRetry do
       allow(ExecutionLog).to receive(:save)
       allow(ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
 
-      docker_image = DockerImage.new(job_definition.app.docker_image)
-      allow(DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
+      docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
+      allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
       allow(Barbeque::Runner::Docker).to receive(:new).with(docker_image: docker_image).and_return(runner)
     end
 

@@ -1,5 +1,3 @@
-require 'docker_image'
-
 class Barbeque::Api::RevisionLocksController < Barbeque::Api::ApplicationController
   include Garage::RestfulActions
 
@@ -19,7 +17,7 @@ class Barbeque::Api::RevisionLocksController < Barbeque::Api::ApplicationControl
 
   def create_resource
     app = App.find_by!(name: params[:app_name])
-    image = DockerImage.new(app.docker_image)
+    image = Barbeque::DockerImage.new(app.docker_image)
     image.tag = params[:revision]
     app.update!(docker_image: image.to_s)
 
@@ -27,7 +25,7 @@ class Barbeque::Api::RevisionLocksController < Barbeque::Api::ApplicationControl
   end
 
   def destroy_resource
-    image = DockerImage.new(@resource.docker_image)
+    image = Barbeque::DockerImage.new(@resource.docker_image)
     image.tag = 'latest'
     @resource.update!(docker_image: image.to_s)
 

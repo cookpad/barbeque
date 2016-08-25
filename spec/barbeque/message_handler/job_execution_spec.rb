@@ -1,7 +1,6 @@
 require 'rails_helper'
 require 'aws-sdk'
 require 'barbeque'
-require 'docker_image'
 require 'execution_log'
 
 describe Barbeque::MessageHandler::JobExecution do
@@ -23,8 +22,8 @@ describe Barbeque::MessageHandler::JobExecution do
     let(:runner) { double('Barbeque::Runner::Docker', run: ['stdout', 'stderr', status]) }
 
     before do
-      docker_image = DockerImage.new(job_definition.app.docker_image)
-      allow(DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
+      docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
+      allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
       allow(Barbeque::Runner::Docker).to receive(:new).with(docker_image: docker_image).and_return(runner)
       allow(ExecutionLog).to receive(:save)
     end
