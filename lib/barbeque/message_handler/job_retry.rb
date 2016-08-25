@@ -1,7 +1,7 @@
 require 'barbeque/docker_image'
 require 'barbeque/execution_log'
 require 'barbeque/runner'
-require 'slack_client'
+require 'barbeque/slack_client'
 
 module Barbeque
   module MessageHandler
@@ -39,7 +39,7 @@ module Barbeque
       def notify_slack(job_retry, result)
         return if job_retry.slack_notification.nil?
 
-        client = SlackClient.new(job_retry.slack_notification.channel)
+        client = Barbeque::SlackClient.new(job_retry.slack_notification.channel)
         if result.success?
           if job_retry.slack_notification.notify_success
             client.notify_success("*[SUCCESS]* Succeeded to retry #{job_retry_link(job_retry)}")

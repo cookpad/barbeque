@@ -72,12 +72,12 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       context 'when successuful slack_notification is configured' do
-        let(:slack_client) { double('SlackClient') }
+        let(:slack_client) { double('Barbeque::SlackClient') }
         let(:job_definition) { create(:job_definition, slack_notification: slack_notification) }
         let(:slack_notification) { create(:slack_notification, notify_success: true) }
 
         before do
-          allow(SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+          allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
         end
 
         it 'sends slack notification' do
@@ -99,12 +99,12 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       context 'when slack_notification is configured' do
-        let(:slack_client) { double('SlackClient') }
+        let(:slack_client) { double('Barbeque::SlackClient') }
         let(:job_definition) { create(:job_definition, slack_notification: slack_notification) }
         let(:slack_notification) { create(:slack_notification, notify_success: false) }
 
         before do
-          allow(SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+          allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
         end
 
         it 'sends slack notification' do

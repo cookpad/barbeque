@@ -1,7 +1,7 @@
 require 'barbeque/docker_image'
 require 'barbeque/execution_log'
 require 'barbeque/runner'
-require 'slack_client'
+require 'barbeque/slack_client'
 
 module Barbeque
   module MessageHandler
@@ -35,7 +35,7 @@ module Barbeque
       def notify_slack(job_execution, status)
         return if job_execution.slack_notification.nil?
 
-        client = SlackClient.new(job_execution.slack_notification.channel)
+        client = Barbeque::SlackClient.new(job_execution.slack_notification.channel)
         if status.success?
           if job_execution.slack_notification.notify_success
             client.notify_success("*[SUCCESS]* Succeeded to execute #{job_execution_link(job_execution)}")
