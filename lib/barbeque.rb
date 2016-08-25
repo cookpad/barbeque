@@ -1,5 +1,4 @@
-require "barbeque/engine"
-
-module Barbeque
-  # Your code goes here...
-end
+require 'barbeque/configuration'
+require 'barbeque/engine'
+require 'barbeque/message'
+require 'barbeque/message_handler'

@@ -1,8 +1,6 @@
 require 'rails_helper'
 require 'aws-sdk'
-require 'barbeque/message'
-require 'barbeque/message_handler'
-require 'barbeque/runner'
+require 'barbeque'
 require 'docker_image'
 require 'execution_log'
 

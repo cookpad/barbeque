@@ -1,5 +1,5 @@
 require 'docker_image'
-require 'barbeque/runner'
+require 'barbeque'
 
 module Barbeque
   module MessageHandler
