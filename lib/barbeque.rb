@@ -1,5 +1,3 @@
-require "barbeque/engine"
-
-module Barbeque
-  # Your code goes here...
-end
+require 'barbeque/docker_image'
+require 'barbeque/engine'
+require 'barbeque/execution_log'

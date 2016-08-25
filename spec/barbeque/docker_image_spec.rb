@@ -1,20 +1,20 @@
-require 'docker_image'
+require 'barbeque'
 
-describe DockerImage do
+describe Barbeque::DockerImage do
   it 'parses docker image name without a tag' do
-    image = DockerImage.new('cookpad')
+    image = Barbeque::DockerImage.new('cookpad')
     expect(image.repository).to eq('cookpad')
     expect(image.tag).to eq('latest')
   end
 
   it 'parses docker image name with a tag' do
-    image = DockerImage.new('cookpad-ruby:2.2')
+    image = Barbeque::DockerImage.new('cookpad-ruby:2.2')
     expect(image.repository).to eq('cookpad-ruby')
     expect(image.tag).to eq('2.2')
   end
 
   it 'parses docker image name with a host' do
-    image = DockerImage.new('docker.io/library/ruby')
+    image = Barbeque::DockerImage.new('docker.io/library/ruby')
     expect(image.repository).to eq('library/ruby')
     expect(image.tag).to eq('latest')
     expect(image.registry).to eq('docker.io')
@@ -35,7 +35,7 @@ describe DockerImage do
       end
 
       it 'prepends docker registry' do
-        image = DockerImage.new(image_name)
+        image = Barbeque::DockerImage.new(image_name)
         expect(image.to_s).to eq("#{docker_registry}/#{image_name}")
       end
     end

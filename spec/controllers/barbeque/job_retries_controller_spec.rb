@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'execution_log'
+require 'barbeque/execution_log'
 
 describe Barbeque::JobRetriesController do
   routes { Barbeque::Engine.routes }
@@ -18,8 +18,8 @@ describe Barbeque::JobRetriesController do
     let(:stderr)  { 'stderr' }
 
     before do
-      allow(ExecutionLog).to receive(:load).with(execution: job_execution).and_return(execution_log)
-      allow(ExecutionLog).to receive(:load).with(execution: job_retry).and_return(retry_log)
+      allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return(execution_log)
+      allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_retry).and_return(retry_log)
     end
 
     it 'shows job retry' do

@@ -1,7 +1,7 @@
 require 'rails_helper'
-require 'execution_log'
+require 'barbeque/execution_log'
 
-describe ExecutionLog do
+describe Barbeque::ExecutionLog do
   let(:job_execution) { create(:job_execution, status: status) }
   let(:s3_client) { double('Aws::S3::Client') }
   let(:s3_object) do
@@ -30,7 +30,7 @@ describe ExecutionLog do
       end
 
       it 'fetches log from S3 for the job_execution' do
-        expect(ExecutionLog.load(execution: job_execution)).to eq({
+        expect(Barbeque::ExecutionLog.load(execution: job_execution)).to eq({
           'message' => message,
           'stdout'  => stdout,
           'stderr'  => stderr,
@@ -50,7 +50,7 @@ describe ExecutionLog do
       end
 
       it 'returns empty hash' do
-        expect(ExecutionLog.load(execution: job_execution)).to eq({})
+        expect(Barbeque::ExecutionLog.load(execution: job_execution)).to eq({})
       end
     end
 
@@ -66,7 +66,7 @@ describe ExecutionLog do
       end
 
       it 'fetches log from S3 for the job_retry' do
-        expect(ExecutionLog.load(execution: job_retry)).to eq({
+        expect(Barbeque::ExecutionLog.load(execution: job_retry)).to eq({
           'message' => message,
           'stdout'  => stdout,
           'stderr'  => stderr,
