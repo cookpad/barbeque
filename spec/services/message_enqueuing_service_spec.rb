@@ -9,7 +9,6 @@ describe Barbeque::MessageEnqueuingService do
     let(:sqs_client) { double('Aws::SQS::Client') }
     let(:job_queue)  { create(:job_queue) }
     let(:send_message_result) { double('Aws::SQS::Types::SendMessageResult', message_id: message_id) }
-    let(:kuroko2_definition_id) { '123' }
 
     before do
       allow(Aws::SQS::Client).to receive(:new).and_return(sqs_client)
