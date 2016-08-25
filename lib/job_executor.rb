@@ -1,5 +1,5 @@
 require 'serverengine'
-require 'job_executor/worker'
+require 'barbeque/worker'
 
 module JobExecutor
   def self.run
@@ -13,7 +13,7 @@ module JobExecutor
       supervisor:  Rails.env.production?,
     }
 
-    worker = ServerEngine.create(nil, JobExecutor::Worker, options)
+    worker = ServerEngine.create(nil, Barbeque::Worker, options)
     worker.run
   end
 end

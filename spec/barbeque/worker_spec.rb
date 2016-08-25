@@ -1,8 +1,7 @@
 require 'rails_helper'
-require 'barbeque'
-require 'job_executor/worker'
+require 'barbeque/worker'
 
-describe JobExecutor::Worker do
+describe Barbeque::Worker do
   let!(:job_execution) { create(:job_execution, message_id: message_id, status: 'pending') }
   let(:job_queue) { create(:job_queue) }
   let(:message_queue) { double('Barbeque::MessageQueue', dequeue: message, job_queue: job_queue) }
@@ -15,7 +14,7 @@ describe JobExecutor::Worker do
   let(:job) { double('Barbeque::MessageHandler::JobExecution', run: [stdout, stderr, status]) }
   let(:worker_class) do
     Class.new.tap do |klass|
-      klass.include JobExecutor::Worker
+      klass.include Barbeque::Worker
     end
   end
 

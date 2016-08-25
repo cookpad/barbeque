@@ -2,7 +2,7 @@ require 'barbeque/message_handler'
 require 'barbeque/message_queue'
 require 'execution_log'
 
-module JobExecutor
+module Barbeque
   module Worker
     class UnexpectedMessageType < StandardError; end
 
@@ -27,7 +27,7 @@ module JobExecutor
       message = message_queue.dequeue
       return unless message
 
-      handler = Barbeque::MessageHandler.const_get(message.type, false)
+      handler = MessageHandler.const_get(message.type, false)
       handler.new(message: message, job_queue: message_queue.job_queue).run
     rescue => e
       # Use Raven.capture_exception
@@ -37,7 +37,7 @@ module JobExecutor
     private
 
     def message_queue
-      @message_queue ||= Barbeque::MessageQueue.new(@queue_name)
+      @message_queue ||= MessageQueue.new(@queue_name)
     end
   end
 end
