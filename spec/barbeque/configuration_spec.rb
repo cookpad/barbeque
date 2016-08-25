@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'barbeque'
+require 'barbeque/configuration'
 
 describe Barbeque::Configuration do
   describe '#build_config' do

@@ -1,4 +1,4 @@
-require 'barbeque'
+require 'barbeque/worker'
 
 describe Barbeque::Message::Base do
   let(:application) { 'cookpad' }

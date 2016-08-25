@@ -1,6 +1,5 @@
 require 'rails_helper'
-require 'aws-sdk'
-require 'barbeque'
+require 'barbeque/worker'
 
 describe Barbeque::MessageHandler::JobExecution do
   describe '#run' do

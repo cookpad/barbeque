@@ -1,7 +1,3 @@
-require 'barbeque/configuration'
 require 'barbeque/docker_image'
 require 'barbeque/engine'
 require 'barbeque/execution_log'
-require 'barbeque/message'
-require 'barbeque/message_handler'
-require 'barbeque/message_queue'

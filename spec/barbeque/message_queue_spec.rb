@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'barbeque'
+require 'barbeque/worker'
 
 describe Barbeque::MessageQueue do
   describe '#dequeue' do
