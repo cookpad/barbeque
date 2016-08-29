@@ -30,7 +30,7 @@ describe Barbeque::JobDefinitionsController do
   describe '#new' do
     it 'assigns a new job_definition' do
       get :new
-      expect(assigns(:job_definition)).to be_a_new(JobDefinition)
+      expect(assigns(:job_definition)).to be_a_new(Barbeque::JobDefinition)
     end
 
     context 'with job_definition parameters' do
@@ -61,7 +61,7 @@ describe Barbeque::JobDefinitionsController do
     it 'creates a job_definition' do
       expect {
         post :create, params: { job_definition: attributes }
-      }.to change(JobDefinition, :count).by(1)
+      }.to change(Barbeque::JobDefinition, :count).by(1)
     end
 
     context 'given use_slack_notification: true and slack_notification_attributes' do
@@ -87,7 +87,7 @@ describe Barbeque::JobDefinitionsController do
           post :create, params: { job_definition: attributes, use_slack_notification: 'true' }
         }.to change(SlackNotification, :count).by(1)
         slack_notification = SlackNotification.last
-        expect(JobDefinition.last.slack_notification).to eq(slack_notification)
+        expect(Barbeque::JobDefinition.last.slack_notification).to eq(slack_notification)
         expect(slack_notification.channel).to eq(channel)
         expect(slack_notification.notify_success).to eq(notify_success)
         expect(slack_notification.failure_notification_text).to eq(failure_notification_text)
@@ -108,7 +108,7 @@ describe Barbeque::JobDefinitionsController do
       it 'rejects to create a job_definition' do
         expect {
           post :create, params: { job_definition: attributes }
-        }.to_not change(JobDefinition, :count)
+        }.to_not change(Barbeque::JobDefinition, :count)
       end
     end
   end
@@ -179,7 +179,7 @@ describe Barbeque::JobDefinitionsController do
       expect {
         delete :destroy, params: { id: job_definition.id }
       }.to change {
-        [JobDefinition.count, JobExecution.count]
+        [Barbeque::JobDefinition.count, JobExecution.count]
       }.from([1, 1]).to([0, 0])
     end
   end
