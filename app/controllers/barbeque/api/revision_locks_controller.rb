@@ -12,11 +12,11 @@ class Barbeque::Api::RevisionLocksController < Barbeque::Api::ApplicationControl
   end
 
   def require_resource
-    @resource = App.find_by!(name: params[:app_name])
+    @resource = Barbeque::App.find_by!(name: params[:app_name])
   end
 
   def create_resource
-    app = App.find_by!(name: params[:app_name])
+    app = Barbeque::App.find_by!(name: params[:app_name])
     image = Barbeque::DockerImage.new(app.docker_image)
     image.tag = params[:revision]
     app.update!(docker_image: image.to_s)

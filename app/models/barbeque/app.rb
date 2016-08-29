@@ -1,4 +1,4 @@
-class App < ApplicationRecord
+class Barbeque::App < Barbeque::ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :docker_image, presence: true
 

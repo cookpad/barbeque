@@ -78,7 +78,7 @@ module Barbeque
       def job_definition
         @job_definition ||= JobDefinition.joins(:app).find_by!(
           job: @message.job,
-          apps: { name: @message.application },
+          barbeque_apps: { name: @message.application },
         )
       end
     end
