@@ -24,7 +24,7 @@ describe Barbeque::JobQueuesController do
   describe '#new' do
     it 'assigns a new job_queue' do
       get :new
-      expect(assigns(:job_queue)).to be_a_new(JobQueue)
+      expect(assigns(:job_queue)).to be_a_new(Barbeque::JobQueue)
     end
   end
 
@@ -39,7 +39,7 @@ describe Barbeque::JobQueuesController do
 
   describe '#create' do
     let(:name) { 'default' }
-    let(:queue_name) { JobQueue::SQS_NAME_PREFIX + name }
+    let(:queue_name) { Barbeque::JobQueue::SQS_NAME_PREFIX + name }
     let(:queue_url)  { "https://sqs.ap-northeast-1.amazonaws.com/123456789012/#{queue_name}" }
     let(:sqs_client) { double('Aws::SQS::Client', create_queue: create_response) }
     let(:attributes) { { name: name, description: 'default queue' } }
@@ -52,16 +52,16 @@ describe Barbeque::JobQueuesController do
     it 'creates a new job_queue' do
       expect {
         post :create, params: { job_queue: attributes }
-      }.to change(JobQueue, :count).by(1)
+      }.to change(Barbeque::JobQueue, :count).by(1)
     end
 
     it 'creates SQS queue' do
       expect(sqs_client).to receive(:create_queue).with(
         queue_name: queue_name,
-        attributes: { 'ReceiveMessageWaitTimeSeconds' => JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME.to_s },
+        attributes: { 'ReceiveMessageWaitTimeSeconds' => Barbeque::JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME.to_s },
       )
       post :create, params: { job_queue: attributes }
-      expect(JobQueue.last.queue_url).to eq(queue_url)
+      expect(Barbeque::JobQueue.last.queue_url).to eq(queue_url)
     end
 
     context 'given duplicated name' do
@@ -75,7 +75,7 @@ describe Barbeque::JobQueuesController do
       it 'rejects to create a job_queue' do
         expect {
           post :create, params: { job_queue: attributes }
-        }.to_not change(JobQueue, :count)
+        }.to_not change(Barbeque::JobQueue, :count)
       end
     end
 
@@ -85,7 +85,7 @@ describe Barbeque::JobQueuesController do
       it 'rejects to create a job_queue' do
         expect {
           post :create, params: { job_queue: attributes }
-        }.to_not change(JobQueue, :count)
+        }.to_not change(Barbeque::JobQueue, :count)
       end
 
       it 'does not create SQS queue' do
@@ -115,7 +115,7 @@ describe Barbeque::JobQueuesController do
     it 'destroys a requested job_queue' do
       expect {
         delete :destroy, params: { id: job_queue.id }
-      }.to change(JobQueue, :count).by(-1)
+      }.to change(Barbeque::JobQueue, :count).by(-1)
     end
   end
 end

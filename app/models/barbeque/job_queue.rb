@@ -1,4 +1,4 @@
-class JobQueue < ApplicationRecord
+class Barbeque::JobQueue < Barbeque::ApplicationRecord
   SQS_NAME_PREFIX = ENV['BARBEQUE_SQS_NAME_PREFIX'] || 'Barbeque-'
   SQS_NAME_MAX_LENGTH = 80
 

@@ -7,7 +7,7 @@ module Barbeque
   module MessageHandler
     class JobExecution
       # @param [Barbeque::Message::JobExecution] message
-      # @param [JobQueue] job_queue
+      # @param [Barbeque::JobQueue] job_queue
       def initialize(message:, job_queue:)
         @message = message
         @job_queue = job_queue

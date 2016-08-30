@@ -6,7 +6,7 @@ module Barbeque
     attr_reader :job_queue
 
     def initialize(queue_name)
-      @job_queue = JobQueue.find_by!(name: queue_name)
+      @job_queue = Barbeque::JobQueue.find_by!(name: queue_name)
       @messages  = []
       @stop      = false
     end
@@ -36,7 +36,7 @@ module Barbeque
     def receive_messages
       result = client.receive_message(
         queue_url: @job_queue.queue_url,
-        wait_time_seconds: JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME,
+        wait_time_seconds: Barbeque::JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME,
       )
       result.messages.map { |m| Barbeque::Message.parse(m) }
     end
