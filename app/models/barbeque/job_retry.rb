@@ -1,4 +1,4 @@
-class JobRetry < ApplicationRecord
+class Barbeque::JobRetry < Barbeque::ApplicationRecord
   belongs_to :job_execution
   has_one :job_definition, through: :job_execution
   has_one :app, through: :job_definition

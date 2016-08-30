@@ -14,7 +14,7 @@ module Barbeque
       end
 
       def run
-        job_retry = ::JobRetry.find_or_initialize_by(message_id: @message.id)
+        job_retry = Barbeque::JobRetry.find_or_initialize_by(message_id: @message.id)
         job_retry.update!(job_execution: job_execution)
         job_execution.update!(status: 'retried')
 
@@ -34,7 +34,7 @@ module Barbeque
         Barbeque::ExecutionLog.save(execution: job_retry, log: log)
       end
 
-      # @param [JobRetry] job_retry
+      # @param [Barbeque::JobRetry] job_retry
       # @param [Process::Status] result
       def notify_slack(job_retry, result)
         return if job_retry.slack_notification.nil?

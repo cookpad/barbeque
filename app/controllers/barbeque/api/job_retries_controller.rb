@@ -16,7 +16,7 @@ class Barbeque::Api::JobRetriesController < Barbeque::Api::ApplicationController
 
   def create_resource
     result = retry_message
-    JobRetry.new(message_id: result.message_id).to_resource
+    Barbeque::JobRetry.new(message_id: result.message_id).to_resource
   end
 
   def retry_message

@@ -48,17 +48,18 @@ describe Barbeque::MessageHandler::JobRetry do
 
     it 'logs stdout and stderr to S3' do
       expect(Barbeque::ExecutionLog).to receive(:save).with(
-        execution: a_kind_of(JobRetry),
+        execution: a_kind_of(Barbeque::JobRetry),
         log: { stdout: 'stdout', stderr: 'stderr' },
       )
       handler.run
     end
 
     it 'creates job_retry associated to job_execution in the message' do
-      expect { handler.run }.to change(JobRetry, :count).by(1)
-      expect(JobRetry.last.finished_at).to be_a(Time)
-      expect(JobRetry.last.job_execution).to eq(job_execution)
-      expect(JobRetry.last.status).to eq('success')
+      expect { handler.run }.to change(Barbeque::JobRetry, :count).by(1)
+      job_retry = Barbeque::JobRetry.last
+      expect(job_retry.finished_at).to be_a(Time)
+      expect(job_retry.job_execution).to eq(job_execution)
+      expect(job_retry.status).to eq('success')
     end
 
     context 'with retry succeeded' do
