@@ -179,7 +179,7 @@ describe Barbeque::JobDefinitionsController do
       expect {
         delete :destroy, params: { id: job_definition.id }
       }.to change {
-        [Barbeque::JobDefinition.count, JobExecution.count]
+        [Barbeque::JobDefinition.count, Barbeque::JobExecution.count]
       }.from([1, 1]).to([0, 0])
     end
   end

@@ -14,7 +14,7 @@ module Barbeque
       end
 
       def run
-        job_execution = ::JobExecution.find_or_initialize_by(message_id: @message.id)
+        job_execution = Barbeque::JobExecution.find_or_initialize_by(message_id: @message.id)
         raise DuplicatedExecution if job_execution.persisted?
         job_execution.update!(job_definition: job_definition, job_queue_id: @job_queue.id)
 

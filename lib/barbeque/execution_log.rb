@@ -10,7 +10,7 @@ module Barbeque
       delegate :save, :load, to: :new
     end
 
-    # @param [JobExecution,JobRetry] execution
+    # @param [Barbeque::JobExecution,JobRetry] execution
     # @param [Hash] log
     def save(execution:, log:)
       s3.put_object(
@@ -20,7 +20,7 @@ module Barbeque
       )
     end
 
-    # @param [JobExecution,JobRetry] execution
+    # @param [Barbeque::JobExecution,JobRetry] execution
     # @return [Hash] log
     def load(execution:)
       return {} if execution.pending?
@@ -38,7 +38,7 @@ module Barbeque
       @s3_bucket_name ||= ENV['BARBEQUE_S3_BUCKET_NAME'] || DEFAULT_S3_BUCKET_NAME
     end
 
-    # @param [JobExecution,JobRetry] execution
+    # @param [Barbeque::JobExecution,JobRetry] execution
     # @param [String] message_id
     def s3_key_for(execution:)
       File.join(execution.app.name, execution.job_definition.job, execution.message_id)

@@ -9,7 +9,7 @@ class Barbeque::MessageRetryingService
   end
 
   def run
-    execution = JobExecution.find_by!(message_id: @message_id)
+    execution = Barbeque::JobExecution.find_by!(message_id: @message_id)
     client.send_message(
       queue_url:     execution.job_queue.queue_url,
       message_body:  build_message.to_json,

@@ -60,7 +60,7 @@ module Barbeque
       end
 
       def job_execution
-        @job_execution ||= ::JobExecution.find_by!(message_id: @message.retry_message_id)
+        @job_execution ||= Barbeque::JobExecution.find_by!(message_id: @message.retry_message_id)
       end
 
       def run_command
