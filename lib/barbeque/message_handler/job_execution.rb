@@ -7,14 +7,14 @@ module Barbeque
   module MessageHandler
     class JobExecution
       # @param [Barbeque::Message::JobExecution] message
-      # @param [JobQueue] job_queue
+      # @param [Barbeque::JobQueue] job_queue
       def initialize(message:, job_queue:)
         @message = message
         @job_queue = job_queue
       end
 
       def run
-        job_execution = ::JobExecution.find_or_initialize_by(message_id: @message.id)
+        job_execution = Barbeque::JobExecution.find_or_initialize_by(message_id: @message.id)
         raise DuplicatedExecution if job_execution.persisted?
         job_execution.update!(job_definition: job_definition, job_queue_id: @job_queue.id)
 
@@ -76,9 +76,9 @@ module Barbeque
       end
 
       def job_definition
-        @job_definition ||= JobDefinition.joins(:app).find_by!(
+        @job_definition ||= Barbeque::JobDefinition.joins(:app).find_by!(
           job: @message.job,
-          apps: { name: @message.application },
+          barbeque_apps: { name: @message.application },
         )
       end
     end

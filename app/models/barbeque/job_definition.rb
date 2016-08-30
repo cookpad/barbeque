@@ -1,4 +1,4 @@
-class JobDefinition < ApplicationRecord
+class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   belongs_to :app
   has_many :job_executions, dependent: :destroy
   has_one :slack_notification, dependent: :destroy

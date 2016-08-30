@@ -16,7 +16,7 @@ class Barbeque::MessageEnqueuingService
 
   # @return [String] message_id
   def run
-    queue = JobQueue.find_by!(name: @queue)
+    queue = Barbeque::JobQueue.find_by!(name: @queue)
     response = client.send_message(
       queue_url:    queue.queue_url,
       message_body: build_message.to_json,

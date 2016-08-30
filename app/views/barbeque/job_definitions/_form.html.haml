@@ -17,7 +17,7 @@
           - if @job_definition.persisted?
             .job_definition_app_name= @job_definition.app.name
           - else
-            = f.collection_select :app_id, App.pluck(:id, :name), :first, :second,
+            = f.collection_select :app_id, Barbeque::App.pluck(:id, :name), :first, :second,
               { prompt: true }, class: 'form-control'
 
       .row.form-group

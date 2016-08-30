@@ -2,7 +2,7 @@ module Barbeque
   module Message
     # A model wrapping Aws::SQS::Types::Message.
     class Base
-      attr_reader :id             # [String] JobExecution is associated via `message_id`
+      attr_reader :id             # [String] Barbeque::JobExecution is associated via `message_id`
       attr_reader :receipt_handle # [String] Used to ack a message
       attr_reader :type           # [String] "JobExecution", "JobRetry", etc
 

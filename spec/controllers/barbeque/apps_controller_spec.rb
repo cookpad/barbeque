@@ -24,7 +24,7 @@ describe Barbeque::AppsController do
   describe '#new' do
     it 'assigns a new app' do
       get :new
-      expect(assigns(:app)).to be_a_new(App)
+      expect(assigns(:app)).to be_a_new(Barbeque::App)
     end
   end
 
@@ -43,7 +43,7 @@ describe Barbeque::AppsController do
     it 'creates an application' do
       expect {
         post :create, params: { app: attributes }
-      }.to change(App, :count).by(1)
+      }.to change(Barbeque::App, :count).by(1)
     end
 
     context 'given duplicated name' do
@@ -57,7 +57,7 @@ describe Barbeque::AppsController do
       it 'rejects to create a job_queue' do
         expect {
           post :create, params: { app: attributes }
-        }.to_not change(App, :count)
+        }.to_not change(Barbeque::App, :count)
       end
     end
   end
@@ -82,7 +82,7 @@ describe Barbeque::AppsController do
     it 'destroys a requested app' do
       expect {
         delete :destroy, params: { id: app.id }
-      }.to change(App, :count).by(-1)
+      }.to change(Barbeque::App, :count).by(-1)
     end
   end
 end

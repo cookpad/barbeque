@@ -33,15 +33,15 @@ describe Barbeque::MessageHandler::JobExecution do
     end
 
     it 'creates job_execution associated to job_definition in the message and job_queue' do
-      expect { handler.run }.to change(JobExecution, :count).by(1)
-      expect(JobExecution.last.finished_at).to be_a(Time)
-      expect(JobExecution.last.job_definition).to eq(job_definition)
-      expect(JobExecution.last.job_queue).to eq(job_queue)
+      expect { handler.run }.to change(Barbeque::JobExecution, :count).by(1)
+      expect(Barbeque::JobExecution.last.finished_at).to be_a(Time)
+      expect(Barbeque::JobExecution.last.job_definition).to eq(job_definition)
+      expect(Barbeque::JobExecution.last.job_queue).to eq(job_queue)
     end
 
     it 'logs message, stdout and stderr to S3' do
       expect(Barbeque::ExecutionLog).to receive(:save).with(
-        execution: a_kind_of(JobExecution),
+        execution: a_kind_of(Barbeque::JobExecution),
         log: { message: message.body.to_json, stdout: 'stdout', stderr: 'stderr' },
       )
       handler.run
@@ -64,7 +64,7 @@ describe Barbeque::MessageHandler::JobExecution do
     context 'when job succeeded' do
       it 'sets job_executions.status :success' do
         handler.run
-        expect(JobExecution.last.status).to eq('success')
+        expect(Barbeque::JobExecution.last.status).to eq('success')
       end
 
       context 'when successuful slack_notification is configured' do
@@ -88,7 +88,7 @@ describe Barbeque::MessageHandler::JobExecution do
 
       it 'sets job_executions.status :failed' do
         handler.run
-        expect(JobExecution.last.status).to eq('failed')
+        expect(Barbeque::JobExecution.last.status).to eq('failed')
       end
 
       context 'when slack_notification is configured' do

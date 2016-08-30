@@ -1,15 +1,15 @@
 class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   def index
-    @job_definitions = JobDefinition.all
+    @job_definitions = Barbeque::JobDefinition.all
   end
 
   def show
-    @job_definition = JobDefinition.find(params[:id])
+    @job_definition = Barbeque::JobDefinition.find(params[:id])
     @job_executions = @job_definition.job_executions.order(id: :desc).page(params[:page])
   end
 
   def new
-    @job_definition = JobDefinition.new
+    @job_definition = Barbeque::JobDefinition.new
     @job_definition.build_slack_notification
     if params[:job_definition]
       @job_definition.assign_attributes(new_job_definition_params)
@@ -17,7 +17,7 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   end
 
   def edit
-    @job_definition = JobDefinition.find(params[:id])
+    @job_definition = Barbeque::JobDefinition.find(params[:id])
     if @job_definition.slack_notification.nil?
       @job_definition.build_slack_notification
     end
@@ -25,7 +25,7 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
 
   def create
     attributes = new_job_definition_params.merge(command: command_array)
-    @job_definition = JobDefinition.new(attributes)
+    @job_definition = Barbeque::JobDefinition.new(attributes)
 
     if @job_definition.save
       redirect_to @job_definition, notice: 'Job definition was successfully created.'
@@ -35,7 +35,7 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   end
 
   def update
-    @job_definition = JobDefinition.find(params[:id])
+    @job_definition = Barbeque::JobDefinition.find(params[:id])
     attributes = params.require(:job_definition).permit(
       :description,
       slack_notification_attributes: slack_notification_params,
@@ -48,7 +48,7 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   end
 
   def destroy
-    @job_definition = JobDefinition.find(params[:id])
+    @job_definition = Barbeque::JobDefinition.find(params[:id])
     @job_definition.destroy
     redirect_to job_definitions_url, notice: 'Job definition was successfully destroyed.'
   end

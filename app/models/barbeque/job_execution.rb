@@ -1,4 +1,4 @@
-class JobExecution < ApplicationRecord
+class Barbeque::JobExecution < Barbeque::ApplicationRecord
   belongs_to :job_definition
   belongs_to :job_queue
   has_one :slack_notification, through: :job_definition

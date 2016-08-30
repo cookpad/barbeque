@@ -7,14 +7,14 @@ module Barbeque
   module MessageHandler
     class JobRetry
       # @param [Barbeque::Message::JobExecution] message
-      # @param [JobQueue] job_queue
+      # @param [Barbeque::JobQueue] job_queue
       def initialize(message:, job_queue:)
         @message = message
         @job_queue = job_queue
       end
 
       def run
-        job_retry = ::JobRetry.find_or_initialize_by(message_id: @message.id)
+        job_retry = Barbeque::JobRetry.find_or_initialize_by(message_id: @message.id)
         job_retry.update!(job_execution: job_execution)
         job_execution.update!(status: 'retried')
 
@@ -34,7 +34,7 @@ module Barbeque
         Barbeque::ExecutionLog.save(execution: job_retry, log: log)
       end
 
-      # @param [JobRetry] job_retry
+      # @param [Barbeque::JobRetry] job_retry
       # @param [Process::Status] result
       def notify_slack(job_retry, result)
         return if job_retry.slack_notification.nil?
@@ -60,7 +60,7 @@ module Barbeque
       end
 
       def job_execution
-        @job_execution ||= ::JobExecution.find_by!(message_id: @message.retry_message_id)
+        @job_execution ||= Barbeque::JobExecution.find_by!(message_id: @message.retry_message_id)
       end
 
       def run_command
