@@ -85,8 +85,8 @@ describe Barbeque::JobDefinitionsController do
       it 'creates a slack_notification' do
         expect {
           post :create, params: { job_definition: attributes, use_slack_notification: 'true' }
-        }.to change(SlackNotification, :count).by(1)
-        slack_notification = SlackNotification.last
+        }.to change(Barbeque::SlackNotification, :count).by(1)
+        slack_notification = Barbeque::SlackNotification.last
         expect(Barbeque::JobDefinition.last.slack_notification).to eq(slack_notification)
         expect(slack_notification.channel).to eq(channel)
         expect(slack_notification.notify_success).to eq(notify_success)
@@ -163,7 +163,7 @@ describe Barbeque::JobDefinitionsController do
             id: job_definition.id,
             job_definition: job_attributes.merge(slack_notification_attributes: { id: slack_notification.id, _destroy: true }),
           }
-        }.to change(SlackNotification, :count).by(-1)
+        }.to change(Barbeque::SlackNotification, :count).by(-1)
       end
     end
   end
