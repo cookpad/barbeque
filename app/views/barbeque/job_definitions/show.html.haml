@@ -44,7 +44,7 @@
         - if @job_executions.present?
           .row
             .col-xs-2
-              = link_to(job_definition_stats_path(@job_definition), class: 'btn btn-default btn-block') do
+              = link_to(job_definition_stats_path(@job_definition), class: 'btn btn-default') do
                 %i.fa.fa-line-chart
                 Statistics
           %table.table.table-bordered
