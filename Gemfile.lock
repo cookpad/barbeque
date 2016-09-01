@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    barbeque (0.0.9)
+    barbeque (0.0.10)
       adminlte2-rails
       aws-sdk
       coffee-rails
@@ -96,7 +96,7 @@ GEM
       activesupport (>= 4.1.0)
     haml (4.0.7)
       tilt
-    hamlit (2.6.1)
+    hamlit (2.7.0)
       temple (~> 0.7.6)
       thor
       tilt
