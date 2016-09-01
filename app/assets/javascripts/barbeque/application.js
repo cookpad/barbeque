@@ -14,4 +14,5 @@
 //= require bootstrap-sprockets
 //= require jquery_ujs
 //= require app
+//= require plotly-basic
 //= require_tree .
