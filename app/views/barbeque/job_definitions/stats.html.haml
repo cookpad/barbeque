@@ -1,0 +1,52 @@
+.row
+  .col-sm-12
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          %i.fa.fa-line-chart
+          Execution statistics for #{@days} #{'day'.pluralize(@days)}
+      .box-body
+        = form_tag(job_definition_stats_path(@job_definition), method: :get, class: 'form-inline') do
+          .form-group
+            .input-group
+              = text_field_tag :days, @days, class: 'form-control'
+              .input-group-addon
+                days
+          = submit_tag 'Go', class: 'btn btn-default'
+        #execution-count-chart
+        #execution-time-chart
+
+= link_to 'Back', job_definition_path(@job_definition)
+
+:coffee
+  jQuery(($) ->
+    $.getJSON('#{job_definition_execution_stats_path(@job_definition, days: @days)}').then((stats) ->
+      countDiv = document.getElementById('execution-count-chart')
+      timeDiv = document.getElementById('execution-time-chart')
+
+      date_hours = stats.map((stat) -> stat.date_hour)
+      counts = stats.map((stat) -> stat.count)
+      avg_times = stats.map((stat) -> stat.avg_time)
+
+      Plotly.plot(countDiv, [
+        {
+          type: 'scatter',
+          name: 'Number of executions',
+          x: date_hours,
+          y: counts,
+        },
+      ], {
+        title: 'Number of executions (hourly)',
+      })
+      Plotly.plot(timeDiv, [
+        {
+          type: 'scatter',
+          name: 'Average execution time',
+          x: date_hours,
+          y: avg_times,
+        },
+      ], {
+        title: 'Average execution time (hourly)',
+      })
+    )
+  )

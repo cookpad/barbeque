@@ -3,7 +3,10 @@ Barbeque::Engine.routes.draw do
 
   resources :apps, except: :index
 
-  resources :job_definitions
+  resources :job_definitions do
+    get :stats
+    get :execution_stats
+  end
 
   resources :job_executions, only: :show do
     post :retry

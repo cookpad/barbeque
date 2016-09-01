@@ -53,6 +53,18 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
     redirect_to job_definitions_url, notice: 'Job definition was successfully destroyed.'
   end
 
+  def stats
+    @job_definition = Barbeque::JobDefinition.find(params[:job_definition_id])
+    @days = (params[:days] || 3).to_i
+  end
+
+  def execution_stats
+    job_definition = Barbeque::JobDefinition.find(params[:job_definition_id])
+    days = (params[:days] || 3).to_i
+    now = Time.zone.now
+    render json: job_definition.execution_stats(days.days.ago(now), now)
+  end
+
   private
 
   def slack_notification_params
