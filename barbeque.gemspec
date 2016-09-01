@@ -16,6 +16,9 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib,vendor}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
+  # The same as Rails 5
+  s.required_ruby_version = '>= 2.2.2'
+
   s.add_dependency "adminlte2-rails"
   s.add_dependency "aws-sdk"
   s.add_dependency "coffee-rails"

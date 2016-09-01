@@ -1,0 +1,22 @@
+language: ruby
+cache: bundler
+branches:
+  only:
+    - master
+rvm:
+  - ruby-head
+  - 2.3.1
+  - 2.2.5
+script:
+  # To resolve: Mysql2::Error: Specified key was too long; max key length is 767 bytes
+  - echo '[mysqld]' | sudo sh -c 'cat >>  /etc/mysql/my.cnf'
+  - echo 'innodb_file_format=Barracuda' | sudo sh -c 'cat >>  /etc/mysql/my.cnf'
+  - echo 'innodb_file_per_table=1' | sudo sh -c 'cat >>  /etc/mysql/my.cnf'
+  - echo 'innodb_large_prefix=1' | sudo sh -c 'cat >>  /etc/mysql/my.cnf'
+  - sudo service mysql restart
+
+  - bin/rails db:create db:migrate
+  - bundle exec rake spec
+matrix:
+  allow_failures:
+    - rvm: ruby-head
