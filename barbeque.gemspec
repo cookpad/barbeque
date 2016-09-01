@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description = "Job queue interface to run job with Docker"
   s.license     = "MIT"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,lib,vendor}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "adminlte2-rails"
   s.add_dependency "aws-sdk"
