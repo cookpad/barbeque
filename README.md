@@ -1,8 +1,7 @@
 # Barbeque
-Short description and motivation.
 
-## Usage
-How to use my plugin.
+## Status
+Currently we are migrating from closed-source version to open-source version and writing documentation.
 
 ## Installation
 Add this line to your application's Gemfile:
