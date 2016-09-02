@@ -1,4 +1,4 @@
-# Barbeque
+# Barbeque [![Build Status](https://travis-ci.org/cookpad/barbeque.svg?branch=master)](https://travis-ci.org/cookpad/barbeque)
 
 ## Status
 Currently we are migrating from closed-source version to open-source version and writing documentation.
