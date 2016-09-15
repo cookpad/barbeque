@@ -28,6 +28,10 @@ require 'rails-controller-testing'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+require 'autodoc'
+Autodoc.configuration.path = 'doc'
+Autodoc.configuration.toc  = true
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
 

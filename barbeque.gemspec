@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency "uglifier"
   s.add_dependency "weak_parameters"
 
+  s.add_development_dependency "autodoc"
   s.add_development_dependency "factory_girl_rails"
   s.add_development_dependency "listen"
   s.add_development_dependency "mysql2"
