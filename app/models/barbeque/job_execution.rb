@@ -3,7 +3,7 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
   belongs_to :job_queue
   has_one :slack_notification, through: :job_definition
   has_one :app, through: :job_definition
-  has_many :job_retries
+  has_many :job_retries, dependent: :destroy
 
   enum status: {
     pending: 0,

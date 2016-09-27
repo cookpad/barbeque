@@ -4,5 +4,5 @@ class Barbeque::App < Barbeque::ApplicationRecord
 
   attr_readonly :name
 
-  has_many :job_definitions
+  has_many :job_definitions, dependent: :destroy
 end
