@@ -1,5 +1,7 @@
 # Barbeque [![Build Status](https://travis-ci.org/cookpad/barbeque.svg?branch=master)](https://travis-ci.org/cookpad/barbeque)
 
+Job queue system to run job with Docker
+
 ## Status
 
 We've just open-sourced this library and documentation is work in progress.  
