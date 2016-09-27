@@ -2,10 +2,10 @@
 
 Job queue system to run job with Docker
 
-## Status
+## Project Status
 
-We've just open-sourced this library and documentation is work in progress.  
-Barbeque is already used on production at Cookpad.
+Barbeque is under development but already used on production at Cookpad.  
+Documentation and open-sourcing plugins are work in progress.
 
 ## Installation
 Add this line to your application's Gemfile:
