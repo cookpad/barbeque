@@ -8,15 +8,23 @@ module Barbeque
 
     DEFAULT_QUEUE = 'default'
 
-    def self.run
+    def self.run(
+      worker_type: 'process',
+      workers:     4,
+      daemonize:   false,
+      log:         $stdout,
+      log_level:   :info,
+      pid_path:    '/tmp/barbeque_worker.pid',
+      supervisor:  true
+    )
       options = {
-        worker_type: 'process',
-        workers:     (ENV['BARBEQUE_WORKER_NUM'] || 4).to_i,
-        daemonize:   ENV['DAEMONIZE_BARBEQUE'] == '1',
-        log:         Rails.env.production? ? Rails.root.join("log/barbeque_worker.log").to_s : $stdout,
-        log_level:   Rails.env.production? ? :info : :debug,
-        pid_path:    Rails.root.join('tmp/pids/barbeque_worker.pid').to_s,
-        supervisor:  Rails.env.production?,
+        worker_type: worker_type,
+        workers:     workers,
+        daemonize:   daemonize,
+        log:         log,
+        log_level:   log_level,
+        pid_path:    pid_path,
+        supervisor:  supervisor,
       }
 
       worker = ServerEngine.create(nil, Barbeque::Worker, options)
