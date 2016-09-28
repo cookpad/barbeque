@@ -7,7 +7,7 @@ namespace :barbeque do
     Barbeque::Worker.run(
       workers:    (ENV['BARBEQUE_WORKER_NUM'] || 4).to_i,
       daemonize:  ENV['DAEMONIZE_BARBEQUE'] == '1',
-      log:        Rails.env.production? ? Rails.root.join('log/barbeque_worker.log').to_s : $stdout,
+      log:        ENV['BARBEQUE_LOG_TO_STDOUT'] == '1' ? $stdout : Rails.root.join('log/barbeque_worker.log').to_s,
       log_level:  Rails.env.production? ? :info : :debug,
       pid_path:   Rails.root.join('tmp/pids/barbeque_worker.pid').to_s,
       supervisor: Rails.env.production?,
