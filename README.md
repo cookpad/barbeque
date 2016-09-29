@@ -10,6 +10,26 @@ Job queue system to run job with Docker
 Barbeque is under development but already used on production at Cookpad.  
 Documentation and open-sourcing plugins are work in progress.
 
+## What's Barbeque?
+
+Barbeque is a job queue system that consists of:
+
+- Web console to manage jobs
+- Web API to queue a job
+- Worker to execute a job
+
+A job for Barbeque is a command you configured on web console.
+A message serialized by JSON and a job name are given to the command when performed.
+In Barbeque worker, they are done on Docker container.
+
+## Why Barbeque?
+
+- You can achieve job-level auto scaling using tools like [Amazon ECS](https://aws.amazon.com/ecs/) and [EC2 Auto Scaling group](https://aws.amazon.com/autoscaling/)
+  - It requires plugin to run job with ECS, but it's not open-sourced for now
+- You don't have to manage infrastructure for each application like Resque or Sidekiq
+
+For details, see [Scalable Job Queue System Built with Docker // Speaker Deck](https://speakerdeck.com/k0kubun/scalable-job-queue-system-built-with-docker).
+
 ## Installation
 Add this line to your application's Gemfile:
 
