@@ -30,25 +30,28 @@ In Barbeque worker, they are done on Docker container.
 
 For details, see [Scalable Job Queue System Built with Docker // Speaker Deck](https://speakerdeck.com/k0kubun/scalable-job-queue-system-built-with-docker).
 
-## Installation
-Add this line to your application's Gemfile:
+## Deployment
 
-```ruby
-gem 'barbeque'
-```
+### Web API & console
 
-And then execute:
+Install barbeque.gem to an empty Rails app and mount `Barbeque::Engine`.
+And deploy it as you like.
+
+You also need to prepare MySQL, Amazon SQS and Amazon S3.
+
+### Worker
+
 ```bash
-$ bundle
+$ rake barbeque:worker BARBEQUE_QUEUE=default
 ```
 
-Or install it yourself as:
-```bash
-$ gem install barbeque
-```
+## Usage
 
-## Contributing
-Contribution directions go here.
+Web API documentation is available at [doc/toc.md](./doc/toc.md).
+
+### Ruby
+
+[barbeque\_client.gem](https://github.com/cookpad/barbeque_client) has API client and ActiveJob integration.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
