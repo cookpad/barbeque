@@ -1,29 +1,57 @@
 # Barbeque [![Build Status](https://travis-ci.org/cookpad/barbeque.svg?branch=master)](https://travis-ci.org/cookpad/barbeque)
 
-## Status
+Job queue system to run job with Docker
 
-We've just open-sourced this library and documentation is work in progress.  
-Barbeque is already used on production at Cookpad.
+<img src="https://raw.githubusercontent.com/k0kubun/barbeque/master/doc/images/job_definitions.png" height="280px" />
+<img src="https://raw.githubusercontent.com/k0kubun/barbeque/master/doc/images/statistics.png" height="280px" />
 
-## Installation
-Add this line to your application's Gemfile:
+## Project Status
 
-```ruby
-gem 'barbeque'
-```
+Barbeque is under development but already used on production at Cookpad.  
+Documentation and open-sourcing plugins are work in progress.
 
-And then execute:
+## What's Barbeque?
+
+Barbeque is a job queue system that consists of:
+
+- Web console to manage jobs
+- Web API to queue a job
+- Worker to execute a job
+
+A job for Barbeque is a command you configured on web console.
+A message serialized by JSON and a job name are given to the command when performed.
+In Barbeque worker, they are done on Docker container.
+
+## Why Barbeque?
+
+- You can achieve job-level auto scaling using tools like [Amazon ECS](https://aws.amazon.com/ecs/) and [EC2 Auto Scaling group](https://aws.amazon.com/autoscaling/)
+  - It requires plugin to run job with ECS, but it's not open-sourced for now
+- You don't have to manage infrastructure for each application like Resque or Sidekiq
+
+For details, see [Scalable Job Queue System Built with Docker // Speaker Deck](https://speakerdeck.com/k0kubun/scalable-job-queue-system-built-with-docker).
+
+## Deployment
+
+### Web API & console
+
+Install barbeque.gem to an empty Rails app and mount `Barbeque::Engine`.
+And deploy it as you like.
+
+You also need to prepare MySQL, Amazon SQS and Amazon S3.
+
+### Worker
+
 ```bash
-$ bundle
+$ rake barbeque:worker BARBEQUE_QUEUE=default
 ```
 
-Or install it yourself as:
-```bash
-$ gem install barbeque
-```
+## Usage
 
-## Contributing
-Contribution directions go here.
+Web API documentation is available at [doc/toc.md](./doc/toc.md).
+
+### Ruby
+
+[barbeque\_client.gem](https://github.com/cookpad/barbeque_client) has API client and ActiveJob integration.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
