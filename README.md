@@ -2,8 +2,8 @@
 
 Job queue system to run job with Docker
 
-<img src="https://raw.githubusercontent.com/k0kubun/barbeque/master/doc/images/job_definitions.png" height="280px" />
-<img src="https://raw.githubusercontent.com/k0kubun/barbeque/master/doc/images/statistics.png" height="280px" />
+<img src="https://raw.githubusercontent.com/cookpad/barbeque/master/doc/images/job_definitions.png" height="280px" />
+<img src="https://raw.githubusercontent.com/cookpad/barbeque/master/doc/images/statistics.png" height="280px" />
 
 ## Project Status
 
