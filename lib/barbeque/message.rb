@@ -1,3 +1,4 @@
+require 'barbeque/exception_handler'
 require 'barbeque/message/base'
 require 'barbeque/message/invalid_message'
 require 'barbeque/message/job_execution'
@@ -12,7 +13,8 @@ module Barbeque
         body = JSON.parse(raw_message.body)
         klass = find_class(body['Type'])
         klass.new(raw_message, body)
-      rescue JSON::ParserError
+      rescue JSON::ParserError => e
+        ExceptionHandler.handle_exception(e)
         InvalidMessage.new(raw_message, {})
       end
 
@@ -20,7 +22,8 @@ module Barbeque
 
       def find_class(type)
         Message.const_get(type, false)
-      rescue NameError
+      rescue NameError => e
+        ExceptionHandler.handle_exception(e)
         InvalidMessage
       end
     end
