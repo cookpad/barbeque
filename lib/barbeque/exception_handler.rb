@@ -2,9 +2,16 @@ require 'barbeque/configuration'
 
 module Barbeque
   module ExceptionHandler
-    def self.handle_exception(e)
-      handler = const_get(Barbeque.config.exception_handler, false)
-      handler.handle_exception(e)
+    class << self
+      def handle_exception(e)
+        handler.handle_exception(e)
+      end
+
+      private
+
+      def handler
+        @handler ||= const_get(Barbeque.config.exception_handler, false)
+      end
     end
 
     module RailsLogger
