@@ -1,5 +1,5 @@
 default: &default
-  exception_handler: rails_logger
+  exception_handler: RailsLogger
   runner: Docker
 
 development:

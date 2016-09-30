@@ -5,7 +5,7 @@ require 'hashie'
 module Barbeque
   module Configuration
     DEFAULT_CONFIG = {
-      'exception_handler' => 'rails_logger',
+      'exception_handler' => 'RailsLogger',
       'runner'            => 'Docker',
     }
 
