@@ -1,3 +1,4 @@
+require 'barbeque/exception_handler'
 require 'barbeque/message_handler'
 require 'barbeque/message_queue'
 require 'serverengine'
@@ -53,8 +54,7 @@ module Barbeque
       handler = MessageHandler.const_get(message.type, false)
       handler.new(message: message, job_queue: message_queue.job_queue).run
     rescue => e
-      # Use Raven.capture_exception
-      Rails.logger.fatal("[ERROR] #{e.inspect}\n#{e.backtrace.join("\n")}")
+      Barbeque::ExceptionHandler.handle_exception(e)
     end
 
     private
