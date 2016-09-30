@@ -1,3 +1,6 @@
+## v0.0.15
+- Report exception raised in SQS message parser
+
 ## v0.0.14
 - Allow logging worker exception by Raven [#7](https://github.com/cookpad/barbeque/pull/7)
 
