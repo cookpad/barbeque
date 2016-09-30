@@ -1,3 +1,6 @@
+## v0.0.14
+- Allow logging worker exception by Raven [#7](https://github.com/cookpad/barbeque/pull/7)
+
 ## v0.0.13
 - Allow switching log output by `BARBEQUE_LOG_TO_STDOUT` [#6](https://github.com/cookpad/barbeque/pull/4)
 
