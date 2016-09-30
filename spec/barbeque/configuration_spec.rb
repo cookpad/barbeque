@@ -22,6 +22,15 @@ describe Barbeque::Configuration do
       expect(config.runner).to eq('Runner')
     end
 
+    context 'when it has no config' do
+      let(:yaml) { 'rails_env: {}' }
+
+      it 'returns default config' do
+        config = Barbeque.build_config
+        expect(config.runner).to eq('Docker')
+      end
+    end
+
     context 'given erb' do
       let(:yaml) do
         <<-YAML.strip_heredoc
