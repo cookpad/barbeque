@@ -17,7 +17,7 @@
       %tbody
         - @job_definitions.each do |job_definition|
           %tr
-            %td= job_definition.app.name
+            %td= link_to job_definition.app.name, app_path(job_definition.app.id)
             %td= job_definition.job
             %td= job_definition.description
             %td
