@@ -37,16 +37,14 @@
   .col-sm-5
     .box.box-primary
       .box-header
-        %h3.box-title.with_padding
+        %h3.box-title.with_padding.pull-left
           Job Executions
+        = link_to(job_definition_stats_path(@job_definition), class: 'btn btn-default pull-right') do
+          %i.fa.fa-line-chart
+          Statistics
 
       .box-body
         - if @job_executions.present?
-          .row
-            .col-xs-2
-              = link_to(job_definition_stats_path(@job_definition), class: 'btn btn-default') do
-                %i.fa.fa-line-chart
-                Statistics
           %table.table.table-bordered
             %thead
               %tr
