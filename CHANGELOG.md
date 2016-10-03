@@ -1,3 +1,7 @@
+## v0.0.17
+- Move statistics button to upper right on job definition page
+- Link app from job definitions index
+
 ## v0.0.16
 - Autolink stdout and stderr [#8](https://github.com/cookpad/barbeque/pull/8)
 
