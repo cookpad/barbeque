@@ -1,9 +1,13 @@
+# Gems used by Barbeque::Engine
+require 'rails_rinku'
+
 module Barbeque
   class Engine < ::Rails::Engine
     isolate_namespace Barbeque
 
     config.before_configuration do
-      # Listing gems which are mountable engine or have railtie.
+      # Gems used by Barbeque::Engine, which also have Railtie or Mountable::Engine.
+      # Railtie and Mountable::Engine aren't executed when required normally.
       require 'adminlte2-rails'
       require 'coffee-rails'
       require 'hamlit'

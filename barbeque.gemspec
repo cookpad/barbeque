@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "jquery-rails"
   s.add_dependency "kaminari"
   s.add_dependency "rails", "~> 5.0.0"
+  s.add_dependency "rinku"
   s.add_dependency "sass-rails"
   s.add_dependency "serverengine"
   s.add_dependency "the_garage"
