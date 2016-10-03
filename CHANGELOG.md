@@ -1,3 +1,6 @@
+## v0.0.16
+- Autolink stdout and stderr [#8](https://github.com/cookpad/barbeque/pull/8)
+
 ## v0.0.15
 - Report exception raised in SQS message parser
 
