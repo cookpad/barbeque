@@ -78,7 +78,7 @@
           Stdout
 
       .box-body
-        %pre= @stdout
+        %pre= rinku_auto_link(@stdout)
 
   .col-sm-6
     .box.box-primary
@@ -87,6 +87,6 @@
           Stderr
 
       .box-body
-        %pre= @stderr
+        %pre= rinku_auto_link(@stderr)
 
 = link_to 'Back', job_definition_path(@job_execution.job_definition)
