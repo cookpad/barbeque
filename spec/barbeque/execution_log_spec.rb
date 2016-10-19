@@ -15,7 +15,7 @@ describe Barbeque::ExecutionLog do
   let(:stderr)  { 'stderr' }
 
   before do
-    allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
+    allow(Barbeque::ExecutionLog).to receive(:s3_client).and_return(s3_client)
   end
 
   describe '.fetch' do
