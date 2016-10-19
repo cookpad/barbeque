@@ -5,6 +5,8 @@ require 'barbeque/slack_client'
 
 module Barbeque
   module MessageHandler
+    class MessageNotFound < StandardError; end
+
     class JobRetry
       # @param [Barbeque::Message::JobExecution] message
       # @param [Barbeque::JobQueue] job_queue
@@ -70,6 +72,10 @@ module Barbeque
       end
 
       def job_envs
+        if job_execution.execution_log.nil?
+          raise MessageNotFound.new('failed to fetch retried message')
+        end
+
         {
           'BARBEQUE_JOB'         => job_execution.job_definition.job,
           'BARBEQUE_MESSAGE'     => job_execution.execution_log['message'],
