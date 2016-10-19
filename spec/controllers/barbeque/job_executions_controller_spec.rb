@@ -25,9 +25,7 @@ describe Barbeque::JobExecutionsController do
 
     it 'shows message, stdout, stderr in S3' do
       get :show, params: { id: job_execution.id }
-      expect(assigns(:message)).to eq(message)
-      expect(assigns(:stdout)).to eq(stdout)
-      expect(assigns(:stderr)).to eq(stderr)
+      expect(assigns(:log)).to eq({ 'message' => message, 'stdout' => stdout, 'stderr' => stderr })
     end
   end
 

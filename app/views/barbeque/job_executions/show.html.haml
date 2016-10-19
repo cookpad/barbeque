@@ -38,7 +38,10 @@
             %tr
               %th Message
               %td
-                %code= @message
+                - if @log
+                  %code= @log['message']
+                - else
+                  Log was not found.
   .col-sm-5
     .box.box-primary
       .box-header
@@ -78,7 +81,10 @@
           Stdout
 
       .box-body
-        %pre= rinku_auto_link(@stdout)
+        - if @log
+          %pre= rinku_auto_link(@log['stdout'])
+        - else
+          Log was not found.
 
   .col-sm-6
     .box.box-primary
@@ -87,6 +93,9 @@
           Stderr
 
       .box-body
-        %pre= rinku_auto_link(@stderr)
+        - if @log
+          %pre= rinku_auto_link(@log['stderr'])
+        - else
+          Log was not found.
 
 = link_to 'Back', job_definition_path(@job_execution.job_definition)
