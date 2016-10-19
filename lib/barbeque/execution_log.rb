@@ -34,6 +34,8 @@ module Barbeque
         key:    s3_key_for(execution: execution),
       )
       JSON.load(s3_object.body.read)
+    rescue Aws::S3::Errors::NoSuchKey
+      nil
     end
 
     private

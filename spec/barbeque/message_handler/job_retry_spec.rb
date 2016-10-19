@@ -113,5 +113,15 @@ describe Barbeque::MessageHandler::JobRetry do
         end
       end
     end
+
+    context 'when retried message is missing' do
+      before do
+        allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return(nil)
+      end
+
+      it 'raises MessageNotFound' do
+        expect { handler.run }.to raise_error(Barbeque::MessageHandler::MessageNotFound)
+      end
+    end
   end
 end

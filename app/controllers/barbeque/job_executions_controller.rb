@@ -1,10 +1,7 @@
 class Barbeque::JobExecutionsController < Barbeque::ApplicationController
   def show
     @job_execution = Barbeque::JobExecution.find(params[:id])
-    log = @job_execution.execution_log
-    @message = log['message']
-    @stdout  = log['stdout']
-    @stderr  = log['stderr']
+    @log = @job_execution.execution_log
   end
 
   def retry
