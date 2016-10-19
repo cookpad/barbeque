@@ -1,3 +1,6 @@
+## v0.0.18
+- Reuse AWS credentials assumed from Role [#9](https://github.com/cookpad/barbeque/pull/9)
+
 ## v0.0.17
 - Move statistics button to upper right on job definition page
 - Link app from job definitions index
