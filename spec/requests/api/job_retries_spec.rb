@@ -12,7 +12,7 @@ describe 'job_retries' do
     let(:sqs_client) { double('Aws::SQS::Client') }
 
     before do
-      allow(Aws::SQS::Client).to receive(:new).and_return(sqs_client)
+      allow(Barbeque::MessageRetryingService).to receive(:sqs_client).and_return(sqs_client)
     end
 
     it 'enqueues a message to retry a specified message', :autodoc do

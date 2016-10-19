@@ -8,12 +8,16 @@ module Barbeque
 
     class << self
       delegate :save, :load, to: :new
+
+      def s3_client
+        @s3_client ||= Aws::S3::Client.new
+      end
     end
 
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
     # @param [Hash] log
     def save(execution:, log:)
-      s3.put_object(
+      ExecutionLog.s3_client.put_object(
         bucket: s3_bucket_name,
         key:    s3_key_for(execution: execution),
         body:   log.to_json,
@@ -25,7 +29,7 @@ module Barbeque
     def load(execution:)
       return {} if execution.pending?
 
-      s3_object = s3.get_object(
+      s3_object = ExecutionLog.s3_client.get_object(
         bucket: s3_bucket_name,
         key:    s3_key_for(execution: execution),
       )
@@ -42,10 +46,6 @@ module Barbeque
     # @param [String] message_id
     def s3_key_for(execution:)
       File.join(execution.app.name, execution.job_definition.job, execution.message_id)
-    end
-
-    def s3
-      @s3 ||= Aws::S3::Client.new
     end
   end
 end

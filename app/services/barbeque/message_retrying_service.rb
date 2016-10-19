@@ -3,6 +3,10 @@ require 'aws-sdk'
 class Barbeque::MessageRetryingService
   DEFAULT_DELAY_SECONDS = 0
 
+  def self.sqs_client
+    @sqs_client ||= Aws::SQS::Client.new
+  end
+
   def initialize(message_id:, delay_seconds: nil)
     @message_id    = message_id
     @delay_seconds = delay_seconds || DEFAULT_DELAY_SECONDS
@@ -10,7 +14,7 @@ class Barbeque::MessageRetryingService
 
   def run
     execution = Barbeque::JobExecution.find_by!(message_id: @message_id)
-    client.send_message(
+    Barbeque::MessageRetryingService.sqs_client.send_message(
       queue_url:     execution.job_queue.queue_url,
       message_body:  build_message.to_json,
       delay_seconds: @delay_seconds,
@@ -24,9 +28,5 @@ class Barbeque::MessageRetryingService
       'Type'           => 'JobRetry',
       'RetryMessageId' => @message_id,
     }
-  end
-
-  def client
-    @client ||= Aws::SQS::Client.new
   end
 end
