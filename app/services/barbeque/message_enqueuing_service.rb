@@ -3,6 +3,10 @@ require 'aws-sdk'
 class Barbeque::MessageEnqueuingService
   DEFAULT_QUEUE = ENV['BARBEQUE_DEFAULT_QUEUE'] || 'default'
 
+  def self.sqs_client
+    @sqs_client ||= Aws::SQS::Client.new
+  end
+
   # @param [String] application
   # @param [String] job
   # @param [Object] message
@@ -17,7 +21,7 @@ class Barbeque::MessageEnqueuingService
   # @return [String] message_id
   def run
     queue = Barbeque::JobQueue.find_by!(name: @queue)
-    response = client.send_message(
+    response = Barbeque::MessageEnqueuingService.sqs_client.send_message(
       queue_url:    queue.queue_url,
       message_body: build_message.to_json,
     )
@@ -33,9 +37,5 @@ class Barbeque::MessageEnqueuingService
       'Job'         => @job,
       'Message'     => @message,
     }
-  end
-
-  def client
-    @client ||= Aws::SQS::Client.new
   end
 end
