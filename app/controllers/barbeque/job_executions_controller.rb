@@ -1,11 +1,7 @@
 class Barbeque::JobExecutionsController < Barbeque::ApplicationController
   def show
     @job_execution = Barbeque::JobExecution.find(params[:id])
-    begin
-      @log = @job_execution.execution_log
-    rescue Aws::S3::Errors::NoSuchKey
-      @log = nil
-    end
+    @log = @job_execution.execution_log
   end
 
   def retry
