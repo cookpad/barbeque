@@ -1,3 +1,6 @@
+## v0.1.0
+- Handle S3 error on web console [#10](https://github.com/cookpad/barbeque/pull/10)
+
 ## v0.0.18
 - Reuse AWS credentials assumed from Role [#9](https://github.com/cookpad/barbeque/pull/9)
 
