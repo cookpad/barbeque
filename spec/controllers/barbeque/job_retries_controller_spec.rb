@@ -29,9 +29,8 @@ describe Barbeque::JobRetriesController do
 
     it 'shows message, stdout, stderr in S3' do
       get :show, params: { job_execution_id: job_execution.id, id: job_retry.id }
-      expect(assigns(:message)).to eq(message)
-      expect(assigns(:stdout)).to eq(stdout)
-      expect(assigns(:stderr)).to eq(stderr)
+      expect(assigns(:execution_log)).to eq(execution_log)
+      expect(assigns(:retry_log)).to eq(retry_log)
     end
   end
 end

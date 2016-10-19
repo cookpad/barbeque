@@ -1,10 +1,17 @@
 class Barbeque::JobRetriesController < Barbeque::ApplicationController
   def show
     @job_execution = Barbeque::JobExecution.find(params[:job_execution_id])
-    @message = @job_execution.execution_log['message']
+    begin
+      @execution_log = @job_execution.execution_log
+    rescue Aws::S3::Errors::NoSuchKey
+      @execution_log = nil
+    end
 
     @job_retry = Barbeque::JobRetry.find(params[:id])
-    @stdout = @job_retry.execution_log['stdout']
-    @stderr = @job_retry.execution_log['stderr']
+    begin
+      @retry_log = @job_retry.execution_log
+    rescue Aws::S3::Errors::NoSuchKey
+      @retry_log = nil
+    end
   end
 end

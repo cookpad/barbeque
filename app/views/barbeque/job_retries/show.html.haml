@@ -35,7 +35,10 @@
             %tr
               %th Message
               %td
-                %code= @message
+                - if @execution_log
+                  %code= @execution_log['message']
+                - else
+                  Execution log was not found.
 
 .row
   .col-sm-6
@@ -45,7 +48,10 @@
           Stdout
 
       .box-body
-        %pre= @stdout
+        - if @retry_log
+          %pre= @retry_log['stdout']
+        - else
+          Retry log was not found.
 
   .col-sm-6
     .box.box-primary
@@ -54,6 +60,9 @@
           Stderr
 
       .box-body
-        %pre= @stderr
+        - if @retry_log
+          %pre= @retry_log['stderr']
+        - else
+          Retry log was not found.
 
 = link_to 'Back', job_execution_path(@job_execution)
