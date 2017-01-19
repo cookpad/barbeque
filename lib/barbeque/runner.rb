@@ -1,5 +1,6 @@
 require 'barbeque/configuration'
 require 'barbeque/runner/docker'
+require 'barbeque/runner/hako'
 
 module Barbeque
   module Runner
