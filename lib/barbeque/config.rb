@@ -38,10 +38,8 @@ module Barbeque
       @config ||= build_config
     end
 
-    def build_config(filename = 'barbeque.yml')
-      filepath = Rails.root.join('config', filename).to_s
-      hash = YAML.load(ERB.new(File.read(filepath)).result)
-      Config.new(DEFAULT_CONFIG.merge(hash[Rails.env]))
+    def build_config(config_name = 'barbeque')
+      Config.new(DEFAULT_CONFIG.merge(Rails.application.config_for(config_name)))
     end
   end
 

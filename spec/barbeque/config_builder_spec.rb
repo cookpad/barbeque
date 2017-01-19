@@ -3,44 +3,25 @@ require 'barbeque/config'
 
 describe Barbeque::ConfigBuilder do
   describe '#build_config' do
-    let(:yaml) do
-      <<-YAML.strip_heredoc
-        rails_env:
-          runner: Runner
-      YAML
-    end
-
-    before do
-      allow(Rails).to receive(:env).and_return('rails_env')
-      allow(File).to receive(:read).
-        with(Rails.root.join('config', 'barbeque.yml').to_s).
-        and_return(yaml)
-    end
-
     it 'returns Barbeque::Config loaded from config/barbeque.yml' do
       config = Barbeque.build_config
-      expect(config.runner).to eq('Runner')
+      expect(config.runner).to eq('Docker')
     end
 
     context 'when it has no config' do
-      let(:yaml) { 'rails_env: {}' }
+      before do
+        stub_const("Barbeque::ConfigBuilder::DEFAULT_CONFIG", { 'runner' => 'Runner' })
+      end
 
       it 'returns default config' do
-        config = Barbeque.build_config
-        expect(config.runner).to eq('Docker')
+        config = Barbeque.build_config('barbeque.empty')
+        expect(config.runner).to eq('Runner')
       end
     end
 
     context 'given erb' do
-      let(:yaml) do
-        <<-YAML.strip_heredoc
-          rails_env:
-            runner: <%= 'Foo' + 'Bar' %>
-        YAML
-      end
-
       it 'evaluates barbeque.yml as erb' do
-        config = Barbeque.build_config
+        config = Barbeque.build_config('barbeque.erb')
         expect(config.runner).to eq('FooBar')
       end
     end

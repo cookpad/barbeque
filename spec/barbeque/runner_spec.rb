@@ -11,7 +11,7 @@ describe Barbeque::Runner do
     end
 
     context 'without runner_options' do
-      let(:barbeque_yml) { 'barbeque.yml' }
+      let(:barbeque_yml) { 'barbeque' }
 
       it 'initializes a configured runner with docker_image' do
         expect(Barbeque::Runner::Docker).to receive(:new).with(
@@ -22,7 +22,7 @@ describe Barbeque::Runner do
     end
 
     context 'with runner_options' do
-      let(:barbeque_yml) { 'barbeque.hako.yml' }
+      let(:barbeque_yml) { 'barbeque.hako' }
 
       it 'initializes a configured runner with docker_image and configured options' do
         expect(Barbeque::Runner::Hako).to receive(:new).with(
