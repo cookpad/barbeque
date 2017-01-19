@@ -4,9 +4,11 @@ module Barbeque
   module Runner
     class Hako
       # @param [Barbeque::DockerImage] docker_image
-      def initialize(docker_image:)
+      # @param [Hash] hako_env
+      def initialize(docker_image:, hako_env: {})
         @app_name = docker_image.repository
-        @tag = docker_image.tag
+        @tag      = docker_image.tag
+        @hako_env = hako_env
       end
 
       # @param [Array<String>] command
@@ -17,11 +19,9 @@ module Barbeque
       def run(command, envs)
         cmd = build_hako_oneshot_command(command, envs)
 
-        hako_dir  = ENV.fetch('HAKO_DIR')
-        hako_envs = { 'GITHUB_ACCESS_TOKEN' => ENV['GITHUB_ACCESS_TOKEN'] }
-        hako_envs.merge!('AWS_REGION' => ENV['AWS_REGION']) if ENV['AWS_REGION']
+        hako_dir = ENV.fetch('HAKO_DIR')
         Bundler.with_clean_env do
-          Open3.capture3(hako_envs, *cmd, chdir: hako_dir)
+          Open3.capture3(@hako_env, *cmd, chdir: hako_dir)
         end
       end
 
