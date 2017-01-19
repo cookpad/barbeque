@@ -20,11 +20,7 @@ module Barbeque
 
     def init_runner_options
       self.runner_options ||= {}
-      self.runner_options = Hash.new.tap do |symbolized|
-        runner_options.each do |key, value|
-          symbolized[key.to_sym] = value
-        end
-      end
+      self.runner_options.symbolize_keys!
     end
   end
 
