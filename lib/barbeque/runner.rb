@@ -1,4 +1,4 @@
-require 'barbeque/configuration'
+require 'barbeque/config'
 require 'barbeque/runner/docker'
 require 'barbeque/runner/hako'
 

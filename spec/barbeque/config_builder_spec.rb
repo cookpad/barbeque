@@ -1,7 +1,7 @@
 require 'rails_helper'
-require 'barbeque/configuration'
+require 'barbeque/config'
 
-describe Barbeque::Configuration do
+describe Barbeque::ConfigBuilder do
   describe '#build_config' do
     let(:yaml) do
       <<-YAML.strip_heredoc
@@ -17,7 +17,7 @@ describe Barbeque::Configuration do
         and_return(yaml)
     end
 
-    it 'returns Hashie::Mash loaded from config/barbeque.yml' do
+    it 'returns Barbeque::Config loaded from config/barbeque.yml' do
       config = Barbeque.build_config
       expect(config.runner).to eq('Runner')
     end

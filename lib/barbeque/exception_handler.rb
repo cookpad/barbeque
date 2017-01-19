@@ -1,4 +1,4 @@
-require 'barbeque/configuration'
+require 'barbeque/config'
 
 module Barbeque
   module ExceptionHandler
