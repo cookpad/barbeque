@@ -3,7 +3,7 @@ require 'yaml'
 
 module Barbeque
   class Config
-    attr_accessor :exception_handler, :runner
+    attr_accessor :exception_handler, :runner, :runner_options
 
     def initialize(options = {})
       options.each do |key, value|
@@ -11,6 +11,18 @@ module Barbeque
           public_send("#{key}=", value)
         else
           raise KeyError.new("Unexpected option '#{key}' was specified.")
+        end
+      end
+      init_runner_options
+    end
+
+    private
+
+    def init_runner_options
+      self.runner_options ||= {}
+      self.runner_options = Hash.new.tap do |symbolized|
+        runner_options.each do |key, value|
+          symbolized[key.to_sym] = value
         end
       end
     end

@@ -1,0 +1,14 @@
+default: &default
+  runner: Hako
+  runner_options:
+    hako_env:
+      ACCESS_TOKEN: token
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
