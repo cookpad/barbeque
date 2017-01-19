@@ -5,9 +5,10 @@ module Barbeque
     class Hako
       # @param [Barbeque::DockerImage] docker_image
       # @param [Hash] hako_env
-      def initialize(docker_image:, hako_env: {})
+      def initialize(docker_image:, hako_dir:, hako_env: {})
         @app_name = docker_image.repository
         @tag      = docker_image.tag
+        @hako_dir = hako_dir
         @hako_env = hako_env
       end
 
@@ -18,10 +19,8 @@ module Barbeque
       # @return [Process::Status] status
       def run(command, envs)
         cmd = build_hako_oneshot_command(command, envs)
-
-        hako_dir = ENV.fetch('HAKO_DIR')
         Bundler.with_clean_env do
-          Open3.capture3(@hako_env, *cmd, chdir: hako_dir)
+          Open3.capture3(@hako_env, *cmd, chdir: @hako_dir)
         end
       end
 

@@ -27,6 +27,7 @@ describe Barbeque::Runner do
       it 'initializes a configured runner with docker_image and configured options' do
         expect(Barbeque::Runner::Hako).to receive(:new).with(
           docker_image: docker_image,
+          hako_dir: '/home/k0kubun/hako_repo',
           hako_env: { 'ACCESS_TOKEN' => 'token' },
         )
         Barbeque::Runner.create(docker_image: docker_image)

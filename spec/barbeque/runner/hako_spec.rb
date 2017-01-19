@@ -4,13 +4,6 @@ describe Barbeque::Runner::Hako do
   let(:hako_directory) { '.' }
   let(:github_access_token) { 'access_token' }
 
-  around do |example|
-    original_env = ENV.to_h.dup
-    ENV['HAKO_DIR'] = hako_directory
-    example.run
-    ENV.replace(original_env)
-  end
-
   describe '#run' do
     let(:app_name) { 'dummy' }
     let(:tag) { 'latest' }
@@ -27,7 +20,11 @@ describe Barbeque::Runner::Hako do
 
     it 'runs hako oneshot command within HAKO_DIR' do
       expect(Open3).to receive(:capture3).with(hako_env, *hako_command, chdir: hako_directory)
-      Barbeque::Runner::Hako.new(docker_image: docker_image, hako_env: hako_env).run(job_command, envs)
+      Barbeque::Runner::Hako.new(
+        docker_image: docker_image,
+        hako_dir: hako_directory,
+        hako_env: hako_env,
+      ).run(job_command, envs)
     end
   end
 end

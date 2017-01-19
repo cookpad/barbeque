@@ -1,6 +1,7 @@
 default: &default
   runner: Hako
   runner_options:
+    hako_dir: /home/k0kubun/hako_repo
     hako_env:
       ACCESS_TOKEN: token
 
