@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency "aws-sdk"
   s.add_dependency "coffee-rails"
   s.add_dependency "hamlit"
-  s.add_dependency "hashie"
   s.add_dependency "jquery-rails"
   s.add_dependency "kaminari"
   s.add_dependency "rails", "~> 5.0.0"
