@@ -1,3 +1,6 @@
+## v0.2.0
+- Add Hako runner [#11](https://github.com/cookpad/barbeque/pull/11)
+
 ## v0.1.0
 - Handle S3 error on web console [#10](https://github.com/cookpad/barbeque/pull/10)
 
