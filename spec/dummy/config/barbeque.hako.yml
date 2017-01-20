@@ -4,6 +4,7 @@ default: &default
     hako_dir: /home/k0kubun/hako_repo
     hako_env:
       ACCESS_TOKEN: token
+    yaml_dir: /yamls
 
 development:
   <<: *default

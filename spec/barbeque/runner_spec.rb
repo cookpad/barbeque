@@ -29,6 +29,7 @@ describe Barbeque::Runner do
           docker_image: docker_image,
           hako_dir: '/home/k0kubun/hako_repo',
           hako_env: { 'ACCESS_TOKEN' => 'token' },
+          yaml_dir: '/yamls'
         )
         Barbeque::Runner.create(docker_image: docker_image)
       end

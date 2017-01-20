@@ -6,13 +6,13 @@ module Barbeque
       # @param [Barbeque::DockerImage] docker_image
       # @param [String] hako_dir
       # @param [Hash] hako_env
-      # @param [String] yaml_prefix
-      def initialize(docker_image:, hako_dir:, hako_env: {}, yaml_prefix: '')
+      # @param [String] yaml_dir
+      def initialize(docker_image:, hako_dir:, hako_env: {}, yaml_dir:)
         @app_name = docker_image.repository
         @tag      = docker_image.tag
         @hako_dir = hako_dir
         @hako_env = hako_env
-        @yaml_prefix = yaml_prefix
+        @yaml_dir = yaml_dir
       end
 
       # @param [Array<String>] command
@@ -32,7 +32,7 @@ module Barbeque
       def build_hako_oneshot_command(command, envs)
         [
           'bundle', 'exec', 'hako', 'oneshot', '--tag', @tag,
-          *env_options(envs), "#{@yaml_prefix}#{@app_name}.yml", '--', *command,
+          *env_options(envs), File.join(@yaml_dir, "#{@app_name}.yml"), '--', *command,
         ]
       end
 

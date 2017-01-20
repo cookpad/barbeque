@@ -1,4 +1,5 @@
 require 'barbeque/runner/hako'
+require 'barbeque/docker_image'
 
 describe Barbeque::Runner::Hako do
   let(:hako_directory) { '.' }
@@ -16,31 +17,15 @@ describe Barbeque::Runner::Hako do
       expect(Open3).to receive(:capture3).with(
         hako_env,
         'bundle', 'exec', 'hako', 'oneshot', '--tag', tag,
-        '--env=FOO=BAR', "#{app_name}.yml", '--', *job_command,
+        '--env=FOO=BAR', "/yamls/#{app_name}.yml", '--', *job_command,
         chdir: hako_directory,
       )
       Barbeque::Runner::Hako.new(
         docker_image: docker_image,
         hako_dir: hako_directory,
         hako_env: hako_env,
+        yaml_dir: '/yamls',
       ).run(job_command, envs)
-    end
-
-    context 'with yaml_prefix' do
-      it 'loads config with yaml_prefix' do
-        expect(Open3).to receive(:capture3).with(
-          hako_env,
-          'bundle', 'exec', 'hako', 'oneshot', '--tag', tag,
-          '--env=FOO=BAR', "apps/#{app_name}.yml", '--', *job_command,
-          chdir: hako_directory,
-        )
-        Barbeque::Runner::Hako.new(
-          docker_image: docker_image,
-          hako_dir: hako_directory,
-          hako_env: hako_env,
-          yaml_prefix: 'apps/',
-        ).run(job_command, envs)
-      end
     end
   end
 end
