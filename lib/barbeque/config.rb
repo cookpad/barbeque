@@ -13,14 +13,7 @@ module Barbeque
           raise KeyError.new("Unexpected option '#{key}' was specified.")
         end
       end
-      init_runner_options
-    end
-
-    private
-
-    def init_runner_options
-      self.runner_options ||= {}
-      self.runner_options.symbolize_keys!
+      runner_options.symbolize_keys!
     end
   end
 
@@ -28,6 +21,7 @@ module Barbeque
     DEFAULT_CONFIG = {
       'exception_handler' => 'RailsLogger',
       'runner'            => 'Docker',
+      'runner_options'    => {},
     }
 
     def config

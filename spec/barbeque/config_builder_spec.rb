@@ -9,13 +9,9 @@ describe Barbeque::ConfigBuilder do
     end
 
     context 'when it has no config' do
-      before do
-        stub_const("Barbeque::ConfigBuilder::DEFAULT_CONFIG", { 'runner' => 'Runner' })
-      end
-
       it 'returns default config' do
         config = Barbeque.build_config('barbeque.empty')
-        expect(config.runner).to eq('Runner')
+        expect(config.runner_options).to eq({})
       end
     end
 
