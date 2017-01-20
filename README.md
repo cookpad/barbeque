@@ -8,7 +8,7 @@ Job queue system to run job with Docker
 ## Project Status
 
 Barbeque is under development but already used on production at Cookpad.  
-Documentation and open-sourcing plugins are work in progress.
+Documentation is work in progress.
 
 ## What's Barbeque?
 
@@ -24,8 +24,8 @@ In Barbeque worker, they are done on Docker container.
 
 ## Why Barbeque?
 
-- You can achieve job-level auto scaling using tools like [Amazon ECS](https://aws.amazon.com/ecs/) and [EC2 Auto Scaling group](https://aws.amazon.com/autoscaling/)
-  - It requires a plugin to run job with ECS, but it's not open-sourced for now
+- You can achieve job-level auto scaling using tools like [Amazon ECS](https://aws.amazon.com/ecs/) [EC2 Auto Scaling group](https://aws.amazon.com/autoscaling/)
+  - For Amazon ECS, Barbeque has Hako runner
 - You don't have to manage infrastructure for each application like Resque or Sidekiq
 
 For details, see [Scalable Job Queue System Built with Docker // Speaker Deck](https://speakerdeck.com/k0kubun/scalable-job-queue-system-built-with-docker).
