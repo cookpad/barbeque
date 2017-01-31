@@ -1,3 +1,6 @@
+## v0.2.1
+- Fix bug in execution statistics [#12](https://github.com/cookpad/barbeque/pull/12)
+
 ## v0.2.0
 - Add Hako runner [#11](https://github.com/cookpad/barbeque/pull/11)
 
