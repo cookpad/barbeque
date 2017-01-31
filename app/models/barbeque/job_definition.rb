@@ -15,12 +15,19 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   DATE_HOUR_SQL = 'date_format(created_at, "%Y-%m-%d %H:00:00")'
 
   def execution_stats(from, to)
-    job_executions.where(created_at: from .. to).group(DATE_HOUR_SQL).order(DATE_HOUR_SQL).pluck("#{DATE_HOUR_SQL}, count(1), avg(timestampdiff(second, created_at, finished_at))").map do |date_hour, count, avg_time|
-      {
-        date_hour: Time.zone.parse("#{date_hour} UTC"),
+    from = from.beginning_of_hour
+    to = to.beginning_of_hour
+    stats = Hash.new { |h, k| h[k] = { count: 0, avg_time: 0 } }
+    job_executions.where(created_at: from .. to).group(DATE_HOUR_SQL).order(DATE_HOUR_SQL).pluck("#{DATE_HOUR_SQL}, count(1), avg(timestampdiff(second, created_at, finished_at))").each do |date_hour, count, avg_time|
+      time = Time.zone.parse("#{date_hour} UTC")
+      stats[time] = {
         count: count,
         avg_time: avg_time,
       }
+    end
+    (from.to_i ... to.to_i).step(1.hour).map do |t|
+      time = Time.at(t)
+      stats[time].merge(date_hour: time)
     end
   end
 end
