@@ -1,3 +1,6 @@
+## v0.2.2 (2017-03-16)
+- Add execution id and html_url to status API response [#13](https://github.com/cookpad/barbeque/pull/13)
+
 ## v0.2.1
 - Fix bug in execution statistics [#12](https://github.com/cookpad/barbeque/pull/12)
 
