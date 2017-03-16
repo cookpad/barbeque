@@ -15,12 +15,14 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
   end
 
   def require_resource
-    @resource = Barbeque::JobExecution.find_or_initialize_by(message_id: params[:message_id])
+    model = Barbeque::JobExecution.find_or_initialize_by(message_id: params[:message_id])
+    @resource = Barbeque::Api::JobExecutionResource.new(model, url_options)
   end
 
   def create_resource
     message_id = enqueue_message
-    Barbeque::JobExecution.new(message_id: message_id).to_resource
+    model = Barbeque::JobExecution.new(message_id: message_id)
+    @resource = Barbeque::Api::JobExecutionResource.new(model, url_options)
   end
 
   # @return [String] id of a message queued to SQS.
@@ -31,5 +33,14 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
       queue:       params[:queue],
       message:     params[:message],
     ).run
+  end
+
+  # Link to job_execution isn't available if it isn't dequeued yet
+  def location
+    if @resource.id
+      super
+    else
+      nil
+    end
   end
 end
