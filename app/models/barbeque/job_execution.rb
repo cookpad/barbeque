@@ -18,8 +18,4 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
   def execution_log
     @execution_log ||= Barbeque::ExecutionLog.load(execution: self)
   end
-
-  def to_resource
-    Barbeque::Api::JobExecutionResource.new(self)
-  end
 end

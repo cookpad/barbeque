@@ -11,10 +11,23 @@ describe 'job_executions' do
 
       it 'shows a status of a job_execution', :autodoc do
         get "/v1/job_executions/#{job_execution.message_id}", env: env
-        expect(result).to match({
+        expect(result).to eq(
           'message_id' => job_execution.message_id,
           'status'     => status,
-        })
+          'id'         => job_execution.id,
+        )
+      end
+
+      context 'when requested with fields=html_url', :autodoc do
+        it 'shows url to job_execution' do
+          get "/v1/job_executions/#{job_execution.message_id}?fields=__default__,html_url", env: env
+          expect(result).to eq(
+            'message_id' => job_execution.message_id,
+            'status'     => status,
+            'id'         => job_execution.id,
+            'html_url'   => "http://www.example.com/job_executions/#{job_execution.id}",
+          )
+        end
       end
     end
 
@@ -23,10 +36,23 @@ describe 'job_executions' do
 
       it 'returns pending as status' do
         get "/v1/job_executions/#{message_id}", env: env
-        expect(result).to match({
+        expect(result).to eq(
           'message_id' => message_id,
           'status'     => 'pending',
-        })
+          'id'         => nil,
+        )
+      end
+
+      context 'when requested with fields=html_url' do
+        it "doesn't shows url" do
+          get "/v1/job_executions/#{message_id}?fields=__default__,html_url", env: env
+          expect(result).to eq(
+            'message_id' => message_id,
+            'status'     => 'pending',
+            'id'         => nil,
+            'html_url'   => nil,
+          )
+        end
       end
     end
   end
@@ -62,6 +88,7 @@ describe 'job_executions' do
       expect(result).to eq({
         'message_id' => message_id,
         'status'     => 'pending',
+        'id'         => nil,
       })
     end
 
@@ -71,6 +98,18 @@ describe 'job_executions' do
       it 'returns 404' do
         post '/v2/job_executions', params: params.to_json, env: env
         expect(response).to have_http_status(404)
+      end
+    end
+
+    context 'when requested with fields=html_url' do
+      it "doesn't shows url" do
+        get "/v1/job_executions/#{message_id}?fields=__default__,html_url", env: env
+        expect(result).to eq(
+          'message_id' => message_id,
+          'status'     => 'pending',
+          'id'         => nil,
+          'html_url'   => nil,
+        )
       end
     end
   end
