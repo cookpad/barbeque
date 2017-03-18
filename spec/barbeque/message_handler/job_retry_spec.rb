@@ -123,5 +123,15 @@ describe Barbeque::MessageHandler::JobRetry do
         expect { handler.run }.to raise_error(Barbeque::MessageHandler::MessageNotFound)
       end
     end
+
+    context 'when job_retry already exists' do
+      before do
+        create(:job_retry, message_id: message.id)
+      end
+
+      it 'raises DuplicatedExecution' do
+        expect { handler.run }.to raise_error(Barbeque::MessageHandler::DuplicatedExecution)
+      end
+    end
   end
 end

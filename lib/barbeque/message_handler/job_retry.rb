@@ -16,8 +16,11 @@ module Barbeque
       end
 
       def run
-        job_retry = Barbeque::JobRetry.find_or_initialize_by(message_id: @message.id)
-        job_retry.update!(job_execution: job_execution)
+        begin
+          job_retry = Barbeque::JobRetry.create(message_id: @message.id, job_execution: job_execution)
+        rescue ActiveRecord::RecordNotUnique
+          raise DuplicatedExecution
+        end
         job_execution.update!(status: 'retried')
 
         stdout, stderr, result = run_command
