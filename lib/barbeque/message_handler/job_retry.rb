@@ -18,8 +18,8 @@ module Barbeque
       def run
         begin
           job_retry = Barbeque::JobRetry.create(message_id: @message.id, job_execution: job_execution)
-        rescue ActiveRecord::RecordNotUnique
-          raise DuplicatedExecution
+        rescue ActiveRecord::RecordNotUnique => e
+          raise DuplicatedExecution.new(e.message)
         end
         job_execution.update!(status: 'retried')
 

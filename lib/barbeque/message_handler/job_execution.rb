@@ -16,8 +16,8 @@ module Barbeque
       def run
         begin
           job_execution = Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @job_queue)
-        rescue ActiveRecord::RecordNotUnique
-          raise DuplicatedExecution
+        rescue ActiveRecord::RecordNotUnique => e
+          raise DuplicatedExecution.new(e.message)
         end
 
         stdout, stderr, status = run_command
