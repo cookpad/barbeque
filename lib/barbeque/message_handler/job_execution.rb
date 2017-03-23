@@ -14,9 +14,11 @@ module Barbeque
       end
 
       def run
-        job_execution = Barbeque::JobExecution.find_or_initialize_by(message_id: @message.id)
-        raise DuplicatedExecution if job_execution.persisted?
-        job_execution.update!(job_definition: job_definition, job_queue_id: @job_queue.id)
+        begin
+          job_execution = Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @job_queue)
+        rescue ActiveRecord::RecordNotUnique => e
+          raise DuplicatedExecution.new(e.message)
+        end
 
         stdout, stderr, status = run_command
         job_execution.update!(status: status.success? ? :success : :failed, finished_at: Time.now)
