@@ -1,3 +1,6 @@
+## v0.2.3 (2017-03-24)
+- Make operation to deduplicate messages atomic [#14](https://github.com/cookpad/barbeque/pull/14)
+
 ## v0.2.2 (2017-03-16)
 - Add execution id and html_url to status API response [#13](https://github.com/cookpad/barbeque/pull/13)
 
