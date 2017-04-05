@@ -1,3 +1,6 @@
+## v0.2.4 (2017-04-05)
+- Autolink URLs in job_retry outputs [#15](https://github.com/cookpad/barbeque/pull/15)
+
 ## v0.2.3 (2017-03-24)
 - Make operation to deduplicate messages atomic [#14](https://github.com/cookpad/barbeque/pull/14)
 
