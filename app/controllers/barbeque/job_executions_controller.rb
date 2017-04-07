@@ -2,6 +2,7 @@ class Barbeque::JobExecutionsController < Barbeque::ApplicationController
   def show
     @job_execution = Barbeque::JobExecution.find(params[:id])
     @log = @job_execution.execution_log
+    @job_retries = @job_execution.job_retries.order(id: :desc)
   end
 
   def retry
