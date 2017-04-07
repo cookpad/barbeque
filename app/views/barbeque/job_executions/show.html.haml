@@ -49,7 +49,7 @@
           Retries
 
       .box-body
-        - if @job_execution.job_retries.present?
+        - if @job_retries.present?
           %table.table.table-bordered
             %thead
               %tr
@@ -59,7 +59,7 @@
                 %th Elapsed Time
                 %th
             %tbody
-              - @job_execution.job_retries.each do |job_retry|
+              - @job_retries.each do |job_retry|
                 %tr
                   %td= job_retry.id
                   %td= status_label(job_retry.status)
