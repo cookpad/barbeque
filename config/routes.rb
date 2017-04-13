@@ -16,6 +16,8 @@ Barbeque::Engine.routes.draw do
 
   resources :job_queues
 
+  resources :monitors, only: %i[index]
+
   scope :v1, module: 'api', as: :v1 do
     resources :apps, only: [], param: :name, constraints: { name: /[\w-]+/ } do
       resource :revision_lock, only: [:create, :destroy]

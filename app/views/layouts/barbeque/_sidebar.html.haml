@@ -14,3 +14,7 @@
         = link_to job_queues_path do
           %i.fa.fa-cubes
           %span Queues
+      %li{ class: ('active' if controller_path == 'barbeque/monitors') }
+        = link_to monitors_path do
+          %i.fa.fa-tachometer
+          %span Monitors
