@@ -29,7 +29,6 @@
 
   counts_per_job = {}
   for own date_hour, jobs of recently_processed_jobs
-    console.log(jobs)
     for own job_id, job of jobs
       name = job.app_name + ' - ' + job.job_name
       counts_per_job[name] ||= []
