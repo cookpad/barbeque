@@ -1,0 +1,50 @@
+.row
+  .col-sm-12
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding Recently processed jobs (hourly)
+      .box-body
+        #recently-processed-jobs-chart{data: { jobs: @recently_processed_jobs.to_json }}
+        %table.table
+          %thead
+            %tr
+              %th Hour
+              %th Application
+              %th Job
+              %th Count
+          %tbody
+            - @recently_processed_jobs.keys.sort { |x, y| y <=> x }.each do |date_hour|
+              - jobs = @recently_processed_jobs[date_hour]
+              - jobs.keys.sort.each do |job_id|
+                - job = jobs[job_id]
+                %tr
+                  %td= date_hour
+                  %td= link_to(job[:app_name], app_path(job[:app_id]))
+                  %td= link_to(job[:job_name], job_definition_path(job[:job_id]))
+                  %td= job[:count]
+
+:coffee
+  chartDiv = document.getElementById('recently-processed-jobs-chart')
+  recentlyProcesedJobs = JSON.parse(chartDiv.dataset.jobs)
+
+  countsPerJob = {}
+  for own dateHour, jobs of recentlyProcesedJobs
+    for own jobId, job of jobs
+      name = job.app_name + ' - ' + job.job_name
+      countsPerJob[name] ||= []
+      countsPerJob[name][dateHour] ||= job.count
+
+  plotlyArgs = []
+  for own name, series of countsPerJob
+    x = []
+    y = []
+    for own dateHour, count of series
+      x.push(dateHour)
+      y.push(count)
+    plotlyArgs.push({
+      type: 'scatter',
+      name: name,
+      x: x,
+      y: y,
+    })
+  Plotly.plot(chartDiv, plotlyArgs)
