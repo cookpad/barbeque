@@ -2,15 +2,15 @@
   %section.sidebar
     %ul.sidebar-menu
       %li.header Menu
-      %li{ class: ('active' if controller_path == 'apps') }
+      %li{ class: ('active' if controller_path == 'barbeque/apps') }
         = link_to root_path do
           %i.fa.fa-users
           %span Applications
-      %li{ class: ('active' if controller_path == 'job_definitions') }
+      %li{ class: ('active' if controller_path == 'barbeque/job_definitions') }
         = link_to job_definitions_path do
           %i.fa.fa-tasks
           %span Job Definitions
-      %li{ class: ('active' if controller_path == 'job_queues') }
+      %li{ class: ('active' if controller_path == 'barbeque/job_queues') }
         = link_to job_queues_path do
           %i.fa.fa-cubes
           %span Queues
