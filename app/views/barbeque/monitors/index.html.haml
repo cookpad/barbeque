@@ -24,27 +24,27 @@
                   %td= job[:count]
 
 :coffee
-  chart_div = document.getElementById('recently-processed-jobs-chart')
-  recently_processed_jobs = JSON.parse(chart_div.dataset.jobs)
+  chartDiv = document.getElementById('recently-processed-jobs-chart')
+  recentlyProcesedJobs = JSON.parse(chartDiv.dataset.jobs)
 
-  counts_per_job = {}
-  for own date_hour, jobs of recently_processed_jobs
-    for own job_id, job of jobs
+  countsPerJob = {}
+  for own dateHour, jobs of recentlyProcesedJobs
+    for own jobId, job of jobs
       name = job.app_name + ' - ' + job.job_name
-      counts_per_job[name] ||= []
-      counts_per_job[name][date_hour] ||= job.count
+      countsPerJob[name] ||= []
+      countsPerJob[name][dateHour] ||= job.count
 
-  plotly_args = []
-  for own name, series of counts_per_job
+  plotlyArgs = []
+  for own name, series of countsPerJob
     x = []
     y = []
-    for own date_hour, count of series
-      x.push(date_hour)
+    for own dateHour, count of series
+      x.push(dateHour)
       y.push(count)
-    plotly_args.push({
+    plotlyArgs.push({
       type: 'scatter',
       name: name,
       x: x,
       y: y,
     })
-  Plotly.plot(chart_div, plotly_args)
+  Plotly.plot(chartDiv, plotlyArgs)
