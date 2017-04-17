@@ -1,3 +1,9 @@
+## v0.3.0 (2017-04-17)
+- Fix job_retry order in job_execution page [#16](https://github.com/cookpad/barbeque/pull/16)
+- Fix Back path to each job definition page [#17](https://github.com/cookpad/barbeque/pull/17)
+- Fix "active" class in sidebar [#18](https://github.com/cookpad/barbeque/pull/18)
+- Add new page to show recently processed jobs [#19](https://github.com/cookpad/barbeque/pull/19)
+
 ## v0.2.4 (2017-04-05)
 - Autolink URLs in job_retry outputs [#15](https://github.com/cookpad/barbeque/pull/15)
 
