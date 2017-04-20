@@ -16,6 +16,8 @@ Barbeque::Engine.routes.draw do
 
   resources :job_queues
 
+  resources :sns_subscriptions
+
   resources :monitors, only: %i[index]
 
   scope :v1, module: 'api', as: :v1 do
