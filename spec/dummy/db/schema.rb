@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160829023237) do
+ActiveRecord::Schema.define(version: 20170420030157) do
 
   create_table "barbeque_apps", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
     t.string   "name",                       null: false
@@ -69,6 +69,14 @@ ActiveRecord::Schema.define(version: 20160829023237) do
     t.string   "failure_notification_text"
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
+  end
+
+  create_table "barbeque_sns_subscriptions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "topic_arn",         null: false
+    t.integer  "job_queue_id",      null: false
+    t.integer  "job_definition_id", null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
 end
