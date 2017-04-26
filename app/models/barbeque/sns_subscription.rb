@@ -6,8 +6,6 @@ module Barbeque
     validates :topic_arn,
       uniqueness: { scope: :job_queue, message: 'should be set with only one queue' },
       presence: true
-    validates :job_queue, presence: true
-    validates :job_definition, presence: true
 
     after_update :update_queue_policy!
 
