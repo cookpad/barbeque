@@ -12,6 +12,7 @@ module Barbeque
     after_update :update_queue_policy!
 
     private
+
     def update_queue_policy!
       job_queue.update_policy!
     end
