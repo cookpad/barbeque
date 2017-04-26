@@ -59,9 +59,4 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
-
-  config.before do
-    allow_any_instance_of(Barbeque::SNSSubscription).to receive(:subscribe_topic!)
-    allow_any_instance_of(Barbeque::SNSSubscription).to receive(:unsubscribe_topic!)
-  end
 end
