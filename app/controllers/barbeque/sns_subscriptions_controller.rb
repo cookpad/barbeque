@@ -27,7 +27,7 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
 
   def update
     @sns_subscription = Barbeque::SNSSubscription.find(params[:id])
-    if @sns_subscription.update(params.require(:sns_subscription).permit(:topic_arn, :job_queue_id, :job_definition_id))
+    if @sns_subscription.update(params.require(:sns_subscription).permit(:job_queue_id, :job_definition_id))
       redirect_to @sns_subscription, notice: 'SNS subscription was successfully updated.'
     else
       render :edit

@@ -14,7 +14,10 @@
       .row.form-group
         .col-md-8
           = f.label :topic_arn
-          = f.text_field :topic_arn, class: 'form-control'
+          - if @sns_subscription.persisted?
+            .sns_subscriptio_topic_arn= @sns_subscription.topic_arn
+          - else
+            = f.text_field :topic_arn, class: 'form-control'
 
       .row.form-group
         .col-md-4
