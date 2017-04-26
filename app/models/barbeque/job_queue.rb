@@ -2,7 +2,7 @@ class Barbeque::JobQueue < Barbeque::ApplicationRecord
   SQS_NAME_PREFIX = ENV['BARBEQUE_SQS_NAME_PREFIX'] || 'Barbeque-'
   SQS_NAME_MAX_LENGTH = 80
 
-  has_many :sns_subscriptions, class_name: :SNSSubscription, dependent: :destroy
+  has_many :sns_subscriptions, class_name: 'SNSSubscription', dependent: :destroy
 
   # All SQS queues' "ReceiveMessageWaitTimeSeconds" are configured to be 20s (maximum).
   # This should be as large as possible to reduce API-calling cost by long polling.
