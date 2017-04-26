@@ -8,6 +8,7 @@ module Barbeque
   module Message
     class << self
       # @param [Aws::SQS::Types::Message] raw_message
+      # @param [JobQueue] job_queue
       # @return [Barbeque::Message::Base]
       def parse(raw_message, job_queue:)
         body = JSON.parse(raw_message.body)
