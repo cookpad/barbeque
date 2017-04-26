@@ -8,6 +8,7 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
   end
 
   def new
+    @sns_topic_arns = fetch_sns_topic_arns
     @sns_subscription = Barbeque::SNSSubscription.new
   end
 
@@ -38,5 +39,12 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
     @sns_subscription = Barbeque::SNSSubscription.find(params[:id])
     @sns_subscription.destroy
     redirect_to sns_subscriptions_path, notice: 'SNS subscription was successfully destroyed.'
+  end
+  
+  private
+
+  def fetch_sns_topic_arns
+    client = Aws::SNS::Client.new
+    client.list_topics.topics.map(&:topic_arn)
   end
 end
