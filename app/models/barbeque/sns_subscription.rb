@@ -8,5 +8,12 @@ module Barbeque
       presence: true
     validates :job_queue, presence: true
     validates :job_definition, presence: true
+
+    after_update :update_queue_policy!
+
+    private
+    def update_queue_policy!
+      job_queue.update_policy!
+    end
   end
 end
