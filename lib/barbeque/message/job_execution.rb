@@ -13,7 +13,7 @@ module Barbeque
         subscription = SNSSubscription.find_by!(topic_arn: topic_arn, job_queue_id: job_queue.id)
         body = {
           'Type' => 'JobExecution',
-          'Application' => subscription.job_definition.app.name,
+          'Application' => subscription.app.name,
           'Job' => subscription.job_definition.job,
           'Message' => message_body['Message'],
         }
