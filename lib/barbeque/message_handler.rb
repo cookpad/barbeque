@@ -6,3 +6,4 @@ end
 
 require 'barbeque/message_handler/job_execution'
 require 'barbeque/message_handler/job_retry'
+require 'barbeque/message_handler/notification'

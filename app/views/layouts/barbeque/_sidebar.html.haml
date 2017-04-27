@@ -14,6 +14,10 @@
         = link_to job_queues_path do
           %i.fa.fa-cubes
           %span Queues
+      %li{ class: ('active' if controller_path == 'barbeque/sns_subscriptions') }
+        = link_to sns_subscriptions_path do
+          %i.fa.fa-calendar-plus-o
+          %span SNS Subscriptions
       %li{ class: ('active' if controller_path == 'barbeque/monitors') }
         = link_to monitors_path do
           %i.fa.fa-tachometer

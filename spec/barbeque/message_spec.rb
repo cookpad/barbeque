@@ -1,8 +1,10 @@
 require 'barbeque/worker'
+require 'rails_helper'
 
 describe Barbeque::Message::Base do
   let(:application) { 'cookpad' }
   let(:job)         { 'NotifyAuthor' }
+  let(:job_queue) { create(:job_queue) }
   let(:message_id)  { SecureRandom.uuid }
   let(:message_body) { '{"foo":"bar"}' }
   let(:receipt_handle) do
@@ -47,6 +49,26 @@ describe Barbeque::Message::Base do
       expect(message.id).to eq(message_id)
       expect(message.receipt_handle).to eq(receipt_handle)
       expect(message.retry_message_id).to eq(retry_message_id)
+    end
+  end
+
+  context 'given Notification' do
+    let(:sns_subscription) { create(:sns_subscription, job_queue: job_queue) }
+    let(:raw_sqs_message) do
+      {
+        'Type'     => 'Notification',
+        'TopicArn' => sns_subscription.topic_arn,
+        'Message'  => message_body,
+      }.to_json
+    end
+
+    it 'parses a SQS message' do
+      message = Barbeque::Message.parse(sqs_message)
+      expect(message).to be_a(Barbeque::Message::Notification)
+      expect(message.id).to eq(message_id)
+      expect(message.receipt_handle).to eq(receipt_handle)
+      expect(message.body).to eq(message_body)
+      expect(message.topic_arn).to eq(sns_subscription.topic_arn)
     end
   end
 

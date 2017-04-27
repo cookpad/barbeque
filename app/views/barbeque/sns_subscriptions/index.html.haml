@@ -1,0 +1,24 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      All SNS Subscriptions
+    = link_to new_sns_subscription_path, class: 'btn btn-primary pull-right' do
+      New SNS Subscriptions
+
+  .box-body
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th topic_arn
+          %th Job Queue
+          %th Job Definition
+          %th
+
+      %tbody
+        - @sns_subscriptions.each do |sns_subscription|
+          %tr
+            %td= sns_subscription.topic_arn
+            %td= sns_subscription.job_queue.name
+            %td= sns_subscription.job_definition.job
+            %td
+              = link_to 'View Details', sns_subscription, class: 'btn btn-default btn-sm'

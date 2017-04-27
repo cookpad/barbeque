@@ -3,6 +3,7 @@ require 'barbeque/message/base'
 require 'barbeque/message/invalid_message'
 require 'barbeque/message/job_execution'
 require 'barbeque/message/job_retry'
+require 'barbeque/message/notification'
 
 module Barbeque
   module Message

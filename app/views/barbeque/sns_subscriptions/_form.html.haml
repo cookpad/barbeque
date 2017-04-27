@@ -1,0 +1,39 @@
+.box.box-primary
+  .box-header
+    %h3.box-title.with_padding
+      #{action_name.capitalize} SNS Subscription
+
+  .box-body
+    = form_for @sns_subscription do |f|
+      - if @sns_subscription.errors.any?
+        %strong #{pluralize(@sns_subscription.errors.count, 'error')} prohibited this SNS subscription from being saved:
+        %ul
+          - @sns_subscription.errors.full_messages.each do |msg|
+            %li= msg
+
+      .row.form-group
+        .col-md-8
+          = f.label :topic_arn
+          - if @sns_subscription.persisted?
+            .sns_subscription_topic_arn= @sns_subscription.topic_arn
+          - else
+            = f.collection_select :topic_arn, @sns_topic_arns.map {|t| [t] }, :first, :first,
+              { prompt: true }, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :job_queue_id
+          - if @sns_subscription.persisted?
+            .sns_subscription_job_queue_id= link_to @sns_subscription.job_queue.name, @sns_subscription.job_queue
+          - else
+            = f.collection_select :job_queue_id, Barbeque::JobQueue.pluck(:id, :name), :first, :second,
+              { prompt: true }, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :job_definition_id
+          = f.collection_select :job_definition_id, Barbeque::JobDefinition.pluck(:id, :job), :first, :second,
+            { prompt: true }, class: 'form-control'
+
+      .form-group
+        = f.submit 'Save', class: 'btn btn-primary'

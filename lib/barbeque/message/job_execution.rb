@@ -4,8 +4,8 @@ module Barbeque
   module Message
     class JobExecution < Base
       attr_reader :body        # [Object] free-format JSON
-      attr_reader :application # [String] To specify `job_definitions.application_id`
-      attr_reader :job         # [String] To specify `job_definitions.name`
+      attr_reader :application # [String] To specify `job_definitions.app.name`
+      attr_reader :job         # [String] To specify `job_definitions.job`
 
       private
 

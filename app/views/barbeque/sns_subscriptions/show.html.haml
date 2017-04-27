@@ -1,0 +1,28 @@
+.row
+  .col-sm-7
+    .box.box-primary
+      .box-header
+        %h3.box-title.with_padding
+          SNS Subscription Details
+
+      .box-body
+        %p#notice= notice
+
+        %table.table.table-bordered
+          %tbody
+            %tr
+              %th topic_arn
+              %td= @sns_subscription.topic_arn
+            %tr
+              %th Job Queue
+              %td= link_to @sns_subscription.job_queue.name, @sns_subscription.job_queue
+            %tr
+              %th Job Defenition
+              %td= link_to @sns_subscription.job_definition.job, @sns_subscription.job_definition
+            %tr
+
+        = link_to 'Edit', edit_sns_subscription_path(@sns_subscription), class: 'btn btn-primary'
+        = link_to 'Destroy', sns_subscription_path(@sns_subscription),
+          class: 'btn', method: :delete, data: { confirm: 'Are you sure to delete SNS subscription?' }
+
+= link_to 'Back', sns_subscriptions_path
