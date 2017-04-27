@@ -1,3 +1,6 @@
+## v0.4.1 (2017-04-28)
+- Add error handling for AWS SNS API calls [#21](https://github.com/cookpad/barbeque/pull/21)
+
 ## v0.4.0 (2017-04-27)
 - Support fan-out executions using AWS SNS notifications [#20](https://github.com/cookpad/barbeque/pull/20)
 
