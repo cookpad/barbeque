@@ -38,7 +38,7 @@ module Barbeque
         queue_url: @job_queue.queue_url,
         wait_time_seconds: Barbeque::JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME,
       )
-      result.messages.map { |m| Barbeque::Message.parse(m, job_queue: @job_queue) }
+      result.messages.map { |m| Barbeque::Message.parse(m) }
     end
 
     def reject_invalid_messages(messages)

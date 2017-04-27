@@ -26,7 +26,7 @@ describe Barbeque::Message::Base do
 
   context 'given JobExecution' do
     it 'parses a SQS message' do
-      message = Barbeque::Message.parse(sqs_message, job_queue: job_queue)
+      message = Barbeque::Message.parse(sqs_message)
       expect(message.application).to eq(application)
       expect(message.job).to eq(job)
       expect(message.id).to eq(message_id)
@@ -45,7 +45,7 @@ describe Barbeque::Message::Base do
     end
 
     it 'parses a SQS message' do
-      message = Barbeque::Message.parse(sqs_message, job_queue: job_queue)
+      message = Barbeque::Message.parse(sqs_message)
       expect(message.id).to eq(message_id)
       expect(message.receipt_handle).to eq(receipt_handle)
       expect(message.retry_message_id).to eq(retry_message_id)
@@ -63,7 +63,7 @@ describe Barbeque::Message::Base do
     end
 
     it 'parses a SQS message' do
-      message = Barbeque::Message.parse(sqs_message, job_queue: job_queue)
+      message = Barbeque::Message.parse(sqs_message)
       expect(message).to be_a(Barbeque::Message::Notification)
       expect(message.id).to eq(message_id)
       expect(message.receipt_handle).to eq(receipt_handle)
@@ -73,7 +73,7 @@ describe Barbeque::Message::Base do
   end
 
   describe 'valid?' do
-    subject { Barbeque::Message.parse(sqs_message, job_queue: job_queue).valid? }
+    subject { Barbeque::Message.parse(sqs_message).valid? }
 
     context 'when SQS message is a valid JSON' do
       it { is_expected.to eq(true) }
