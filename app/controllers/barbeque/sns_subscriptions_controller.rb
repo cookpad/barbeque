@@ -30,7 +30,7 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
         @sns_topic_arns = fetch_sns_topic_arns
         render :new
       else
-        @sns_subscription.save
+        @sns_subscription.save!
         update_sqs_policy!
         redirect_to @sns_subscription, notice: 'SNS subscription was successfully created.'
       end
