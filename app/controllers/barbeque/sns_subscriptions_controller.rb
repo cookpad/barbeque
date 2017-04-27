@@ -18,11 +18,22 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
 
   def create
     @sns_subscription = Barbeque::SNSSubscription.new(params.require(:sns_subscription).permit(:topic_arn, :job_queue_id, :job_definition_id))
-
-    if @sns_subscription.save
-      update_sqs_policy!
-      subscribe_topic!
-      redirect_to @sns_subscription, notice: 'SNS subscription was successfully created.'
+    if @sns_subscription.valid?
+      begin
+        subscribe_topic!
+      rescue Aws::SNS::Errors::AuthorizationError
+        @sns_subscription.errors[:topic_arn] << 'is not authorized'
+        @sns_topic_arns = fetch_sns_topic_arns
+        render :new
+      rescue Aws::SNS::Errors::NotFound
+        @sns_subscription.errors[:topic_arn] << 'is not found'
+        @sns_topic_arns = fetch_sns_topic_arns
+        render :new
+      else
+        @sns_subscription.save
+        update_sqs_policy!
+        redirect_to @sns_subscription, notice: 'SNS subscription was successfully created.'
+      end
     else
       render :new
     end
@@ -50,6 +61,8 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
 
   def fetch_sns_topic_arns
     sns_client.list_topics.topics.map(&:topic_arn)
+  rescue Aws::Errors::MissingCredentialsError, Aws::SNS::Errors::AuthorizationError
+    []
   end
 
   def update_sqs_policy!
