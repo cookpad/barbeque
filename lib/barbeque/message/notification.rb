@@ -4,7 +4,7 @@ module Barbeque
   module Message
     class Notification < Base
       attr_reader :body        # [Object] free-format JSON
-      attr_reader :topic_arn#  # [String] To specify `subscription.topic_arn`
+      attr_reader :topic_arn   # [String] To specify `subscription.topic_arn`
       attr_reader :application # [String] To specify `job_definitions.app.name`
       attr_reader :job         # [String] To specify `job_definitions.job`
 
