@@ -64,11 +64,11 @@ describe Barbeque::Message::Base do
 
     it 'parses a SQS message' do
       message = Barbeque::Message.parse(sqs_message, job_queue: job_queue)
-      expect(message.application).to eq(sns_subscription.app.name)
-      expect(message.job).to eq(sns_subscription.job_definition.job)
+      expect(message).to be_a(Barbeque::Message::Notification)
       expect(message.id).to eq(message_id)
       expect(message.receipt_handle).to eq(receipt_handle)
       expect(message.body).to eq(message_body)
+      expect(message.topic_arn).to eq(sns_subscription.topic_arn)
     end
   end
 

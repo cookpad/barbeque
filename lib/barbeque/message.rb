@@ -3,21 +3,17 @@ require 'barbeque/message/base'
 require 'barbeque/message/invalid_message'
 require 'barbeque/message/job_execution'
 require 'barbeque/message/job_retry'
+require 'barbeque/message/notification'
 
 module Barbeque
   module Message
     class << self
       # @param [Aws::SQS::Types::Message] raw_message
-      # @param [JobQueue] job_queue
       # @return [Barbeque::Message::Base]
       def parse(raw_message, job_queue:)
         body = JSON.parse(raw_message.body)
-        if body['Type'] == 'Notification'
-          Barbeque::Message::JobExecution.create_message_from_sns_notification(raw_message, body, job_queue: job_queue)
-        else
-          klass = find_class(body['Type'])
-          klass.new(raw_message, body)
-        end
+        klass = find_class(body['Type'])
+        klass.new(raw_message, body)
       rescue JSON::ParserError => e
         ExceptionHandler.handle_exception(e)
         InvalidMessage.new(raw_message, {})
