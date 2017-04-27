@@ -1,3 +1,6 @@
+## v0.4.0 (2017-04-27)
+- Support fan-out executions using AWS SNS notifications [#20](https://github.com/cookpad/barbeque/pull/20)
+
 ## v0.3.0 (2017-04-17)
 - Fix job_retry order in job_execution page [#16](https://github.com/cookpad/barbeque/pull/16)
 - Fix Back path to each job definition page [#17](https://github.com/cookpad/barbeque/pull/17)
