@@ -68,6 +68,17 @@ describe Barbeque::SnsSubscriptionsController do
         expect(assigns(:sns_subscription).errors[:topic_arn]).to eq(['is not found'])
       end
     end
+
+    context 'with AuthorizationError' do
+      it 'does not create a record and shows error message' do
+        expect(sqs_client).not_to receive(:get_queue_attributes)
+        expect(controller).to receive(:subscribe_topic!).and_raise(Aws::SNS::Errors::AuthorizationError.new(self, 'not found'))
+        allow(controller).to receive(:fetch_sns_topic_arns).and_return([])
+        post :create , params: { sns_subscription: attributes }
+        expect(response).to render_template(:new)
+        expect(assigns(:sns_subscription).errors[:topic_arn]).to eq(['is not authorized'])
+      end
+    end
   end
 
   describe '#destroy' do
