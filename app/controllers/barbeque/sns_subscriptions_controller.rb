@@ -61,8 +61,6 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
 
   def fetch_sns_topic_arns
     sns_client.list_topics.topics.map(&:topic_arn)
-  rescue Aws::Errors::MissingCredentialsError, Aws::SNS::Errors::AuthorizationError
-    []
   end
 
   def update_sqs_policy!
