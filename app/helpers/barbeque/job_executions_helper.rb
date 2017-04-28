@@ -10,6 +10,8 @@ module Barbeque::JobExecutionsHelper
         'warning'
       when 'pending'
         'info'
+      when 'error'
+        'danger'
       else
         'default'
       end

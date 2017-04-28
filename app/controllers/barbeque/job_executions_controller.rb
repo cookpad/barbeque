@@ -7,7 +7,7 @@ class Barbeque::JobExecutionsController < Barbeque::ApplicationController
 
   def retry
     @job_execution = Barbeque::JobExecution.find(params[:job_execution_id])
-    raise ActionController::BadRequest unless @job_execution.failed?
+    raise ActionController::BadRequest unless @job_execution.retryable?
 
     result = Barbeque::MessageRetryingService.new(message_id: @job_execution.message_id).run
     @job_execution.retried!

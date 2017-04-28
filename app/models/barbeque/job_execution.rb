@@ -10,6 +10,7 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
     success: 1,
     failed:  2,
     retried: 3,
+    error: 4,
   }
 
   paginates_per 15
@@ -17,5 +18,9 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
   # @return [Hash] - A hash created by `JobExecutor::Job#log_result`
   def execution_log
     @execution_log ||= Barbeque::ExecutionLog.load(execution: self)
+  end
+
+  def retryable?
+    failed? || error?
   end
 end

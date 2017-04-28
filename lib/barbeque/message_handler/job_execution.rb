@@ -20,9 +20,15 @@ module Barbeque
           raise DuplicatedExecution.new(e.message)
         end
 
-        stdout, stderr, status = run_command
+        begin
+          stdout, stderr, status = run_command
+        rescue Exception => e
+          job_execution.update!(status: :error, finished_at: Time.now)
+          notify_slack(job_execution)
+          raise e
+        end
         job_execution.update!(status: status.success? ? :success : :failed, finished_at: Time.now)
-        notify_slack(job_execution, status)
+        notify_slack(job_execution)
 
         log_result(job_execution, stdout, stderr)
       end
@@ -34,17 +40,22 @@ module Barbeque
         Barbeque::ExecutionLog.save(execution: execution, log: log)
       end
 
-      def notify_slack(job_execution, status)
+      def notify_slack(job_execution)
         return if job_execution.slack_notification.nil?
 
         client = Barbeque::SlackClient.new(job_execution.slack_notification.channel)
-        if status.success?
+        if job_execution.success?
           if job_execution.slack_notification.notify_success
             client.notify_success("*[SUCCESS]* Succeeded to execute #{job_execution_link(job_execution)}")
           end
-        else
+        elsif job_execution.failed?
           client.notify_failure(
             "*[FAILURE]* Failed to execute #{job_execution_link(job_execution)}" \
+            " #{job_execution.slack_notification.failure_notification_text}"
+          )
+        else
+          client.notify_failure(
+            "*[ERROR]* Failed to execute #{job_execution_link(job_execution)}" \
             " #{job_execution.slack_notification.failure_notification_text}"
           )
         end

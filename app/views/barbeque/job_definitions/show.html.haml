@@ -65,7 +65,7 @@
                       = link_to job_execution_path(job_execution), class: 'btn btn-default btn-sm btn-flat' do
                         %i.fa.fa-chevron-right
                         Details
-                      - if job_execution.failed?
+                      - if job_execution.retryable?
                         = link_to job_execution_retry_path(job_execution), method: :post, class: 'btn btn-default btn-sm btn-flat',
                           data: { disable_with: 'retrying...', confirm: "Are you sure to retry #{@job_definition.job} ##{job_execution.id}?" } do
                           %i.fa.fa-refresh

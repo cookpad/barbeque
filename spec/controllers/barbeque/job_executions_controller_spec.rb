@@ -61,5 +61,21 @@ describe Barbeque::JobExecutionsController do
         }.to raise_error(ActionController::BadRequest)
       end
     end
+
+    context 'when execution is error' do
+      let(:job_execution) { create(:job_execution, status: 'error') }
+
+      it 'enqueues the same message and mark as retried' do
+        expect(Barbeque::MessageRetryingService).to receive(:new).with(
+          message_id: job_execution.message_id,
+        ).and_return(retrying_service)
+
+        expect {
+          post :retry, params: { job_execution_id: job_execution.id }
+        }.to change {
+          job_execution.reload.status
+        }.from('error').to('retried')
+      end
+    end
   end
 end
