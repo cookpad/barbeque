@@ -148,6 +148,14 @@ describe Barbeque::MessageHandler::JobRetry do
         expect(Barbeque::JobRetry.last).to be_error
         expect(job_execution.reload).to be_error
       end
+
+      it 'logs empty output' do
+        expect(Barbeque::ExecutionLog).to receive(:save).with(
+          execution: a_kind_of(Barbeque::JobRetry),
+          log: { stdout: '', stderr: '' },
+        )
+        expect { handler.run }.to raise_error(exception)
+      end
     end
   end
 end
