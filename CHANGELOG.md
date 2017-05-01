@@ -1,3 +1,6 @@
+## v0.5.0 (2017-05-01)
+- Add error status to job_execution [#22](https://github.com/cookpad/barbeque/pull/22)
+
 ## v0.4.1 (2017-04-28)
 - Add error handling for AWS SNS API calls [#21](https://github.com/cookpad/barbeque/pull/21)
 
