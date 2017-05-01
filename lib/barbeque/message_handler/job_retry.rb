@@ -28,6 +28,7 @@ module Barbeque
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
+          log_result(job_retry, '', '')
           notify_slack(job_retry)
           raise e
         end

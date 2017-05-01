@@ -24,6 +24,7 @@ module Barbeque
           stdout, stderr, status = run_command
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
+          log_result(job_execution, '', '')
           notify_slack(job_execution)
           raise e
         end

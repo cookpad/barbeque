@@ -129,6 +129,14 @@ describe Barbeque::MessageHandler::JobExecution do
         expect { handler.run }.to raise_error(exception)
         expect(Barbeque::JobExecution.last).to be_error
       end
+
+      it 'logs message body' do
+        expect(Barbeque::ExecutionLog).to receive(:save).with(
+          execution: a_kind_of(Barbeque::JobExecution),
+          log: { message: message.body.to_json, stdout: '', stderr: '' },
+        )
+        expect { handler.run }.to raise_error(exception)
+      end
     end
   end
 end
