@@ -116,5 +116,19 @@ describe Barbeque::MessageHandler::JobExecution do
         expect { handler.run }.to raise_error(Barbeque::MessageHandler::DuplicatedExecution)
       end
     end
+
+    context 'when unhandled exception is raised' do
+      let(:exception) { Class.new(StandardError) }
+
+      before do
+        expect(runner).to receive(:run).and_raise(exception)
+      end
+
+      it 'updates status to error' do
+        expect(Barbeque::JobExecution.count).to eq(0)
+        expect { handler.run }.to raise_error(exception)
+        expect(Barbeque::JobExecution.last).to be_error
+      end
+    end
   end
 end
