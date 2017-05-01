@@ -1,3 +1,6 @@
+## v0.5.1 (2017-05-01)
+- Log message body in error status for retry [#23](https://github.com/cookpad/barbeque/pull/23)
+
 ## v0.5.0 (2017-05-01)
 - Add error status to job_execution [#22](https://github.com/cookpad/barbeque/pull/22)
 
