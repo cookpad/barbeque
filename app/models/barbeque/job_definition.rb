@@ -1,6 +1,7 @@
 class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   belongs_to :app
   has_many :job_executions, dependent: :destroy
+  has_many :sns_subscriptions, class_name: 'SNSSubscription'
   has_one :slack_notification, dependent: :destroy
 
   validates :job, uniqueness: { scope: :app_id }

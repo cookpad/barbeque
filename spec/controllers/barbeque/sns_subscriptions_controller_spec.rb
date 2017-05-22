@@ -4,8 +4,8 @@ describe Barbeque::SnsSubscriptionsController do
   routes { Barbeque::Engine.routes }
 
   before do
-    allow(Aws::SQS::Client).to receive(:new).and_return(sqs_client)
-    allow(Aws::SNS::Client).to receive(:new).and_return(sns_client)
+    allow(Barbeque::SNSSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
+    allow(Barbeque::SNSSubscriptionService).to receive(:sns_client).and_return(sns_client)
   end
 
   describe '#create' do
@@ -60,8 +60,8 @@ describe Barbeque::SnsSubscriptionsController do
 
     context 'with NotFound error' do
       it 'does not create a record and shows error message' do
-        expect(sqs_client).not_to receive(:get_queue_attributes)
-        expect(controller).to receive(:subscribe_topic!).and_raise(Aws::SNS::Errors::NotFound.new(self, 'not found'))
+        expect(sqs_client).to receive(:get_queue_attributes).with(queue_url: job_queue.queue_url, attribute_names: ['QueueArn'])
+        expect(sns_client).to receive(:subscribe).and_raise(Aws::SNS::Errors::NotFound.new(self, 'not found'))
         allow(controller).to receive(:fetch_sns_topic_arns).and_return([])
         post :create , params: { sns_subscription: attributes }
         expect(response).to render_template(:new)
@@ -71,8 +71,8 @@ describe Barbeque::SnsSubscriptionsController do
 
     context 'with AuthorizationError' do
       it 'does not create a record and shows error message' do
-        expect(sqs_client).not_to receive(:get_queue_attributes)
-        expect(controller).to receive(:subscribe_topic!).and_raise(Aws::SNS::Errors::AuthorizationError.new(self, 'not found'))
+        expect(sqs_client).to receive(:get_queue_attributes).with(queue_url: job_queue.queue_url, attribute_names: ['QueueArn'])
+        expect(sns_client).to receive(:subscribe).and_raise(Aws::SNS::Errors::AuthorizationError.new(self, 'not found'))
         allow(controller).to receive(:fetch_sns_topic_arns).and_return([])
         post :create , params: { sns_subscription: attributes }
         expect(response).to render_template(:new)
