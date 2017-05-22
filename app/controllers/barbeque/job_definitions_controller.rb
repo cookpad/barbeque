@@ -49,6 +49,9 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
 
   def destroy
     @job_definition = Barbeque::JobDefinition.find(params[:id])
+    @job_definition.sns_subscriptions.each do |sns_subscription|
+      Barbeque::SNSSubscriptionService.new.unsubscribe(sns_subscription)
+    end
     @job_definition.destroy
     redirect_to job_definitions_url, notice: 'Job definition was successfully destroyed.'
   end
