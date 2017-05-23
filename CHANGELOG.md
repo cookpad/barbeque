@@ -1,3 +1,6 @@
+## v0.5.2 (2017-05-23)
+- Destroy SNS subscriptions before destroying job definition [#24](https://github.com/cookpad/barbeque/pull/24)
+
 ## v0.5.1 (2017-05-01)
 - Log message body in error status for retry [#23](https://github.com/cookpad/barbeque/pull/23)
 
