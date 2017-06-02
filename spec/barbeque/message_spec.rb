@@ -66,6 +66,7 @@ describe Barbeque::Message::Base do
 
   context 'given Notification' do
     let(:sns_subscription) { create(:sns_subscription, job_queue: job_queue) }
+    let(:message_body) { { "foo" => "bar" }.to_json }
     let(:raw_sqs_message) do
       {
         'Type'     => 'Notification',
@@ -79,20 +80,8 @@ describe Barbeque::Message::Base do
       expect(message).to be_a(Barbeque::Message::Notification)
       expect(message.id).to eq(message_id)
       expect(message.receipt_handle).to eq(receipt_handle)
-      expect(message.body).to eq(message_body)
+      expect(message.body).to eq({ "foo" => "bar" })
       expect(message.topic_arn).to eq(sns_subscription.topic_arn)
-    end
-
-    context 'given JSON formatted string as message_body' do
-      let(:message_body) { { "foo" => "bar" }.to_json }
-      it 'parses a SQS message' do
-        message = Barbeque::Message.parse(sqs_message)
-        expect(message).to be_a(Barbeque::Message::Notification)
-        expect(message.id).to eq(message_id)
-        expect(message.receipt_handle).to eq(receipt_handle)
-        expect(message.body).to eq({ "foo" => "bar" })
-        expect(message.topic_arn).to eq(sns_subscription.topic_arn)
-      end
     end
   end
 
