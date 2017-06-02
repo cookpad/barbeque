@@ -13,11 +13,7 @@ module Barbeque
         super
         @application = message_body['Application']
         @job  = message_body['Job']
-        @body = if message_body['Message'].is_a?(String)
-                  JSON.parse(message_body['Message'])
-                else
-                  message_body['Message']
-                end
+        @body = message_body['Message']
       end
     end
   end

@@ -33,18 +33,6 @@ describe Barbeque::Message::Base do
       expect(message.receipt_handle).to eq(receipt_handle)
       expect(message.body).to eq(message_body)
     end
-
-    context 'given JSON formatted string as message_body' do
-      let(:message_body) { { "foo" => "bar" }.to_json }
-      it 'parses a SQS message' do
-        message = Barbeque::Message.parse(sqs_message)
-        expect(message.application).to eq(application)
-        expect(message.job).to eq(job)
-        expect(message.id).to eq(message_id)
-        expect(message.receipt_handle).to eq(receipt_handle)
-        expect(message.body).to eq({ "foo" => "bar" })
-      end
-    end
   end
 
   context 'given JobRetry' do
