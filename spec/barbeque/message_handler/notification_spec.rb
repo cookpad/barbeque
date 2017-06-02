@@ -9,7 +9,7 @@ describe Barbeque::MessageHandler::Notification do
         Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle'),
         {
           'TopicArn'  => sns_subscription.topic_arn,
-          'Message'   => ['hello'],
+          'Message'   => ['hello'].to_json,
         }
       )
     end
