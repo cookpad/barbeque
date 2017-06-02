@@ -21,11 +21,7 @@ module Barbeque
       def assign_body(message_body)
         super
         @topic_arn = message_body['TopicArn']
-        @body = if message_body['Message'].is_a?(String)
-                  JSON.parse(message_body['Message'])
-                else
-                  message_body['Message']
-                end
+        @body = JSON.parse(message_body['Message'])
       end
     end
   end
