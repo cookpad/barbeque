@@ -6,7 +6,7 @@ describe Barbeque::Message::Base do
   let(:job)         { 'NotifyAuthor' }
   let(:job_queue) { create(:job_queue) }
   let(:message_id)  { SecureRandom.uuid }
-  let(:message_body) { '{"foo":"bar"}' }
+  let(:message_body) { { "foo" => "bar" } }
   let(:receipt_handle) do
     "MbZj6wDWli+JvwwJaBV+3dcjk2YW2vA3+STFFljTM8tJJg6HRG6PYSasuWXPJB+Cw
     Lj1FjgXUv1uSj1gUPAWV66FU/WeR4mq2OKpEGYWbnLmpRCJVAyeMjeU5ZBdtcQ+QE
@@ -32,6 +32,18 @@ describe Barbeque::Message::Base do
       expect(message.id).to eq(message_id)
       expect(message.receipt_handle).to eq(receipt_handle)
       expect(message.body).to eq(message_body)
+    end
+
+    context 'given JSON formatted string as message_body' do
+      let(:message_body) { { "foo" => "bar" }.to_json }
+      it 'parses a SQS message' do
+        message = Barbeque::Message.parse(sqs_message)
+        expect(message.application).to eq(application)
+        expect(message.job).to eq(job)
+        expect(message.id).to eq(message_id)
+        expect(message.receipt_handle).to eq(receipt_handle)
+        expect(message.body).to eq({ "foo" => "bar" })
+      end
     end
   end
 
@@ -69,6 +81,18 @@ describe Barbeque::Message::Base do
       expect(message.receipt_handle).to eq(receipt_handle)
       expect(message.body).to eq(message_body)
       expect(message.topic_arn).to eq(sns_subscription.topic_arn)
+    end
+
+    context 'given JSON formatted string as message_body' do
+      let(:message_body) { { "foo" => "bar" }.to_json }
+      it 'parses a SQS message' do
+        message = Barbeque::Message.parse(sqs_message)
+        expect(message).to be_a(Barbeque::Message::Notification)
+        expect(message.id).to eq(message_id)
+        expect(message.receipt_handle).to eq(receipt_handle)
+        expect(message.body).to eq({ "foo" => "bar" })
+        expect(message.topic_arn).to eq(sns_subscription.topic_arn)
+      end
     end
   end
 
