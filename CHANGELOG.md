@@ -1,3 +1,6 @@
+## v0.6.0 (2017-06-05)
+- Support JSON-formatted string as Notification massages [#25](https://github.com/cookpad/barbeque/pull/25)
+
 ## v0.5.2 (2017-05-23)
 - Destroy SNS subscriptions before destroying job definition [#24](https://github.com/cookpad/barbeque/pull/24)
 
