@@ -32,7 +32,7 @@
       .row.form-group
         .col-md-4
           = f.label :job_definition_id
-          = f.collection_select :job_definition_id, Barbeque::JobDefinition.pluck(:id, :job), :first, :second,
+          = f.collection_select :job_definition_id, Barbeque::JobDefinition.all.map {|definition| [definition.id, "#{definition.app.name} - #{definition.job}"] }, :first, :second,
             { prompt: true }, class: 'form-control'
 
       .form-group
