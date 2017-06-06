@@ -1,3 +1,6 @@
+## v0.6.1 (2017-06-06)
+- Show application names for each job definition in SNS subscriptions [#26](https://github.com/cookpad/barbeque/pull/26)
+
 ## v0.6.0 (2017-06-05)
 - Support JSON-formatted string as Notification massages [#25](https://github.com/cookpad/barbeque/pull/25)
 
