@@ -1,3 +1,6 @@
+## v0.6.2 (2017-06-06)
+- Kill N+1 query [#27](https://github.com/cookpad/barbeque/pull/27)
+
 ## v0.6.1 (2017-06-06)
 - Show application names for each job definition in SNS subscriptions [#26](https://github.com/cookpad/barbeque/pull/26)
 
