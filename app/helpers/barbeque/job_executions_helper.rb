@@ -12,6 +12,8 @@ module Barbeque::JobExecutionsHelper
         'info'
       when 'error'
         'danger'
+      when 'running'
+        'info'
       else
         'default'
       end

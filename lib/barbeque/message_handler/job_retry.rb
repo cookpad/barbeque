@@ -21,7 +21,8 @@ module Barbeque
         rescue ActiveRecord::RecordNotUnique => e
           raise DuplicatedExecution.new(e.message)
         end
-        job_execution.update!(status: 'retried')
+        job_execution.update!(status: :retried)
+        job_retry.update!(status: :running)
 
         begin
           stdout, stderr, result = run_command

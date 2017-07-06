@@ -10,6 +10,7 @@ class Barbeque::JobRetry < Barbeque::ApplicationRecord
     failed:  2,
     retried: 3,
     error: 4,
+    running: 5,
   }
 
   # @return [Hash] - A hash created by `JobExecutor::Retry#log_result`

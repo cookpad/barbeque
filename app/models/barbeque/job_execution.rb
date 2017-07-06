@@ -11,6 +11,7 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
     failed:  2,
     retried: 3,
     error: 4,
+    running: 5,
   }
 
   paginates_per 15
