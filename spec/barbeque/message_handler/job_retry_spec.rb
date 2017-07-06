@@ -46,6 +46,18 @@ describe Barbeque::MessageHandler::JobRetry do
       handler.run
     end
 
+    it 'sets running status during run_command' do
+      expect(Barbeque::JobRetry.count).to eq(0)
+      expect(runner).to receive(:run) { |command, envs|
+        expect(command).to eq(job_definition.command)
+        expect(Barbeque::JobRetry.count).to eq(1)
+        expect(Barbeque::JobRetry.last).to be_running
+        ['stdout', 'stderr', status]
+      }
+      handler.run
+      expect(Barbeque::JobRetry.count).to eq(1)
+      expect(Barbeque::JobRetry.last).to_not be_running
+    end
     it 'logs stdout and stderr to S3' do
       expect(Barbeque::ExecutionLog).to receive(:save).with(
         execution: a_kind_of(Barbeque::JobRetry),

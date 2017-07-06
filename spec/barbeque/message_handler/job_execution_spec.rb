@@ -61,6 +61,19 @@ describe Barbeque::MessageHandler::JobExecution do
       handler.run
     end
 
+    it 'sets running status during run_command' do
+      expect(Barbeque::JobExecution.count).to eq(0)
+      expect(runner).to receive(:run) { |command, envs|
+        expect(command).to eq(job_definition.command)
+        expect(Barbeque::JobExecution.count).to eq(1)
+        expect(Barbeque::JobExecution.last).to be_running
+        ['stdout', 'stderr', status]
+      }
+      handler.run
+      expect(Barbeque::JobExecution.count).to eq(1)
+      expect(Barbeque::JobExecution.last).to_not be_running
+    end
+
     context 'when job succeeded' do
       it 'sets job_executions.status :success' do
         handler.run
