@@ -1,3 +1,6 @@
+## v0.6.3 (2017-07-10)
+- Add "running" status [#28](https://github.com/cookpad/barbeque/pull/28)
+
 ## v0.6.2 (2017-06-06)
 - Kill N+1 query [#27](https://github.com/cookpad/barbeque/pull/27)
 
