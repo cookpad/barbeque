@@ -44,8 +44,7 @@ module Barbeque
       private
 
       def log_result(job_retry, stdout, stderr)
-        log = { stdout: stdout, stderr: stderr }
-        Barbeque::ExecutionLog.save(execution: job_retry, log: log)
+        Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
       end
 
       # @param [Barbeque::JobRetry] job_retry

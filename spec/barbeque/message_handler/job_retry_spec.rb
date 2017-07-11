@@ -18,7 +18,7 @@ describe Barbeque::MessageHandler::JobRetry do
     let(:runner) { double('Barbeque::Runner::Docker', run: ['stdout', 'stderr', status]) }
 
     before do
-      allow(Barbeque::ExecutionLog).to receive(:save)
+      allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
       allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
 
       docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
@@ -59,10 +59,7 @@ describe Barbeque::MessageHandler::JobRetry do
       expect(Barbeque::JobRetry.last).to_not be_running
     end
     it 'logs stdout and stderr to S3' do
-      expect(Barbeque::ExecutionLog).to receive(:save).with(
-        execution: a_kind_of(Barbeque::JobRetry),
-        log: { stdout: 'stdout', stderr: 'stderr' },
-      )
+      expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobRetry), 'stdout', 'stderr')
       handler.run
     end
 
@@ -162,10 +159,7 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       it 'logs empty output' do
-        expect(Barbeque::ExecutionLog).to receive(:save).with(
-          execution: a_kind_of(Barbeque::JobRetry),
-          log: { stdout: '', stderr: '' },
-        )
+        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobRetry), '', '')
         expect { handler.run }.to raise_error(exception)
       end
     end

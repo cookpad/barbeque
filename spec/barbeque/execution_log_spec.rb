@@ -4,10 +4,10 @@ require 'barbeque/execution_log'
 describe Barbeque::ExecutionLog do
   let(:job_execution) { create(:job_execution, status: status) }
   let(:s3_client) { double('Aws::S3::Client') }
-  let(:s3_object) do
-    Aws::S3::Types::GetObjectOutput.new(body: StringIO.new(JSON.dump(s3_log)))
+  let(:legacy_s3_object) do
+    Aws::S3::Types::GetObjectOutput.new(body: StringIO.new(JSON.dump(legacy_s3_log)))
   end
-  let(:s3_log) do
+  let(:legacy_s3_log) do
     { message: message, stdout: stdout, stderr: stderr }
   end
   let(:message) { ['hello'] }
@@ -19,14 +19,26 @@ describe Barbeque::ExecutionLog do
   end
 
   describe '.fetch' do
+    def make_s3_object(content)
+      Aws::S3::Types::GetObjectOutput.new(body: StringIO.new(content))
+    end
+
     context 'when job_execution is finished' do
       let(:status) { 'success' }
 
       before do
         allow(s3_client).to receive(:get_object).with(
-          key: File.join(job_execution.app.name, job_execution.job_definition.job, job_execution.message_id),
+          key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}/message.json",
           bucket: 'barbeque',
-        ).and_return(s3_object)
+        ).and_return(make_s3_object(message.to_json))
+        allow(s3_client).to receive(:get_object).with(
+          key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}/stdout.txt",
+          bucket: 'barbeque',
+        ).and_return(make_s3_object(stdout))
+        allow(s3_client).to receive(:get_object).with(
+          key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}/stderr.txt",
+          bucket: 'barbeque',
+        ).and_return(make_s3_object(stderr))
       end
 
       it 'fetches log from S3 for the job_execution' do
@@ -36,13 +48,42 @@ describe Barbeque::ExecutionLog do
           'stderr'  => stderr,
         })
       end
+
+      context 'with legacy format' do
+        before do
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}/message.json",
+            bucket: 'barbeque',
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}/stdout.txt",
+            bucket: 'barbeque',
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}/stderr.txt",
+            bucket: 'barbeque',
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}",
+            bucket: 'barbeque',
+          ).and_return(legacy_s3_object)
+        end
+
+        it 'fetches legacy log from S3 for the job_execution' do
+          expect(Barbeque::ExecutionLog.load(execution: job_execution)).to eq({
+            'message' => message,
+            'stdout'  => stdout,
+            'stderr'  => stderr,
+          })
+        end
+      end
     end
 
     context 'when job_execution is pending' do
       let(:status) { 'pending' }
 
       before do
-        key = File.join(job_execution.app.name, job_execution.job_definition.job, job_execution.message_id)
+        key = "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_execution.message_id}"
         allow(s3_client).to receive(:get_object).with(
           key: key,
           bucket: 'barbeque',
@@ -60,17 +101,54 @@ describe Barbeque::ExecutionLog do
 
       before do
         allow(s3_client).to receive(:get_object).with(
-          key: File.join(job_execution.app.name, job_execution.job_definition.job, job_retry.message_id),
+          key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}/message.json",
           bucket: 'barbeque',
-        ).and_return(s3_object)
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+        allow(s3_client).to receive(:get_object).with(
+          key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}/stdout.txt",
+          bucket: 'barbeque',
+        ).and_return(make_s3_object(stdout))
+        allow(s3_client).to receive(:get_object).with(
+          key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}/stderr.txt",
+          bucket: 'barbeque',
+        ).and_return(make_s3_object(stderr))
       end
 
       it 'fetches log from S3 for the job_retry' do
         expect(Barbeque::ExecutionLog.load(execution: job_retry)).to eq({
-          'message' => message,
+          'message' => nil,
           'stdout'  => stdout,
           'stderr'  => stderr,
         })
+      end
+
+      context 'with legacy format' do
+        before do
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}/message.json",
+            bucket: 'barbeque',
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}/stdout.txt",
+            bucket: 'barbeque',
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}/stderr.txt",
+            bucket: 'barbeque',
+          ).and_raise(Aws::S3::Errors::NoSuchKey.new(nil, 'The specified key does not exist.'))
+          allow(s3_client).to receive(:get_object).with(
+            key: "#{job_execution.app.name}/#{job_execution.job_definition.job}/#{job_retry.message_id}",
+            bucket: 'barbeque',
+          ).and_return(legacy_s3_object)
+        end
+
+        it 'fetches legacy log from S3 for the job_retry' do
+          expect(Barbeque::ExecutionLog.load(execution: job_retry)).to eq({
+            'message' => message,
+            'stdout'  => stdout,
+            'stderr'  => stderr,
+          })
+        end
       end
     end
   end
