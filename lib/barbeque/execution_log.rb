@@ -33,8 +33,7 @@ module Barbeque
     def load(execution:)
       return {} if execution.pending?
 
-      message_str = get(execution, 'message.json')
-      message = message_str ? JSON.parse(message_str) : nil
+      message = get(execution, 'message.json')
       stdout = get(execution, 'stdout.txt')
       stderr = get(execution, 'stderr.txt')
       if message || stdout || stderr

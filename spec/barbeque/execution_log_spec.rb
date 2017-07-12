@@ -43,7 +43,7 @@ describe Barbeque::ExecutionLog do
 
       it 'fetches log from S3 for the job_execution' do
         expect(Barbeque::ExecutionLog.load(execution: job_execution)).to eq({
-          'message' => message,
+          'message' => message.to_json,
           'stdout'  => stdout,
           'stderr'  => stderr,
         })
