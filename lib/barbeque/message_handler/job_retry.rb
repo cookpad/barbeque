@@ -1,7 +1,7 @@
 require 'barbeque/docker_image'
 require 'barbeque/execution_log'
 require 'barbeque/runner'
-require 'barbeque/slack_client'
+require 'barbeque/slack_notifier'
 
 module Barbeque
   module MessageHandler
@@ -24,19 +24,20 @@ module Barbeque
         job_execution.update!(status: :retried)
         job_retry.update!(status: :running)
 
+        slack_notifier = Barbeque::SlackNotifier.new
         begin
           stdout, stderr, result = run_command
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
           log_result(job_retry, '', '')
-          notify_slack(job_retry)
+          slack_notifier.notify_job_retry(job_retry)
           raise e
         end
         status = result.success? ? :success : :failed
         job_retry.update!(status: status, finished_at: Time.now)
         job_execution.update!(status: status)
-        notify_slack(job_retry)
+        slack_notifier.notify_job_retry(job_retry)
 
         log_result(job_retry, stdout, stderr)
       end
@@ -45,35 +46,6 @@ module Barbeque
 
       def log_result(job_retry, stdout, stderr)
         Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
-      end
-
-      # @param [Barbeque::JobRetry] job_retry
-      def notify_slack(job_retry)
-        return if job_retry.slack_notification.nil?
-
-        client = Barbeque::SlackClient.new(job_retry.slack_notification.channel)
-        if job_retry.success?
-          if job_retry.slack_notification.notify_success
-            client.notify_success("*[SUCCESS]* Succeeded to retry #{job_retry_link(job_retry)}")
-          end
-        elsif job_retry.failed?
-          client.notify_failure(
-            "*[FAILURE]* Failed to retry #{job_retry_link(job_retry)}" \
-            " #{job_execution.slack_notification.failure_notification_text}"
-          )
-        else
-          client.notify_failure(
-            "*[ERROR]* Failed to retry #{job_retry_link(job_retry)}" \
-            " #{job_execution.slack_notification.failure_notification_text}"
-          )
-        end
-      end
-
-      def job_retry_link(job_retry)
-        url = Barbeque::Engine.routes.url_helpers.job_execution_job_retry_url(
-          job_retry.job_execution, job_retry, host: ENV['BARBEQUE_HOST']
-        )
-        "<#{url}|#{job_retry.job_definition.job}'s retry ##{job_retry.id}>"
       end
 
       def job_execution
