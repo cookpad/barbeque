@@ -7,21 +7,25 @@ module Barbeque
     DEFAULT_S3_BUCKET_NAME = 'barbeque'
 
     class << self
-      delegate :save, :load, to: :new
+      delegate :save_message, :save_stdout_and_stderr, :load, to: :new
 
       def s3_client
         @s3_client ||= Aws::S3::Client.new
       end
     end
 
+    # @param [Barbeque::JobExecution] execution
+    # @param [Barbeque::Message::JobExecution] message
+    def save_message(execution, message)
+      put(execution, 'message.json', message.body.to_json)
+    end
+
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
-    # @param [Hash] log
-    def save(execution:, log:)
-      ExecutionLog.s3_client.put_object(
-        bucket: s3_bucket_name,
-        key:    s3_key_for(execution: execution),
-        body:   log.to_json,
-      )
+    # @param [String] stdout
+    # @param [String] stderr
+    def save_stdout_and_stderr(execution, stdout, stderr)
+      put(execution, 'stdout.txt', stdout)
+      put(execution, 'stderr.txt', stderr)
     end
 
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
@@ -29,13 +33,28 @@ module Barbeque
     def load(execution:)
       return {} if execution.pending?
 
-      s3_object = ExecutionLog.s3_client.get_object(
-        bucket: s3_bucket_name,
-        key:    s3_key_for(execution: execution),
-      )
-      JSON.load(s3_object.body.read)
-    rescue Aws::S3::Errors::NoSuchKey
-      nil
+      message_str = get(execution, 'message.json')
+      message = message_str ? JSON.parse(message_str) : nil
+      stdout = get(execution, 'stdout.txt')
+      stderr = get(execution, 'stderr.txt')
+      if message || stdout || stderr
+        {
+          'message' => message,
+          'stdout' => stdout,
+          'stderr' => stderr,
+        }
+      else
+        # Try to load legacy format
+        begin
+          s3_object = ExecutionLog.s3_client.get_object(
+            bucket: s3_bucket_name,
+            key: legacy_s3_key_for(execution),
+          )
+          JSON.parse(s3_object.body.read)
+        rescue Aws::S3::Errors::NoSuchKey
+          nil
+        end
+      end
     end
 
     private
@@ -45,9 +64,38 @@ module Barbeque
     end
 
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
-    # @param [String] message_id
-    def s3_key_for(execution:)
-      File.join(execution.app.name, execution.job_definition.job, execution.message_id)
+    # @param [String] filename
+    def s3_key_for(execution, filename)
+      "#{execution.app.name}/#{execution.job_definition.job}/#{execution.message_id}/#{filename}"
+    end
+
+    # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
+    def legacy_s3_key_for(execution)
+      "#{execution.app.name}/#{execution.job_definition.job}/#{execution.message_id}"
+    end
+
+    # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
+    # @param [String] filename
+    # @return [String]
+    def get(execution, filename)
+      s3_object = ExecutionLog.s3_client.get_object(
+        bucket: s3_bucket_name,
+        key: s3_key_for(execution, filename),
+      )
+      s3_object.body.read
+    rescue Aws::S3::Errors::NoSuchKey
+      nil
+    end
+
+    # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
+    # @param [String] filename
+    # @param [String] content
+    def put(execution, filename, content)
+      ExecutionLog.s3_client.put_object(
+        bucket: s3_bucket_name,
+        key: s3_key_for(execution, filename),
+        body: content,
+      )
     end
   end
 end

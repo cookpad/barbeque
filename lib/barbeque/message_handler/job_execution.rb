@@ -38,8 +38,8 @@ module Barbeque
       private
 
       def log_result(execution, stdout, stderr)
-        log = { message: @message.body.to_json, stdout: stdout, stderr: stderr }
-        Barbeque::ExecutionLog.save(execution: execution, log: log)
+        Barbeque::ExecutionLog.save_message(execution, @message)  # TODO: Should be saved earlier
+        Barbeque::ExecutionLog.save_stdout_and_stderr(execution, stdout, stderr)
       end
 
       def notify_slack(job_execution)

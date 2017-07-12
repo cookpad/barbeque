@@ -23,7 +23,8 @@ describe Barbeque::MessageHandler::JobExecution do
       docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
       allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
       allow(Barbeque::Runner::Docker).to receive(:new).with(docker_image: docker_image).and_return(runner)
-      allow(Barbeque::ExecutionLog).to receive(:save)
+      allow(Barbeque::ExecutionLog).to receive(:save_message)
+      allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
     end
 
     around do |example|
@@ -40,10 +41,8 @@ describe Barbeque::MessageHandler::JobExecution do
     end
 
     it 'logs message, stdout and stderr to S3' do
-      expect(Barbeque::ExecutionLog).to receive(:save).with(
-        execution: a_kind_of(Barbeque::JobExecution),
-        log: { message: message.body.to_json, stdout: 'stdout', stderr: 'stderr' },
-      )
+      expect(Barbeque::ExecutionLog).to receive(:save_message).with(a_kind_of(Barbeque::JobExecution), message)
+      expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobExecution), 'stdout', 'stderr')
       handler.run
     end
 
@@ -144,10 +143,8 @@ describe Barbeque::MessageHandler::JobExecution do
       end
 
       it 'logs message body' do
-        expect(Barbeque::ExecutionLog).to receive(:save).with(
-          execution: a_kind_of(Barbeque::JobExecution),
-          log: { message: message.body.to_json, stdout: '', stderr: '' },
-        )
+        expect(Barbeque::ExecutionLog).to receive(:save_message).with(a_kind_of(Barbeque::JobExecution), message)
+        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobExecution), '', '')
         expect { handler.run }.to raise_error(exception)
       end
     end
