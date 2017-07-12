@@ -1,3 +1,10 @@
+## v0.7.0 (2017-07-12)
+- Change S3 log format [#29](https://github.com/cookpad/barbeque/pull/29)
+  - The legacy format saves `{message: message.body.to_json, stdout: stdout, stderr: stderr}.to_json` to `#{app}/#{job}/#{message_id}`
+  - The new format saves message body to `#{app}/#{job}/#{message_id}/message.json`, stdout to `#{app}/#{job}/#{message_id}/stdout.txt`, and stderr to `#{app}/#{job}/#{message_id}/stderr.txt`
+  - The legacy format is still supported in v0.7.0, but will be removed in v1.0.0
+    - Migration script will be available later
+
 ## v0.6.3 (2017-07-10)
 - Add "running" status [#28](https://github.com/cookpad/barbeque/pull/28)
 
