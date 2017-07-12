@@ -20,11 +20,9 @@ module Barbeque
         rescue ActiveRecord::RecordNotUnique => e
           raise DuplicatedExecution.new(e.message)
         end
-        job_execution.update!(status: :retried)
-        job_retry.update!(status: :running)
 
         begin
-          stdout, stderr, result = Executor.create.run(job_retry.job_execution, job_envs)
+          Executor.create.start_retry(job_retry, job_envs)
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
@@ -32,11 +30,6 @@ module Barbeque
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
           raise e
         end
-        status = result.success? ? :success : :failed
-        job_retry.update!(status: status, finished_at: Time.now)
-        job_execution.update!(status: status)
-        Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
-        Barbeque::SlackNotifier.notify_job_retry(job_retry)
       end
 
       private

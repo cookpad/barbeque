@@ -13,47 +13,86 @@ describe Barbeque::Worker do
   let(:status) { double('Process::Status', success?: is_success) }
   let(:job) { double('Barbeque::MessageHandler::JobExecution', run: [stdout, stderr, status]) }
   let(:worker_class) do
-    Class.new.tap do |klass|
-      klass.include Barbeque::Worker
+    Class.new do
+      cattr_accessor :worker_id
+      def worker_id
+        self.class.worker_id
+      end
+
+      include Barbeque::Worker
     end
   end
+  let(:worker) { worker_class.new }
 
   before do
     allow(Barbeque::MessageQueue).to receive(:new).and_return(message_queue)
     allow(Barbeque::MessageHandler::JobExecution).to receive(:new).with(message: message, job_queue: job_queue).and_return(job)
   end
 
-  describe '#execute_job' do
+  describe '#execute_command' do
     let(:message) { double('Barbeque::Message::Base', body: message_body, id: message_id, type: 'JobExecution') }
 
-    it 'runs a job' do
-      expect(job).to receive(:run).and_return([stdout, stderr, status])
-      worker_class.new.execute_job
+    context 'with worker_id = 0' do
+      before do
+        worker_class.worker_id = 0
+      end
+
+      it 'runs ExecutionPoller' do
+        expect_any_instance_of(Barbeque::ExecutionPoller).to receive(:run)
+        worker.execute_command
+      end
     end
 
-    context 'given JobRetry message' do
-      let(:retry_message_id) { SecureRandom.uuid }
-      let(:message) do
-        double(
-          'Barbeque::Message::Base',
-          body: message_body,
-          id: retry_message_id,
-          type: 'JobRetry',
-          retry_message_id: job_execution.message_id,
-        )
-      end
-      let(:execution_retry) { Barbeque::MessageHandler::JobRetry.new(message: message, job_queue: job_queue) }
-
+    context 'with worker_id = 1' do
       before do
-        create(:job_retry, job_execution: job_execution, message_id: retry_message_id)
-        allow(Barbeque::MessageHandler::JobRetry).to receive(:new).
-          with(message: message, job_queue: job_queue).and_return(execution_retry)
-        allow(execution_retry).to receive(:run).and_return([stdout, stderr, status])
+        worker_class.worker_id = 1
       end
 
-      it 'retries the specified message' do
-        expect(execution_retry).to receive(:run)
-        worker_class.new.execute_job
+      it 'runs RetryPoller' do
+        expect_any_instance_of(Barbeque::RetryPoller).to receive(:run)
+        worker.execute_command
+      end
+    end
+
+    context 'with worker_id >= 2' do
+      before do
+        worker_class.worker_id = 2
+      end
+
+      it 'runs Runner' do
+        expect_any_instance_of(Barbeque::Runner).to receive(:run)
+        worker.execute_command
+      end
+
+      it 'runs a job' do
+        expect(job).to receive(:run).and_return([stdout, stderr, status])
+        worker.execute_command
+      end
+
+      context 'given JobRetry message' do
+        let(:retry_message_id) { SecureRandom.uuid }
+        let(:message) do
+          double(
+            'Barbeque::Message::Base',
+            body: message_body,
+            id: retry_message_id,
+            type: 'JobRetry',
+            retry_message_id: job_execution.message_id,
+          )
+        end
+        let(:execution_retry) { Barbeque::MessageHandler::JobRetry.new(message: message, job_queue: job_queue) }
+
+        before do
+          create(:job_retry, job_execution: job_execution, message_id: retry_message_id)
+          allow(Barbeque::MessageHandler::JobRetry).to receive(:new).
+            with(message: message, job_queue: job_queue).and_return(execution_retry)
+          allow(execution_retry).to receive(:run).and_return([stdout, stderr, status])
+        end
+
+        it 'retries the specified message' do
+          expect(execution_retry).to receive(:run)
+          worker_class.new.execute_command
+        end
       end
     end
   end

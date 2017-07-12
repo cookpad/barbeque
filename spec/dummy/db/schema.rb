@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170420030157) do
+ActiveRecord::Schema.define(version: 20170712075449) do
 
   create_table "barbeque_apps", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
     t.string   "name",                       null: false
@@ -19,6 +19,23 @@ ActiveRecord::Schema.define(version: 20170420030157) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.index ["name"], name: "index_barbeque_apps_on_name", unique: true, using: :btree
+  end
+
+  create_table "barbeque_docker_containers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string   "message_id",   null: false
+    t.string   "container_id", null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["message_id"], name: "index_barbeque_docker_containers_on_message_id", unique: true, using: :btree
+  end
+
+  create_table "barbeque_ecs_hako_tasks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string   "message_id", null: false
+    t.string   "cluster",    null: false
+    t.string   "task_arn",   null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_barbeque_ecs_hako_tasks_on_message_id", unique: true, using: :btree
   end
 
   create_table "barbeque_job_definitions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
