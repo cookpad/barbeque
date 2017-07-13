@@ -24,20 +24,19 @@ module Barbeque
         job_execution.update!(status: :retried)
         job_retry.update!(status: :running)
 
-        slack_notifier = Barbeque::SlackNotifier.new
         begin
           stdout, stderr, result = run_command
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
           log_result(job_retry, '', '')
-          slack_notifier.notify_job_retry(job_retry)
+          Barbeque::SlackNotifier.notify_job_retry(job_retry)
           raise e
         end
         status = result.success? ? :success : :failed
         job_retry.update!(status: status, finished_at: Time.now)
         job_execution.update!(status: status)
-        slack_notifier.notify_job_retry(job_retry)
+        Barbeque::SlackNotifier.notify_job_retry(job_retry)
 
         log_result(job_retry, stdout, stderr)
       end

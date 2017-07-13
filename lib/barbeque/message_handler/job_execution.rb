@@ -21,17 +21,16 @@ module Barbeque
         end
         job_execution.update!(status: :running)
 
-        slack_notifier = Barbeque::SlackNotifier.new
         begin
           stdout, stderr, status = run_command
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
           log_result(job_execution, '', '')
-          slack_notifier.notify_job_execution(job_execution)
+          Barbeque::SlackNotifier.notify_job_execution(job_execution)
           raise e
         end
         job_execution.update!(status: status.success? ? :success : :failed, finished_at: Time.now)
-        slack_notifier.notify_job_execution(job_execution)
+        Barbeque::SlackNotifier.notify_job_execution(job_execution)
 
         log_result(job_execution, stdout, stderr)
       end
