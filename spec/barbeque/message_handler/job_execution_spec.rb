@@ -17,12 +17,11 @@ describe Barbeque::MessageHandler::JobExecution do
       )
     end
     let(:status) { double('Process::Status', success?: true) }
-    let(:executor) { double('Barbeque::Executor::Docker', run: ['stdout', 'stderr', status]) }
+    let(:open3_result) { ['stdout', 'stderr', status] }
+    let(:executor) { double('Barbeque::Executor::Docker') }
 
     before do
-      docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
-      allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
-      allow(Barbeque::Executor::Docker).to receive(:new).with(docker_image: docker_image).and_return(executor)
+      allow(Barbeque::Executor::Docker).to receive(:new).with({}).and_return(executor)
       allow(Barbeque::ExecutionLog).to receive(:save_message)
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
     end
@@ -34,6 +33,7 @@ describe Barbeque::MessageHandler::JobExecution do
     end
 
     it 'creates job_execution associated to job_definition in the message and job_queue' do
+      allow(executor).to receive(:run).and_return(open3_result)
       expect { handler.run }.to change(Barbeque::JobExecution, :count).by(1)
       expect(Barbeque::JobExecution.last.finished_at).to be_a(Time)
       expect(Barbeque::JobExecution.last.job_definition).to eq(job_definition)
@@ -41,32 +41,34 @@ describe Barbeque::MessageHandler::JobExecution do
     end
 
     it 'logs message, stdout and stderr to S3' do
+      allow(executor).to receive(:run).and_return(open3_result)
       expect(Barbeque::ExecutionLog).to receive(:save_message).with(a_kind_of(Barbeque::JobExecution), message)
       expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobExecution), 'stdout', 'stderr')
       handler.run
     end
 
     it 'runs command with executor' do
-      expect(executor).to receive(:run).with(
-        job_definition.command,
-        {
+      expect(executor).to receive(:run) { |job_execution, envs|
+        expect(job_execution.job_definition).to eq(job_definition)
+        expect(envs).to eq(
           'BARBEQUE_JOB'         => job_definition.job,
           'BARBEQUE_MESSAGE'     => message.body.to_json,
           'BARBEQUE_MESSAGE_ID'  => message.id,
           'BARBEQUE_QUEUE_NAME'  => job_queue.name,
           'BARBEQUE_RETRY_COUNT' => '0',
-        },
-      )
+        )
+        open3_result
+      }
       handler.run
     end
 
     it 'sets running status during run_command' do
       expect(Barbeque::JobExecution.count).to eq(0)
-      expect(executor).to receive(:run) { |command, envs|
-        expect(command).to eq(job_definition.command)
+      expect(executor).to receive(:run) { |job_execution, envs|
+        expect(job_execution.job_definition).to eq(job_definition)
         expect(Barbeque::JobExecution.count).to eq(1)
         expect(Barbeque::JobExecution.last).to be_running
-        ['stdout', 'stderr', status]
+        open3_result
       }
       handler.run
       expect(Barbeque::JobExecution.count).to eq(1)
@@ -75,6 +77,7 @@ describe Barbeque::MessageHandler::JobExecution do
 
     context 'when job succeeded' do
       it 'sets job_executions.status :success' do
+        allow(executor).to receive(:run).and_return(open3_result)
         handler.run
         expect(Barbeque::JobExecution.last.status).to eq('success')
       end
@@ -89,6 +92,7 @@ describe Barbeque::MessageHandler::JobExecution do
         end
 
         it 'sends slack notification' do
+          allow(executor).to receive(:run).and_return(open3_result)
           expect(slack_client).to receive(:notify_success)
           handler.run
         end
@@ -99,6 +103,7 @@ describe Barbeque::MessageHandler::JobExecution do
       let(:status) { double('Process::Status', success?: false) }
 
       it 'sets job_executions.status :failed' do
+        allow(executor).to receive(:run).and_return(open3_result)
         handler.run
         expect(Barbeque::JobExecution.last.status).to eq('failed')
       end
@@ -113,6 +118,7 @@ describe Barbeque::MessageHandler::JobExecution do
         end
 
         it 'sends slack notification' do
+          allow(executor).to receive(:run).and_return(open3_result)
           expect(slack_client).to receive(:notify_failure)
           handler.run
         end

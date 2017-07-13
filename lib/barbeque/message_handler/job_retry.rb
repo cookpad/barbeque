@@ -1,4 +1,3 @@
-require 'barbeque/docker_image'
 require 'barbeque/execution_log'
 require 'barbeque/executor'
 require 'barbeque/slack_notifier'
@@ -25,7 +24,7 @@ module Barbeque
         job_retry.update!(status: :running)
 
         begin
-          stdout, stderr, result = run_command
+          stdout, stderr, result = run_command(job_retry)
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
@@ -51,10 +50,12 @@ module Barbeque
         @job_execution ||= Barbeque::JobExecution.find_by!(message_id: @message.retry_message_id)
       end
 
-      def run_command
-        image  = DockerImage.new(job_execution.app.docker_image)
-        executor = Executor.create(docker_image: image)
-        executor.run(job_execution.job_definition.command, job_envs)
+      # @param [Barbeque::JobRetry] job_retry
+      # @return [String] stdout
+      # @return [String] stderr
+      # @return [Process::Status] status
+      def run_command(job_retry)
+        Executor.create.run(job_retry.job_execution, job_envs)
       end
 
       def job_envs

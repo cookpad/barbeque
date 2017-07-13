@@ -15,15 +15,14 @@ describe Barbeque::MessageHandler::JobRetry do
     end
     let(:message_body)  { '["dummy"]' }
     let(:status) { double('Process::Status', success?: true) }
-    let(:executor) { double('Barbeque::Executor::Docker', run: ['stdout', 'stderr', status]) }
+    let(:executor) { double('Barbeque::Executor::Docker') }
+    let(:open3_result) { ['stdout', 'stderr', status] }
 
     before do
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
       allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
 
-      docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
-      allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
-      allow(Barbeque::Executor::Docker).to receive(:new).with(docker_image: docker_image).and_return(executor)
+      allow(Barbeque::Executor::Docker).to receive(:new).with({}).and_return(executor)
     end
 
     around do |example|
@@ -33,37 +32,41 @@ describe Barbeque::MessageHandler::JobRetry do
     end
 
     it 'runs a command with executor' do
-      expect(executor).to receive(:run).with(
-        job_definition.command,
-        {
+      expect(executor).to receive(:run) { |job_execution, envs|
+        expect(job_execution.job_definition).to eq(job_definition)
+        expect(envs).to eq(
           'BARBEQUE_JOB'         => job_definition.job,
           'BARBEQUE_MESSAGE'     => message_body,
           'BARBEQUE_MESSAGE_ID'  => job_execution.message_id,
           'BARBEQUE_QUEUE_NAME'  => job_queue.name,
           'BARBEQUE_RETRY_COUNT' => '1',
-        },
-      )
+        )
+        open3_result
+      }
       handler.run
     end
 
     it 'sets running status during run_command' do
       expect(Barbeque::JobRetry.count).to eq(0)
-      expect(executor).to receive(:run) { |command, envs|
-        expect(command).to eq(job_definition.command)
+      expect(executor).to receive(:run) { |job_execution, envs|
+        expect(job_execution.job_definition).to eq(job_definition)
         expect(Barbeque::JobRetry.count).to eq(1)
         expect(Barbeque::JobRetry.last).to be_running
-        ['stdout', 'stderr', status]
+        open3_result
       }
       handler.run
       expect(Barbeque::JobRetry.count).to eq(1)
       expect(Barbeque::JobRetry.last).to_not be_running
     end
+
     it 'logs stdout and stderr to S3' do
+      allow(executor).to receive(:run).and_return(open3_result)
       expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobRetry), 'stdout', 'stderr')
       handler.run
     end
 
     it 'creates job_retry associated to job_execution in the message' do
+      allow(executor).to receive(:run).and_return(open3_result)
       expect { handler.run }.to change(Barbeque::JobRetry, :count).by(1)
       job_retry = Barbeque::JobRetry.last
       expect(job_retry.finished_at).to be_a(Time)
@@ -73,6 +76,7 @@ describe Barbeque::MessageHandler::JobRetry do
 
     context 'with retry succeeded' do
       it 'changes status of job_execution to success' do
+        allow(executor).to receive(:run).and_return(open3_result)
         expect {
           handler.run
         }.to change {
@@ -90,6 +94,7 @@ describe Barbeque::MessageHandler::JobRetry do
         end
 
         it 'sends slack notification' do
+          allow(executor).to receive(:run).and_return(open3_result)
           expect(slack_client).to receive(:notify_success)
           handler.run
         end
@@ -100,6 +105,7 @@ describe Barbeque::MessageHandler::JobRetry do
       let(:status) { double('Process::Status', success?: false) }
 
       it 'does not change status of job_execution' do
+        allow(executor).to receive(:run).and_return(open3_result)
         expect {
           handler.run
         }.to_not change {
@@ -117,6 +123,7 @@ describe Barbeque::MessageHandler::JobRetry do
         end
 
         it 'sends slack notification' do
+          allow(executor).to receive(:run).and_return(open3_result)
           expect(slack_client).to receive(:notify_failure)
           handler.run
         end
