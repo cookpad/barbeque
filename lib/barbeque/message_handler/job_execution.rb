@@ -1,7 +1,7 @@
 require 'barbeque/docker_image'
 require 'barbeque/execution_log'
 require 'barbeque/runner'
-require 'barbeque/slack_client'
+require 'barbeque/slack_notifier'
 
 module Barbeque
   module MessageHandler
@@ -26,11 +26,11 @@ module Barbeque
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
           log_result(job_execution, '', '')
-          notify_slack(job_execution)
+          Barbeque::SlackNotifier.notify_job_execution(job_execution)
           raise e
         end
         job_execution.update!(status: status.success? ? :success : :failed, finished_at: Time.now)
-        notify_slack(job_execution)
+        Barbeque::SlackNotifier.notify_job_execution(job_execution)
 
         log_result(job_execution, stdout, stderr)
       end
@@ -40,35 +40,6 @@ module Barbeque
       def log_result(execution, stdout, stderr)
         Barbeque::ExecutionLog.save_message(execution, @message)  # TODO: Should be saved earlier
         Barbeque::ExecutionLog.save_stdout_and_stderr(execution, stdout, stderr)
-      end
-
-      def notify_slack(job_execution)
-        return if job_execution.slack_notification.nil?
-
-        client = Barbeque::SlackClient.new(job_execution.slack_notification.channel)
-        if job_execution.success?
-          if job_execution.slack_notification.notify_success
-            client.notify_success("*[SUCCESS]* Succeeded to execute #{job_execution_link(job_execution)}")
-          end
-        elsif job_execution.failed?
-          client.notify_failure(
-            "*[FAILURE]* Failed to execute #{job_execution_link(job_execution)}" \
-            " #{job_execution.slack_notification.failure_notification_text}"
-          )
-        else
-          client.notify_failure(
-            "*[ERROR]* Failed to execute #{job_execution_link(job_execution)}" \
-            " #{job_execution.slack_notification.failure_notification_text}"
-          )
-        end
-      end
-
-      def job_execution_link(job_execution)
-        "<#{job_execution_url(job_execution)}|#{job_execution.job_definition.job} ##{job_execution.id}>"
-      end
-
-      def job_execution_url(job_execution)
-        Barbeque::Engine.routes.url_helpers.job_execution_url(job_execution, host: ENV['BARBEQUE_HOST'])
       end
 
       # @return [String] stdout
