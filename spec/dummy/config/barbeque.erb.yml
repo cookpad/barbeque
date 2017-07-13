@@ -1,2 +1,2 @@
 test:
-  runner: <%= 'Foo' + 'Bar' %>
+  executor: <%= 'Foo' + 'Bar' %>

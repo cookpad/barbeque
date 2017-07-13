@@ -1,7 +1,7 @@
-require 'barbeque/runner/hako'
+require 'barbeque/executor/hako'
 require 'barbeque/docker_image'
 
-describe Barbeque::Runner::Hako do
+describe Barbeque::Executor::Hako do
   let(:hako_directory) { '.' }
   let(:github_access_token) { 'access_token' }
 
@@ -20,7 +20,7 @@ describe Barbeque::Runner::Hako do
         '--env=FOO=BAR', "/yamls/#{app_name}.yml", '--', *job_command,
         chdir: hako_directory,
       )
-      Barbeque::Runner::Hako.new(
+      Barbeque::Executor::Hako.new(
         docker_image: docker_image,
         hako_dir: hako_directory,
         hako_env: hako_env,

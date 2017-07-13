@@ -15,7 +15,7 @@ describe Barbeque::MessageHandler::JobRetry do
     end
     let(:message_body)  { '["dummy"]' }
     let(:status) { double('Process::Status', success?: true) }
-    let(:runner) { double('Barbeque::Runner::Docker', run: ['stdout', 'stderr', status]) }
+    let(:executor) { double('Barbeque::Executor::Docker', run: ['stdout', 'stderr', status]) }
 
     before do
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
@@ -23,7 +23,7 @@ describe Barbeque::MessageHandler::JobRetry do
 
       docker_image = Barbeque::DockerImage.new(job_definition.app.docker_image)
       allow(Barbeque::DockerImage).to receive(:new).with(job_definition.app.docker_image).and_return(docker_image)
-      allow(Barbeque::Runner::Docker).to receive(:new).with(docker_image: docker_image).and_return(runner)
+      allow(Barbeque::Executor::Docker).to receive(:new).with(docker_image: docker_image).and_return(executor)
     end
 
     around do |example|
@@ -32,8 +32,8 @@ describe Barbeque::MessageHandler::JobRetry do
       ENV.delete('BARBEQUE_HOST')
     end
 
-    it 'runs a command with runner' do
-      expect(runner).to receive(:run).with(
+    it 'runs a command with executor' do
+      expect(executor).to receive(:run).with(
         job_definition.command,
         {
           'BARBEQUE_JOB'         => job_definition.job,
@@ -48,7 +48,7 @@ describe Barbeque::MessageHandler::JobRetry do
 
     it 'sets running status during run_command' do
       expect(Barbeque::JobRetry.count).to eq(0)
-      expect(runner).to receive(:run) { |command, envs|
+      expect(executor).to receive(:run) { |command, envs|
         expect(command).to eq(job_definition.command)
         expect(Barbeque::JobRetry.count).to eq(1)
         expect(Barbeque::JobRetry.last).to be_running
@@ -147,7 +147,7 @@ describe Barbeque::MessageHandler::JobRetry do
       let(:exception) { Class.new(StandardError) }
 
       before do
-        expect(runner).to receive(:run).and_raise(exception)
+        expect(executor).to receive(:run).and_raise(exception)
       end
 
       it 'updates status to error' do

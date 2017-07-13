@@ -3,7 +3,7 @@ require 'yaml'
 
 module Barbeque
   class Config
-    attr_accessor :exception_handler, :runner, :runner_options
+    attr_accessor :exception_handler, :executor, :executor_options
 
     def initialize(options = {})
       options.each do |key, value|
@@ -13,15 +13,15 @@ module Barbeque
           raise KeyError.new("Unexpected option '#{key}' was specified.")
         end
       end
-      runner_options.symbolize_keys!
+      executor_options.symbolize_keys!
     end
   end
 
   module ConfigBuilder
     DEFAULT_CONFIG = {
       'exception_handler' => 'RailsLogger',
-      'runner'            => 'Docker',
-      'runner_options'    => {},
+      'executor' => 'Docker',
+      'executor_options' => {},
     }
 
     def config
