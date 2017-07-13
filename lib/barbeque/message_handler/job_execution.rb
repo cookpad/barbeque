@@ -1,4 +1,3 @@
-require 'barbeque/docker_image'
 require 'barbeque/execution_log'
 require 'barbeque/executor'
 require 'barbeque/slack_notifier'
@@ -22,7 +21,7 @@ module Barbeque
         job_execution.update!(status: :running)
 
         begin
-          stdout, stderr, status = run_command
+          stdout, stderr, status = run_command(job_execution)
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
           log_result(job_execution, '', '')
@@ -42,13 +41,12 @@ module Barbeque
         Barbeque::ExecutionLog.save_stdout_and_stderr(execution, stdout, stderr)
       end
 
+      # @param [Barbeque::JobExecution] job_execution
       # @return [String] stdout
       # @return [String] stderr
       # @return [Process::Status] status
-      def run_command
-        image  = DockerImage.new(job_definition.app.docker_image)
-        executor = Executor.create(docker_image: image)
-        executor.run(job_definition.command, job_envs)
+      def run_command(job_execution)
+        Executor.create.run(job_execution, job_envs)
       end
 
       def job_envs

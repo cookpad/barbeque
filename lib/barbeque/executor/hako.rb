@@ -1,27 +1,27 @@
+require 'barbeque/docker_image'
 require 'open3'
 
 module Barbeque
   module Executor
     class Hako
-      # @param [Barbeque::DockerImage] docker_image
       # @param [String] hako_dir
       # @param [Hash] hako_env
       # @param [String] yaml_dir
-      def initialize(docker_image:, hako_dir:, hako_env: {}, yaml_dir:)
-        @app_name = docker_image.repository
-        @tag      = docker_image.tag
+      def initialize(hako_dir:, hako_env: {}, yaml_dir:)
         @hako_dir = hako_dir
         @hako_env = hako_env
         @yaml_dir = yaml_dir
       end
 
-      # @param [Array<String>] command
+      # @param [Barbeque::JobExecution] job_execution
       # @param [Hash] envs
       # @return [String] stdout
       # @return [String] stderr
       # @return [Process::Status] status
-      def run(command, envs)
-        cmd = build_hako_oneshot_command(command, envs)
+      def run(job_execution, envs)
+        job_definition = job_execution.job_definition
+        docker_image = DockerImage.new(job_definition.app.docker_image)
+        cmd = build_hako_oneshot_command(docker_image, job_definition.command, envs)
         Bundler.with_clean_env do
           Open3.capture3(@hako_env, *cmd, chdir: @hako_dir)
         end
@@ -29,10 +29,10 @@ module Barbeque
 
       private
 
-      def build_hako_oneshot_command(command, envs)
+      def build_hako_oneshot_command(docker_image, command, envs)
         [
-          'bundle', 'exec', 'hako', 'oneshot', '--tag', @tag,
-          *env_options(envs), File.join(@yaml_dir, "#{@app_name}.yml"), '--', *command,
+          'bundle', 'exec', 'hako', 'oneshot', '--tag', docker_image.tag,
+          *env_options(envs), File.join(@yaml_dir, "#{docker_image.repository}.yml"), '--', *command,
         ]
       end
 

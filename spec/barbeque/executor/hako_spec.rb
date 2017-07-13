@@ -1,5 +1,5 @@
+require 'rails_helper'
 require 'barbeque/executor/hako'
-require 'barbeque/docker_image'
 
 describe Barbeque::Executor::Hako do
   let(:hako_directory) { '.' }
@@ -8,10 +8,12 @@ describe Barbeque::Executor::Hako do
   describe '#run' do
     let(:app_name) { 'dummy' }
     let(:tag) { 'latest' }
-    let(:docker_image) { Barbeque::DockerImage.new("#{app_name}:#{tag}") }
     let(:job_command) { ['bundle', 'exec', 'barbeque:execute'] }
     let(:hako_env) { { 'AWS_REGION' => 'ap-northeast-1' } }
     let(:envs) { { 'FOO' => 'BAR' } }
+    let(:app) { FactoryGirl.create(:app, docker_image: "#{app_name}:#{tag}") }
+    let(:job_definition) { FactoryGirl.create(:job_definition, app: app, command: job_command) }
+    let(:job_execution) { FactoryGirl.create(:job_execution, job_definition: job_definition) }
 
     it 'runs hako oneshot command within HAKO_DIR' do
       expect(Open3).to receive(:capture3).with(
@@ -21,11 +23,10 @@ describe Barbeque::Executor::Hako do
         chdir: hako_directory,
       )
       Barbeque::Executor::Hako.new(
-        docker_image: docker_image,
         hako_dir: hako_directory,
         hako_env: hako_env,
         yaml_dir: '/yamls',
-      ).run(job_command, envs)
+      ).run(job_execution, envs)
     end
   end
 end
