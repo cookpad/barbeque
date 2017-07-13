@@ -1,7 +1,3 @@
-require 'barbeque/docker_image'
-require 'barbeque/execution_log'
-require 'barbeque/runner'
-require 'barbeque/slack_client'
 require 'barbeque/message_handler/job_execution'
 
 module Barbeque

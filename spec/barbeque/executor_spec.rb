@@ -1,7 +1,7 @@
 require 'rails_helper'
-require 'barbeque/runner'
+require 'barbeque/executor'
 
-describe Barbeque::Runner do
+describe Barbeque::Executor do
   describe '.create' do
     let(:docker_image) { 'cookpad' }
 
@@ -10,28 +10,28 @@ describe Barbeque::Runner do
       allow(Barbeque).to receive(:config).and_return(config)
     end
 
-    context 'without runner_options' do
+    context 'without executor_options' do
       let(:barbeque_yml) { 'barbeque' }
 
-      it 'initializes a configured runner with docker_image' do
-        expect(Barbeque::Runner::Docker).to receive(:new).with(
+      it 'initializes a configured executor with docker_image' do
+        expect(Barbeque::Executor::Docker).to receive(:new).with(
           docker_image: docker_image,
         )
-        Barbeque::Runner.create(docker_image: docker_image)
+        Barbeque::Executor.create(docker_image: docker_image)
       end
     end
 
-    context 'with runner_options' do
+    context 'with executor_options' do
       let(:barbeque_yml) { 'barbeque.hako' }
 
-      it 'initializes a configured runner with docker_image and configured options' do
-        expect(Barbeque::Runner::Hako).to receive(:new).with(
+      it 'initializes a configured executor with docker_image and configured options' do
+        expect(Barbeque::Executor::Hako).to receive(:new).with(
           docker_image: docker_image,
           hako_dir: '/home/k0kubun/hako_repo',
           hako_env: { 'ACCESS_TOKEN' => 'token' },
           yaml_dir: '/yamls'
         )
-        Barbeque::Runner.create(docker_image: docker_image)
+        Barbeque::Executor.create(docker_image: docker_image)
       end
     end
   end
