@@ -28,7 +28,7 @@ module Barbeque
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, '', '')
+          Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, '', "#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}")
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
           raise e
         end

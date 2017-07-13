@@ -25,7 +25,7 @@ module Barbeque
           stdout, stderr, status = Executor.create.run(job_execution, job_envs)
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, '', '')
+          Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, '', "#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}")
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
           raise e
         end

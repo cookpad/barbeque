@@ -154,7 +154,7 @@ describe Barbeque::MessageHandler::JobRetry do
       let(:exception) { Class.new(StandardError) }
 
       before do
-        expect(executor).to receive(:run).and_raise(exception)
+        expect(executor).to receive(:run).and_raise(exception.new('something went wrong'))
       end
 
       it 'updates status to error' do
@@ -166,7 +166,7 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       it 'logs empty output' do
-        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobRetry), '', '')
+        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobRetry), '', /something went wrong/)
         expect { handler.run }.to raise_error(exception)
       end
     end
