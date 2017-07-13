@@ -24,7 +24,7 @@ module Barbeque
         job_retry.update!(status: :running)
 
         begin
-          stdout, stderr, result = run_command(job_retry)
+          stdout, stderr, result = Executor.create.run(job_retry.job_execution, job_envs)
         rescue Exception => e
           job_retry.update!(status: :error, finished_at: Time.now)
           job_execution.update!(status: :error)
@@ -43,14 +43,6 @@ module Barbeque
 
       def job_execution
         @job_execution ||= Barbeque::JobExecution.find_by!(message_id: @message.retry_message_id)
-      end
-
-      # @param [Barbeque::JobRetry] job_retry
-      # @return [String] stdout
-      # @return [String] stderr
-      # @return [Process::Status] status
-      def run_command(job_retry)
-        Executor.create.run(job_retry.job_execution, job_envs)
       end
 
       def job_envs

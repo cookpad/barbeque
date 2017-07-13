@@ -22,7 +22,7 @@ module Barbeque
         job_execution.update!(status: :running)
 
         begin
-          stdout, stderr, status = run_command(job_execution)
+          stdout, stderr, status = Executor.create.run(job_execution, job_envs)
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, '', '')
@@ -35,14 +35,6 @@ module Barbeque
       end
 
       private
-
-      # @param [Barbeque::JobExecution] job_execution
-      # @return [String] stdout
-      # @return [String] stderr
-      # @return [Process::Status] status
-      def run_command(job_execution)
-        Executor.create.run(job_execution, job_envs)
-      end
 
       def job_envs
         {
