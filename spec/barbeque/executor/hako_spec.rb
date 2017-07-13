@@ -3,7 +3,6 @@ require 'barbeque/docker_image'
 
 describe Barbeque::Executor::Hako do
   let(:hako_directory) { '.' }
-  let(:github_access_token) { 'access_token' }
 
   describe '#run' do
     let(:app_name) { 'dummy' }
