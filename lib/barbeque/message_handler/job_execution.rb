@@ -18,28 +18,23 @@ module Barbeque
         rescue ActiveRecord::RecordNotUnique => e
           raise DuplicatedExecution.new(e.message)
         end
+        Barbeque::ExecutionLog.save_message(job_execution, @message)  # TODO: Should be saved earlier
         job_execution.update!(status: :running)
 
         begin
           stdout, stderr, status = run_command(job_execution)
         rescue Exception => e
           job_execution.update!(status: :error, finished_at: Time.now)
-          log_result(job_execution, '', '')
+          Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, '', '')
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
           raise e
         end
         job_execution.update!(status: status.success? ? :success : :failed, finished_at: Time.now)
+        Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
         Barbeque::SlackNotifier.notify_job_execution(job_execution)
-
-        log_result(job_execution, stdout, stderr)
       end
 
       private
-
-      def log_result(execution, stdout, stderr)
-        Barbeque::ExecutionLog.save_message(execution, @message)  # TODO: Should be saved earlier
-        Barbeque::ExecutionLog.save_stdout_and_stderr(execution, stdout, stderr)
-      end
 
       # @param [Barbeque::JobExecution] job_execution
       # @return [String] stdout
