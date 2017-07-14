@@ -1,3 +1,5 @@
+require 'barbeque/config'
+
 class Barbeque::JobQueuesController < Barbeque::ApplicationController
   def index
     @job_queues = Barbeque::JobQueue.all
@@ -49,10 +51,7 @@ class Barbeque::JobQueuesController < Barbeque::ApplicationController
     Aws::SQS::Client.new.create_queue(
       queue_name: job_queue.sqs_queue_name,
       attributes: {
-        # All SQS queues' "ReceiveMessageWaitTimeSeconds" are configured to be 20s (maximum).
-        # This should be as large as possible to reduce API-calling cost by long polling.
-        # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html#API_CreateQueue_RequestParameters
-        'ReceiveMessageWaitTimeSeconds' => Barbeque::JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME.to_s,
+        'ReceiveMessageWaitTimeSeconds' => Barbeque.config.sqs_receive_message_wait_time.to_s,
       },
     )
   end

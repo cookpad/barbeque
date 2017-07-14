@@ -1,4 +1,5 @@
 require 'aws-sdk'
+require 'barbeque/config'
 require 'barbeque/message'
 
 module Barbeque
@@ -36,7 +37,7 @@ module Barbeque
     def receive_messages
       result = client.receive_message(
         queue_url: @job_queue.queue_url,
-        wait_time_seconds: Barbeque::JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME,
+        wait_time_seconds: Barbeque.config.sqs_receive_message_wait_time,
       )
       result.messages.map { |m| Barbeque::Message.parse(m) }
     end
