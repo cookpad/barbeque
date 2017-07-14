@@ -10,6 +10,9 @@
       - In Executor::Docker, uses S3 task notification JSON
     - RetryPoller: polls retry status and reflect it to the database
       - Same with ExecutionPoller
+  - Add `maximum_concurrent_executions` configuration to config/barbeque.yml
+    - It controls the number of concurrent job executions
+    - The limit is disabled by default
 - Add `sqs_receive_message_wait_time` configuration to config/barbeque.yml
   - This option controls ReceiveMessageWaitTimeSeconds attribute of SQS queue
   - The default value is changed from 20s to 10s

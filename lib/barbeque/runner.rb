@@ -1,3 +1,4 @@
+require 'barbeque/config'
 require 'barbeque/exception_handler'
 require 'barbeque/execution_log'
 require 'barbeque/message_handler'
@@ -12,6 +13,8 @@ module Barbeque
     end
 
     def run
+      keep_maximum_concurrent_executions
+
       message = message_queue.dequeue
       return unless message
 
@@ -27,6 +30,22 @@ module Barbeque
 
     def message_queue
       @message_queue ||= MessageQueue.new(@queue_name)
+    end
+
+    def keep_maximum_concurrent_executions
+      max_num = Barbeque.config.maximum_concurrent_executions
+      unless max_num
+        # nil means unlimited
+        return
+      end
+
+      loop do
+        current_num = Barbeque::JobExecution.where(status: [:running, :retried]).count
+        if current_num < max_num
+          return
+        end
+        sleep 10
+      end
     end
   end
 end
