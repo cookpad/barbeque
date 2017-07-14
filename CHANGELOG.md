@@ -1,3 +1,8 @@
+## v1.0.0 (xxxx-xx-xx)
+- Add `sqs_receive_message_wait_time` configuration to config/barbeque.yml
+  - This option controls ReceiveMessageWaitTimeSeconds attribute of SQS queue
+  - The default value is changed from 20s to 10s
+
 ## v0.7.0 (2017-07-12)
 - Change S3 log format [#29](https://github.com/cookpad/barbeque/pull/29)
   - The legacy format saves `{message: message.body.to_json, stdout: stdout, stderr: stderr}.to_json` to `#{app}/#{job}/#{message_id}`
