@@ -139,7 +139,7 @@ describe Barbeque::MessageHandler::JobExecution do
       let(:exception) { Class.new(StandardError) }
 
       before do
-        expect(executor).to receive(:run).and_raise(exception)
+        expect(executor).to receive(:run).and_raise(exception.new('something went wrong'))
       end
 
       it 'updates status to error' do
@@ -150,7 +150,7 @@ describe Barbeque::MessageHandler::JobExecution do
 
       it 'logs message body' do
         expect(Barbeque::ExecutionLog).to receive(:save_message).with(a_kind_of(Barbeque::JobExecution), message)
-        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobExecution), '', '')
+        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobExecution), '', /something went wrong/)
         expect { handler.run }.to raise_error(exception)
       end
     end
