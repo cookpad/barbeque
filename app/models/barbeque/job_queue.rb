@@ -4,10 +4,6 @@ class Barbeque::JobQueue < Barbeque::ApplicationRecord
 
   has_many :sns_subscriptions, class_name: 'SNSSubscription', dependent: :destroy
 
-  # All SQS queues' "ReceiveMessageWaitTimeSeconds" are configured to 10s.
-  # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html#API_CreateQueue_RequestParameters
-  SQS_RECEIVE_MESSAGE_WAIT_TIME = 10
-
   # SQS queue allows [a-zA-Z0-9_-]+ as queue name. Its maximum length is 80.
   validates :name, presence: true, uniqueness: true, format: /\A[a-zA-Z0-9_-]+\z/,
     length: { maximum: SQS_NAME_MAX_LENGTH - SQS_NAME_PREFIX.length }

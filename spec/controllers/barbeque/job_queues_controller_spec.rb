@@ -58,7 +58,7 @@ describe Barbeque::JobQueuesController do
     it 'creates SQS queue' do
       expect(sqs_client).to receive(:create_queue).with(
         queue_name: queue_name,
-        attributes: { 'ReceiveMessageWaitTimeSeconds' => Barbeque::JobQueue::SQS_RECEIVE_MESSAGE_WAIT_TIME.to_s },
+        attributes: { 'ReceiveMessageWaitTimeSeconds' => Barbeque.config.sqs_receive_message_wait_time.to_s },
       )
       post :create, params: { job_queue: attributes }
       expect(Barbeque::JobQueue.last.queue_url).to eq(queue_url)

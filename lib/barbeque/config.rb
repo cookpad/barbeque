@@ -3,7 +3,7 @@ require 'yaml'
 
 module Barbeque
   class Config
-    attr_accessor :exception_handler, :executor, :executor_options
+    attr_accessor :exception_handler, :executor, :executor_options, :sqs_receive_message_wait_time
 
     def initialize(options = {})
       options.each do |key, value|
@@ -22,6 +22,8 @@ module Barbeque
       'exception_handler' => 'RailsLogger',
       'executor' => 'Docker',
       'executor_options' => {},
+      # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html#API_CreateQueue_RequestParameters
+      'sqs_receive_message_wait_time' => 10,
     }
 
     def config
