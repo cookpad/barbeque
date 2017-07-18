@@ -119,7 +119,7 @@ module Barbeque
       end
 
       def s3_client
-        @s3_client ||= Aws::S3::Client.new(region: @s3_region)
+        @s3_client ||= Aws::S3::Client.new(region: @s3_region, http_read_timeout: 5)
       end
 
       def get_stopped_result(hako_task)
