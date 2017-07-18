@@ -101,7 +101,7 @@ module Barbeque
         if status.success?
           begin
             JSON.parse(stdout)[0]
-          rescue => e
+          rescue JSON::ParserError => e
             raise DockerCommandError.new("Unable to parse JSON: #{e.class}: #{e.message}: #{stdout}")
           end
         else
