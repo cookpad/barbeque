@@ -67,7 +67,7 @@ class Barbeque::SNSSubscriptionService
     )
   end
 
-  # @paaram [String] queue_arn
+  # @param [String] queue_arn
   # @param [Array<String>] topic_arns
   # @return [String] JSON formatted policy
   def generate_policy(queue_arn:, topic_arns:)

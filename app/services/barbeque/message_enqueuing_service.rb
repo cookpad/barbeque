@@ -10,7 +10,7 @@ class Barbeque::MessageEnqueuingService
   # @param [String] application
   # @param [String] job
   # @param [Object] message
-  # @param optional [String] queue
+  # @param [String] queue
   def initialize(application:, job:, message:, queue: nil)
     @application = application
     @job         = job

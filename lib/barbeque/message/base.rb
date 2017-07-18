@@ -7,7 +7,7 @@ module Barbeque
       attr_reader :type           # [String] "JobExecution", "JobRetry", etc
 
       # @param [Aws::SQS::Types::Message] raw_message
-      # @param [Hash] parse result of `raw_message.body`
+      # @param message_body [Hash] parse result of `raw_message.body`
       def initialize(raw_message, message_body)
         assign_body(message_body)
         @id             = raw_message.message_id
