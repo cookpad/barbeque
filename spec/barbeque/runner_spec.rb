@@ -50,7 +50,8 @@ RSpec.describe Barbeque::Runner do
           end
 
           it 'waits' do
-            expect(runner).to receive(:sleep) {
+            expect(runner).to receive(:sleep) { |interval|
+              expect(interval).to eq(10)
               # One execution finishes during sleep
               Barbeque::JobExecution.first.update!(status: :success)
             }
