@@ -5,6 +5,10 @@ require 'barbeque/message_handler'
 require 'barbeque/message_queue'
 
 module Barbeque
+  # Part of barbeque-worker.
+  # Runner dequeues a message from {MessageQueue} (Amazon SQS) and dispatches
+  # it to message handler.
+
   class Runner
     DEFAULT_QUEUE = 'default'
 
