@@ -48,7 +48,9 @@ module Barbeque
         if current_num < max_num
           return
         end
-        sleep 10
+        interval = 10
+        Rails.logger.info("#{current_num} executions are running but maximum_concurrent_executions is configured to #{max_num}. Waiting #{interval} seconds...")
+        sleep(interval)
       end
     end
   end
