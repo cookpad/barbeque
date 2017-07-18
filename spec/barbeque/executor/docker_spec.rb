@@ -54,11 +54,11 @@ RSpec.describe Barbeque::Executor::Docker do
       let(:inspect_status) { double('Process::Status', success?: true) }
       let(:container_info) do
         {
-            'State' => {
-              'Status' => 'exited',
-              'FinishedAt' => '2017-07-11T09:17:32.013951633Z',
-              'ExitCode' => 0,
-            },
+          'State' => {
+            'Status' => 'exited',
+            'FinishedAt' => '2017-07-11T09:17:32.013951633Z',
+            'ExitCode' => 0,
+          },
         }
       end
       let(:stdout) { 'stdout' }
