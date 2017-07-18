@@ -35,13 +35,17 @@ module Barbeque
         cmd = build_docker_run_command(docker_image, job_execution.job_definition.command, envs)
         stdout, stderr, status = Open3.capture3(*cmd)
         if status.success?
-          job_execution.update!(status: :retried)
-          job_retry.update!(status: :running)
           Barbeque::DockerContainer.create!(message_id: job_retry.message_id, container_id: stdout.chomp)
+          Barbeque::ApplicationRecord.transaction do
+            job_execution.update!(status: :retried)
+            job_retry.update!(status: :running)
+          end
         else
-          job_retry.update!(status: :failed, finished_at: Time.zone.now)
-          job_execution.update!(status: :failed)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
+          Barbeque::ApplicationRecord.transaction do
+            job_retry.update!(status: :failed, finished_at: Time.zone.now)
+            job_execution.update!(status: :failed)
+          end
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
         end
       end
@@ -70,8 +74,10 @@ module Barbeque
           finished_at = Time.zone.parse(info['State']['FinishedAt'])
           exit_code = info['State']['ExitCode']
           status = exit_code == 0 ? :success : :failed
-          job_retry.update!(status: status, finished_at: finished_at)
-          job_execution.update!(status: status)
+          Barbeque::ApplicationRecord.transaction do
+            job_retry.update!(status: status, finished_at: finished_at)
+            job_execution.update!(status: status)
+          end
 
           stdout, stderr = get_logs(container.container_id)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)

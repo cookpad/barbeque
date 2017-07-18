@@ -49,14 +49,18 @@ module Barbeque
         stdout, stderr, status = Bundler.with_clean_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
         if status.success?
           cluster, task_arn = extract_task_info(stdout)
-          job_execution.update!(status: :retried)
-          job_retry.update!(status: :running)
           Barbeque::EcsHakoTask.create!(message_id: job_retry.message_id, cluster: cluster, task_arn: task_arn)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
+          Barbeque::ApplicationRecord.transaction do
+            job_execution.update!(status: :retried)
+            job_retry.update!(status: :running)
+          end
         else
-          job_retry.update!(status: :failed, finished_at: Time.zone.now)
-          job_execution.update!(status: :failed)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
+          Barbeque::ApplicationRecord.transaction do
+            job_retry.update!(status: :failed, finished_at: Time.zone.now)
+            job_execution.update!(status: :failed)
+          end
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
         end
       end
@@ -93,8 +97,10 @@ module Barbeque
               status = container.exit_code == 0 ? :success : :failed
             end
           end
-          job_retry.update!(status: status, finished_at: task.stopped_at)
-          job_execution.update!(status: status)
+          Barbeque::ApplicationRecord.transaction do
+            job_retry.update!(status: status, finished_at: task.stopped_at)
+            job_execution.update!(status: status)
+          end
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
         end
       end
