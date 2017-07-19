@@ -18,7 +18,6 @@ module Barbeque
         rescue ActiveRecord::RecordNotUnique => e
           raise DuplicatedExecution.new(e.message)
         end
-        Barbeque::ExecutionLog.save_message(job_execution, @message)  # TODO: Should be saved earlier
 
         begin
           Executor.create.start_execution(job_execution, job_envs)

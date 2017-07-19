@@ -22,7 +22,6 @@ describe Barbeque::MessageHandler::JobExecution do
 
     before do
       allow(Barbeque::Executor::Docker).to receive(:new).with({}).and_return(executor)
-      allow(Barbeque::ExecutionLog).to receive(:save_message)
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
     end
 
