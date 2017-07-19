@@ -5,6 +5,7 @@ default: &default
     hako_env:
       ACCESS_TOKEN: token
     yaml_dir: /yamls
+    oneshot_notification_prefix: s3://barbeque/task_statuses?region=ap-northeast-1
 
 development:
   <<: *default

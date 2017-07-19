@@ -1,13 +1,11 @@
-require 'barbeque/exception_handler'
-require 'barbeque/message_handler'
-require 'barbeque/message_queue'
+require 'barbeque/execution_poller'
+require 'barbeque/retry_poller'
+require 'barbeque/runner'
 require 'serverengine'
 
 module Barbeque
   module Worker
     class UnexpectedMessageType < StandardError; end
-
-    DEFAULT_QUEUE = 'default'
 
     def self.run(
       worker_type: 'process',
@@ -33,34 +31,35 @@ module Barbeque
     end
 
     def initialize
-      @queue_name = ENV['BARBEQUE_QUEUE'] || DEFAULT_QUEUE
+      @command =
+        case worker_id
+        when 0
+          ExecutionPoller.new
+        when 1
+          RetryPoller.new
+        else
+          Runner.new
+        end
     end
 
     def run
+      $0 = "barbeque-worker (worker_id=#{worker_id} command=#{@command.class.name})"
       until @stop
-        execute_job
+        begin
+          execute_command
+        rescue => e
+          Barbeque::ExceptionHandler.handle_exception(e)
+        end
       end
     end
 
     def stop
       @stop = true
-      message_queue.stop!
+      @command.stop
     end
 
-    def execute_job
-      message = message_queue.dequeue
-      return unless message
-
-      handler = MessageHandler.const_get(message.type, false)
-      handler.new(message: message, job_queue: message_queue.job_queue).run
-    rescue => e
-      Barbeque::ExceptionHandler.handle_exception(e)
-    end
-
-    private
-
-    def message_queue
-      @message_queue ||= MessageQueue.new(@queue_name)
+    def execute_command
+      @command.run
     end
   end
 end

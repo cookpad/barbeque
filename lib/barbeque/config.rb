@@ -3,7 +3,7 @@ require 'yaml'
 
 module Barbeque
   class Config
-    attr_accessor :exception_handler, :executor, :executor_options, :sqs_receive_message_wait_time
+    attr_accessor :exception_handler, :executor, :executor_options, :sqs_receive_message_wait_time, :maximum_concurrent_executions, :runner_wait_seconds
 
     def initialize(options = {})
       options.each do |key, value|
@@ -24,6 +24,9 @@ module Barbeque
       'executor_options' => {},
       # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html#API_CreateQueue_RequestParameters
       'sqs_receive_message_wait_time' => 10,
+      # nil means unlimited
+      'maximum_concurrent_executions' => nil,
+      'runner_wait_seconds' => 10,
     }
 
     def config
