@@ -25,7 +25,9 @@ class Barbeque::MessageEnqueuingService
       queue_url:    queue.queue_url,
       message_body: build_message.to_json,
     )
-    response.message_id
+    message_id = response.message_id
+    Barbeque::ExecutionLog.save_message(@application, @job, message_id, @message.to_json)
+    message_id
   end
 
   private
