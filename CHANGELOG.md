@@ -13,6 +13,8 @@
   - Add `maximum_concurrent_executions` configuration to config/barbeque.yml
     - It controls the number of concurrent job executions
     - The limit is disabled by default
+- Drop support for legacy S3 log format
+  - Run [migration script](tools/s3-log-migrator.rb) before upgrading to v1.0.0
 - Add `sqs_receive_message_wait_time` configuration to config/barbeque.yml
   - This option controls ReceiveMessageWaitTimeSeconds attribute of SQS queue
   - The default value is changed from 20s to 10s
