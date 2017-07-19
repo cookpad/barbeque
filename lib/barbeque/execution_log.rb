@@ -35,9 +35,9 @@ module Barbeque
     def load(execution:)
       return {} if execution.pending?
 
-      message = get(execution, 'message.json')
-      stdout = get(execution, 'stdout.txt')
-      stderr = get(execution, 'stderr.txt')
+      message = get_with_execution(execution, 'message.json')
+      stdout = get_with_execution(execution, 'stdout.txt')
+      stderr = get_with_execution(execution, 'stderr.txt')
       if message || stdout || stderr
         {
           'message' => message,
@@ -88,7 +88,7 @@ module Barbeque
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
     # @param [String] filename
     # @return [String]
-    def get(execution, filename)
+    def get_with_execution(execution, filename)
       s3_object = ExecutionLog.s3_client.get_object(
         bucket: s3_bucket_name,
         key: s3_key_for_execution(execution, filename),
