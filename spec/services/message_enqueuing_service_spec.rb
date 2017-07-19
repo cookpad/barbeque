@@ -24,7 +24,6 @@ describe Barbeque::MessageEnqueuingService do
           'Message'     => message,
         }.to_json,
       ).and_return(send_message_result)
-      expect(Barbeque::ExecutionLog).to receive(:save_message).with(application, job, send_message_result.message_id, message.to_json)
 
       result = Barbeque::MessageEnqueuingService.new(
         job:     job,
