@@ -43,16 +43,7 @@ module Barbeque
           'stderr' => stderr,
         }
       else
-        # Try to load legacy format
-        begin
-          s3_object = ExecutionLog.s3_client.get_object(
-            bucket: s3_bucket_name,
-            key: legacy_s3_key_for(execution),
-          )
-          JSON.parse(s3_object.body.read)
-        rescue Aws::S3::Errors::NoSuchKey
-          nil
-        end
+        nil
       end
     end
 
@@ -66,11 +57,6 @@ module Barbeque
     # @param [String] filename
     def s3_key_for(execution, filename)
       "#{execution.app.name}/#{execution.job_definition.job}/#{execution.message_id}/#{filename}"
-    end
-
-    # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
-    def legacy_s3_key_for(execution)
-      "#{execution.app.name}/#{execution.job_definition.job}/#{execution.message_id}"
     end
 
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
