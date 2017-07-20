@@ -3,9 +3,10 @@ require 'barbeque/worker'
 
 describe Barbeque::MessageHandler::JobExecution do
   describe '#run' do
-    let(:handler) { Barbeque::MessageHandler::JobExecution.new(message: message, job_queue: job_queue) }
+    let(:handler) { Barbeque::MessageHandler::JobExecution.new(message: message, message_queue: message_queue) }
     let(:job_definition) { create(:job_definition) }
     let(:job_queue)      { create(:job_queue) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
     let(:message) do
       Barbeque::Message::JobExecution.new(
         Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle'),
@@ -24,6 +25,7 @@ describe Barbeque::MessageHandler::JobExecution do
       allow(Barbeque::Executor::Docker).to receive(:new).with({}).and_return(executor)
       allow(Barbeque::ExecutionLog).to receive(:save_message)
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
+      expect(message_queue).to receive(:delete_message).with(message)
     end
 
     around do |example|

@@ -3,8 +3,9 @@ require 'barbeque/worker'
 
 describe Barbeque::MessageHandler::JobRetry do
   describe '#run' do
-    let(:handler) { Barbeque::MessageHandler::JobRetry.new(message: message, job_queue: job_queue) }
+    let(:handler) { Barbeque::MessageHandler::JobRetry.new(message: message, message_queue: message_queue) }
     let(:job_queue) { create(:job_queue) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
     let(:job_definition) { create(:job_definition) }
     let(:job_execution) { create(:job_execution, status: :failed, job_definition: job_definition, job_queue: job_queue) }
     let(:message) do
@@ -22,6 +23,7 @@ describe Barbeque::MessageHandler::JobRetry do
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
       allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
       allow(Barbeque::Executor::Docker).to receive(:new).with({}).and_return(executor)
+      expect(message_queue).to receive(:delete_message).with(message)
     end
 
     around do |example|

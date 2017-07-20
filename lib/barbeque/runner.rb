@@ -23,7 +23,7 @@ module Barbeque
       return unless message
 
       handler = MessageHandler.const_get(message.type, false)
-      handler.new(message: message, job_queue: message_queue.job_queue).run
+      handler.new(message: message, message_queue: message_queue).run
     end
 
     def stop

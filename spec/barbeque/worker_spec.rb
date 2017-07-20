@@ -26,7 +26,7 @@ describe Barbeque::Worker do
 
   before do
     allow(Barbeque::MessageQueue).to receive(:new).and_return(message_queue)
-    allow(Barbeque::MessageHandler::JobExecution).to receive(:new).with(message: message, job_queue: job_queue).and_return(job)
+    allow(Barbeque::MessageHandler::JobExecution).to receive(:new).with(message: message, message_queue: message_queue).and_return(job)
   end
 
   describe '#execute_command' do
@@ -80,12 +80,12 @@ describe Barbeque::Worker do
             retry_message_id: job_execution.message_id,
           )
         end
-        let(:execution_retry) { Barbeque::MessageHandler::JobRetry.new(message: message, job_queue: job_queue) }
+        let(:execution_retry) { Barbeque::MessageHandler::JobRetry.new(message: message, message_queue: message_queue) }
 
         before do
           create(:job_retry, job_execution: job_execution, message_id: retry_message_id)
           allow(Barbeque::MessageHandler::JobRetry).to receive(:new).
-            with(message: message, job_queue: job_queue).and_return(execution_retry)
+            with(message: message, message_queue: message_queue).and_return(execution_retry)
           allow(execution_retry).to receive(:run).and_return([stdout, stderr, status])
         end
 

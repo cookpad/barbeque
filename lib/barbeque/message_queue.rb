@@ -4,6 +4,9 @@ require 'barbeque/message'
 
 module Barbeque
   class MessageQueue
+    class ExtendVisibilityError < StandardError
+    end
+
     attr_reader :job_queue
 
     def initialize(queue_name)
@@ -13,7 +16,6 @@ module Barbeque
     end
 
     # Receive a message and delete them all from SQS queue immediately.
-    # TODO: Stop removing them immediately to implement retry.
     # @return [Barbeque::Message::Base]
     def dequeue
       while valid_messages.empty?
@@ -23,9 +25,22 @@ module Barbeque
         valid_messages.concat(messages)
       end
 
-      valid_messages.shift.tap do |message|
-        delete_message(message)
+      message = valid_messages.shift
+      # XXX: #receive_messages returns one message at most because it calls
+      #       receive_message API without max_number_of_messages option.
+      unless valid_messages.empty?
+        extend_visibility_timeout(valid_messages)
       end
+      message
+    end
+
+    # Remove a message from SQS queue.
+    # @param [Barbeque::Message::Base] message
+    def delete_message(message)
+      client.delete_message(
+        queue_url: @job_queue.queue_url,
+        receipt_handle: message.receipt_handle,
+      )
     end
 
     def stop!
@@ -48,12 +63,15 @@ module Barbeque
       messages
     end
 
-    # Remove a message from SQS queue.
-    def delete_message(message)
-      client.delete_message(
-        queue_url:      @job_queue.queue_url,
-        receipt_handle: message.receipt_handle,
+    def extend_visibility_timeout(messages)
+      resp = client.change_message_visibility_batch(
+        queue_url: @job_queue.queue_url,
+        entries: messages.map { |message| { id: message.message_id, receipt_handle: message.receipt_handle, visibility_timeout: 60 } },
       )
+      unless resp.failed.empty?
+        raise "Failed to extend visibility timeout: #{resp.failed.map(&:inspect)}"
+      end
+      nil
     end
 
     def valid_messages
