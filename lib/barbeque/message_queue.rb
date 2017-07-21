@@ -4,9 +4,6 @@ require 'barbeque/message'
 
 module Barbeque
   class MessageQueue
-    class ExtendVisibilityError < StandardError
-    end
-
     attr_reader :job_queue
 
     def initialize(queue_name)
@@ -55,17 +52,6 @@ module Barbeque
       if result.messages[0]
         Barbeque::Message.parse(result.messages[0])
       end
-    end
-
-    def extend_visibility_timeout(messages)
-      resp = client.change_message_visibility_batch(
-        queue_url: @job_queue.queue_url,
-        entries: messages.map { |message| { id: message.message_id, receipt_handle: message.receipt_handle, visibility_timeout: 60 } },
-      )
-      unless resp.failed.empty?
-        raise "Failed to extend visibility timeout: #{resp.failed.map(&:inspect)}"
-      end
-      nil
     end
 
     def client
