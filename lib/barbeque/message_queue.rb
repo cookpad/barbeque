@@ -15,23 +15,20 @@ module Barbeque
       @stop      = false
     end
 
-    # Receive a message and delete them all from SQS queue immediately.
+    # Receive a message from SQS queue.
     # @return [Barbeque::Message::Base]
     def dequeue
-      while valid_messages.empty?
+      loop do
         return nil if @stop
-        messages = receive_messages
-        messages = reject_invalid_messages(messages)
-        valid_messages.concat(messages)
+        message = receive_message
+        if message
+          if message.valid?
+            return message
+          else
+            delete_message(message)
+          end
+        end
       end
-
-      message = valid_messages.shift
-      # XXX: #receive_messages returns one message at most because it calls
-      #       receive_message API without max_number_of_messages option.
-      unless valid_messages.empty?
-        extend_visibility_timeout(valid_messages)
-      end
-      message
     end
 
     # Remove a message from SQS queue.
@@ -49,18 +46,15 @@ module Barbeque
 
     private
 
-    def receive_messages
+    def receive_message
       result = client.receive_message(
         queue_url: @job_queue.queue_url,
         wait_time_seconds: Barbeque.config.sqs_receive_message_wait_time,
+        max_number_of_messages: 1,
       )
-      result.messages.map { |m| Barbeque::Message.parse(m) }
-    end
-
-    def reject_invalid_messages(messages)
-      messages, invalid_messages = messages.partition(&:valid?)
-      invalid_messages.each { |m| delete_message(m) }
-      messages
+      if result.messages[0]
+        Barbeque::Message.parse(result.messages[0])
+      end
     end
 
     def extend_visibility_timeout(messages)
@@ -72,10 +66,6 @@ module Barbeque
         raise "Failed to extend visibility timeout: #{resp.failed.map(&:inspect)}"
       end
       nil
-    end
-
-    def valid_messages
-      @valid_messages ||= []
     end
 
     def client
