@@ -16,7 +16,6 @@ module Barbeque
         begin
           job_execution = Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @message_queue.job_queue)
         rescue ActiveRecord::RecordNotUnique => e
-          @message_queue.delete_message(@message)
           raise DuplicatedExecution.new(e.message)
         end
         Barbeque::ExecutionLog.save_message(job_execution, @message)

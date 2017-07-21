@@ -18,7 +18,6 @@ module Barbeque
         begin
           job_retry = Barbeque::JobRetry.create(message_id: @message.id, job_execution: job_execution)
         rescue ActiveRecord::RecordNotUnique => e
-          @message_queue.delete_message(@message)
           raise DuplicatedExecution.new(e.message)
         end
         @message_queue.delete_message(@message)
