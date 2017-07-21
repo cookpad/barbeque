@@ -6,19 +6,20 @@ module Barbeque
   module MessageHandler
     class JobExecution
       # @param [Barbeque::Message::JobExecution] message
-      # @param [Barbeque::JobQueue] job_queue
-      def initialize(message:, job_queue:)
+      # @param [Barbeque::MessageQueue] message_queue
+      def initialize(message:, message_queue:)
         @message = message
-        @job_queue = job_queue
+        @message_queue = message_queue
       end
 
       def run
         begin
-          job_execution = Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @job_queue)
+          job_execution = Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @message_queue.job_queue)
         rescue ActiveRecord::RecordNotUnique => e
           raise DuplicatedExecution.new(e.message)
         end
-        Barbeque::ExecutionLog.save_message(job_execution, @message)  # TODO: Should be saved earlier
+        Barbeque::ExecutionLog.save_message(job_execution, @message)
+        @message_queue.delete_message(@message)
 
         begin
           Executor.create.start_execution(job_execution, job_envs)
@@ -37,7 +38,7 @@ module Barbeque
           'BARBEQUE_JOB'         => @message.job,
           'BARBEQUE_MESSAGE'     => @message.body.to_json,
           'BARBEQUE_MESSAGE_ID'  => @message.id,
-          'BARBEQUE_QUEUE_NAME'  => @job_queue.name,
+          'BARBEQUE_QUEUE_NAME'  => @message_queue.job_queue.name,
           'BARBEQUE_RETRY_COUNT' => '0',
         }
       end

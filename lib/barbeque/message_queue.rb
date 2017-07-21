@@ -12,20 +12,29 @@ module Barbeque
       @stop      = false
     end
 
-    # Receive a message and delete them all from SQS queue immediately.
-    # TODO: Stop removing them immediately to implement retry.
+    # Receive a message from SQS queue.
     # @return [Barbeque::Message::Base]
     def dequeue
-      while valid_messages.empty?
+      loop do
         return nil if @stop
-        messages = receive_messages
-        messages = reject_invalid_messages(messages)
-        valid_messages.concat(messages)
+        message = receive_message
+        if message
+          if message.valid?
+            return message
+          else
+            delete_message(message)
+          end
+        end
       end
+    end
 
-      valid_messages.shift.tap do |message|
-        delete_message(message)
-      end
+    # Remove a message from SQS queue.
+    # @param [Barbeque::Message::Base] message
+    def delete_message(message)
+      client.delete_message(
+        queue_url: @job_queue.queue_url,
+        receipt_handle: message.receipt_handle,
+      )
     end
 
     def stop!
@@ -34,30 +43,15 @@ module Barbeque
 
     private
 
-    def receive_messages
+    def receive_message
       result = client.receive_message(
         queue_url: @job_queue.queue_url,
         wait_time_seconds: Barbeque.config.sqs_receive_message_wait_time,
+        max_number_of_messages: 1,
       )
-      result.messages.map { |m| Barbeque::Message.parse(m) }
-    end
-
-    def reject_invalid_messages(messages)
-      messages, invalid_messages = messages.partition(&:valid?)
-      invalid_messages.each { |m| delete_message(m) }
-      messages
-    end
-
-    # Remove a message from SQS queue.
-    def delete_message(message)
-      client.delete_message(
-        queue_url:      @job_queue.queue_url,
-        receipt_handle: message.receipt_handle,
-      )
-    end
-
-    def valid_messages
-      @valid_messages ||= []
+      if result.messages[0]
+        Barbeque::Message.parse(result.messages[0])
+      end
     end
 
     def client

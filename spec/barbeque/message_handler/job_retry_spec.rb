@@ -3,8 +3,9 @@ require 'barbeque/worker'
 
 describe Barbeque::MessageHandler::JobRetry do
   describe '#run' do
-    let(:handler) { Barbeque::MessageHandler::JobRetry.new(message: message, job_queue: job_queue) }
+    let(:handler) { Barbeque::MessageHandler::JobRetry.new(message: message, message_queue: message_queue) }
     let(:job_queue) { create(:job_queue) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
     let(:job_definition) { create(:job_definition) }
     let(:job_execution) { create(:job_execution, status: :failed, job_definition: job_definition, job_queue: job_queue) }
     let(:message) do
@@ -41,11 +42,13 @@ describe Barbeque::MessageHandler::JobRetry do
           'BARBEQUE_RETRY_COUNT' => '1',
         )
       }
+      expect(message_queue).to receive(:delete_message).with(message)
       handler.run
     end
 
     it 'creates job_retry associated to job_execution in the message' do
       expect(executor).to receive(:start_retry)
+      expect(message_queue).to receive(:delete_message).with(message)
       expect { handler.run }.to change(Barbeque::JobRetry, :count).by(1)
       job_retry = Barbeque::JobRetry.last
       expect(job_retry.finished_at).to be_nil
@@ -59,6 +62,7 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       it 'raises MessageNotFound' do
+        expect(message_queue).to receive(:delete_message).with(message)
         expect { handler.run }.to raise_error(Barbeque::MessageHandler::MessageNotFound)
       end
     end
@@ -81,6 +85,7 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       it 'updates status to error' do
+        expect(message_queue).to receive(:delete_message).with(message)
         expect(job_execution).to be_failed
         expect(Barbeque::JobRetry.count).to eq(0)
         expect { handler.run }.to raise_error(exception)
@@ -89,6 +94,7 @@ describe Barbeque::MessageHandler::JobRetry do
       end
 
       it 'logs empty output' do
+        expect(message_queue).to receive(:delete_message).with(message)
         expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(a_kind_of(Barbeque::JobRetry), '', /something went wrong/)
         expect { handler.run }.to raise_error(exception)
       end
