@@ -1,4 +1,4 @@
-## v1.0.0 (xxxx-xx-xx)
+## v1.0.0 (2017-07-24)
 - Introduce Executor as a replacement of Runner
   - `runner` and `runner_options` is renamed to `executor` and `executor_options` respectively
   - Now `rake barbeque:worker` launches three types of process
