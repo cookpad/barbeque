@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170712075449) do
+ActiveRecord::Schema.define(version: 20170724025542) do
 
   create_table "barbeque_apps", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
     t.string   "name",                       null: false
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 20170712075449) do
     t.integer  "job_queue_id"
     t.index ["job_definition_id"], name: "index_barbeque_job_executions_on_job_definition_id", using: :btree
     t.index ["message_id"], name: "index_barbeque_job_executions_on_message_id", unique: true, using: :btree
+    t.index ["status"], name: "index_barbeque_job_executions_on_status", using: :btree
   end
 
   create_table "barbeque_job_queues", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
@@ -77,6 +78,7 @@ ActiveRecord::Schema.define(version: 20170712075449) do
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
     t.index ["message_id"], name: "index_barbeque_job_retries_on_message_id", unique: true, using: :btree
+    t.index ["status"], name: "index_barbeque_job_retries_on_status", using: :btree
   end
 
   create_table "barbeque_slack_notifications", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
