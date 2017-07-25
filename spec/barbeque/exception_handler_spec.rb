@@ -15,7 +15,7 @@ describe Barbeque::ExceptionHandler do
     end
 
     it 'handles exception with configured handler' do
-      expect(Barbeque::ExceptionHandler::RailsLogger).to receive(:handle_exception).with(exception)
+      expect_any_instance_of(Barbeque::ExceptionHandler::RailsLogger).to receive(:handle_exception).with(exception)
       Barbeque::ExceptionHandler.handle_exception(exception)
     end
   end
