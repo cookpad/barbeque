@@ -1,3 +1,10 @@
+## v1.1.0 (2017-07-25)
+### Changes
+- Add message context to exception handler
+  - Now exception handler is able to track which message is being processed when an exception is raised
+### Bug fixes
+- Set status to running after creating related records
+
 ## v1.0.0 (2017-07-24)
 - Introduce Executor as a replacement of Runner
   - `runner` and `runner_options` is renamed to `executor` and `executor_options` respectively
