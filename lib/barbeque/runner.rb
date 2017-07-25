@@ -22,6 +22,7 @@ module Barbeque
       message = message_queue.dequeue
       return unless message
 
+      Barbeque::ExceptionHandler.set_message_context(message.id, message.type)
       handler = MessageHandler.const_get(message.type, false)
       handler.new(message: message, message_queue: message_queue).run
     end

@@ -27,6 +27,7 @@ module Barbeque
     private
 
     def poll(job_retry)
+      Barbeque::ExceptionHandler.set_message_context(job_retry.message_id, nil)
       executor = Executor.create
       executor.poll_retry(job_retry)
     end

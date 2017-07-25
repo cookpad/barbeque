@@ -1,3 +1,5 @@
+require 'barbeque/exception_handler'
+
 module Barbeque
   class ExecutionPoller
     def initialize
@@ -27,6 +29,7 @@ module Barbeque
     private
 
     def poll(job_execution)
+      Barbeque::ExceptionHandler.set_message_context(job_execution.message_id, nil)
       executor = Executor.create
       executor.poll_execution(job_execution)
     end

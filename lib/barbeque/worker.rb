@@ -1,3 +1,4 @@
+require 'barbeque/exception_handler'
 require 'barbeque/execution_poller'
 require 'barbeque/retry_poller'
 require 'barbeque/runner'
@@ -50,6 +51,7 @@ module Barbeque
         rescue => e
           Barbeque::ExceptionHandler.handle_exception(e)
         end
+        Barbeque::ExceptionHandler.clear_context
       end
     end
 
