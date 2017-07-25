@@ -29,13 +29,13 @@ module Barbeque
         cmd = build_hako_oneshot_command(docker_image, job_execution.job_definition.command, envs)
         stdout, stderr, status = Bundler.with_clean_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
         if status.success?
-          job_execution.update!(status: :running)
           cluster, task_arn = extract_task_info(stdout)
           Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: cluster, task_arn: task_arn)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
+          job_execution.update!(status: :running)
         else
-          job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
+          job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
         end
       end

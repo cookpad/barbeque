@@ -18,11 +18,11 @@ module Barbeque
         cmd = build_docker_run_command(docker_image, job_execution.job_definition.command, envs)
         stdout, stderr, status = Open3.capture3(*cmd)
         if status.success?
-          job_execution.update!(status: :running)
           Barbeque::DockerContainer.create!(message_id: job_execution.message_id, container_id: stdout.chomp)
+          job_execution.update!(status: :running)
         else
-          job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
+          job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
         end
       end
