@@ -1,3 +1,5 @@
+- content_for(:title, "Edit SNS subscription between #{@sns_subscription.topic_arn} and #{@sns_subscription.job_queue.name} - Barbeque")
+
 = render 'form'
 
 = link_to 'Back', sns_subscription_path(@sns_subscription)
