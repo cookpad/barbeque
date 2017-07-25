@@ -49,7 +49,7 @@
 
       .box-body
         - if @retry_log
-          %pre= rinku_auto_link(@retry_log['stdout'])
+          %pre= Rinku.auto_link(html_escape(@retry_log['stdout'])).html_safe
         - else
           Retry log was not found.
 
@@ -61,7 +61,7 @@
 
       .box-body
         - if @retry_log
-          %pre= rinku_auto_link(@retry_log['stderr'])
+          %pre= Rinku.auto_link(html_escape(@retry_log['stderr'])).html_safe
         - else
           Retry log was not found.
 
