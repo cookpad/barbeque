@@ -1,5 +1,5 @@
 # Gems used by Barbeque::Engine
-require 'rails_rinku'
+require 'rinku'
 
 module Barbeque
   class Engine < ::Rails::Engine

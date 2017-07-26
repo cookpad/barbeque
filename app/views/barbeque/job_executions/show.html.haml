@@ -82,7 +82,7 @@
 
       .box-body
         - if @log
-          %pre= rinku_auto_link(@log['stdout'])
+          %pre= Rinku.auto_link(html_escape(@log['stdout'])).html_safe
         - else
           Log was not found.
 
@@ -94,7 +94,7 @@
 
       .box-body
         - if @log
-          %pre= rinku_auto_link(@log['stderr'])
+          %pre= Rinku.auto_link(html_escape(@log['stderr'])).html_safe
         - else
           Log was not found.
 
