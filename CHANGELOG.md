@@ -1,3 +1,7 @@
+## v1.2.0 (2017-07-26)
+### Changes
+- Update Rails to 5.1
+
 ## v1.1.0 (2017-07-25)
 ### Changes
 - Add message context to exception handler
