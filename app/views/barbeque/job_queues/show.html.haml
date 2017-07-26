@@ -1,4 +1,9 @@
 - content_for(:title, "#{@job_queue.name} job queue - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to('Job queues', job_queues_path)
+    %li.active= @job_queue.name
 
 .box.box-primary
   .box-header

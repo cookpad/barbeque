@@ -1,4 +1,8 @@
 - content_for(:title, "Edit #{@app.name} - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to(@app.name, app_path(@app.id))
 
 = render 'form'
 

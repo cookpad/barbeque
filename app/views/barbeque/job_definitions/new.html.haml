@@ -1,4 +1,8 @@
 - content_for(:title, 'New job definition - Barbeque')
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to(@job_definition.app.name, app_path(@job_definition.app.id))
 
 = render 'form'
 

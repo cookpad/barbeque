@@ -1,4 +1,7 @@
 - content_for(:title, 'Job definitions - Barbeque')
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
 
 .box.box-primary
   .box-header

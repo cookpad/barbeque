@@ -1,4 +1,9 @@
 - content_for(:title, "Edit SNS subscription between #{@sns_subscription.topic_arn} and #{@sns_subscription.job_queue.name} - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to('SNS subscriptions', sns_subscriptions_path)
+    %li= link_to(@sns_subscription.topic_arn, sns_subscription_path(@sns_subscription.id))
 
 = render 'form'
 

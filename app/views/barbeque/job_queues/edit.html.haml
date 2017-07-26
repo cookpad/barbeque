@@ -1,4 +1,9 @@
 - content_for(:title, "Edit #{@job_queue.name} job queue - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to('Job queues', job_queues_path)
+    %li= link_to(@job_queue.name, job_queue_path(@job_queue.id))
 
 = render 'form'
 

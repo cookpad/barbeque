@@ -1,4 +1,8 @@
 - content_for(:title, 'New SNS subscription - Barbeque')
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to('SNS subscriptions', sns_subscriptions_path)
 
 = render 'form'
 

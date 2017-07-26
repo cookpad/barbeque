@@ -1,4 +1,9 @@
 - content_for(:title, "Edit job definition #{@job_definition.job} - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to(@job_definition.app.name, app_path(@job_definition.app.id))
+    %li= link_to(@job_definition.job, job_definition_path(@job_definition.id))
 
 = render 'form'
 

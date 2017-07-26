@@ -1,4 +1,8 @@
 - content_for(:title, 'SNS subscriptions - Barbeque')
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li.active SNS subscriptions
 
 .box.box-primary
   .box-header
