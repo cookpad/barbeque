@@ -1,3 +1,10 @@
+- content_for(:title, "SNS subscription between #{@sns_subscription.topic_arn} and #{@sns_subscription.job_queue.name} - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li= link_to('SNS subscriptions', sns_subscriptions_path)
+    %li.active #{@sns_subscription.topic_arn}
+
 .row
   .col-sm-7
     .box.box-primary

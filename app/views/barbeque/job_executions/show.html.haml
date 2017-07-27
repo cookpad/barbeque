@@ -1,3 +1,12 @@
+- content_for(:title, "Job execution ##{@job_execution.id} of #{@job_execution.job_definition.job} - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    - job_definition = @job_execution.job_definition
+    %li= link_to('Home', root_path)
+    %li= link_to(job_definition.app.name, app_path(job_definition.app.id))
+    %li= link_to(job_definition.job, job_definition_path(job_definition.id))
+    %li.active ##{@job_execution.id}
+
 .row
   .col-sm-7
     .box.box-primary

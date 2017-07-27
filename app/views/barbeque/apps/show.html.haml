@@ -1,3 +1,9 @@
+- content_for(:title, "#{@app.name} - Barbeque")
+- content_for(:header) do
+  %ol.breadcrumb
+    %li= link_to('Home', root_path)
+    %li.active #{@app.name}
+
 .box.box-primary
   .box-header
     %h3.box-title.with_padding
