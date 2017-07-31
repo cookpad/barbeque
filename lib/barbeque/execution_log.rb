@@ -7,7 +7,7 @@ module Barbeque
     DEFAULT_S3_BUCKET_NAME = 'barbeque'
 
     class << self
-      delegate :save_message, :save_stdout_and_stderr, :load, to: :new
+      delegate :save_message, :save_stdout_and_stderr, :try_save_stdout_and_stderr, :load, to: :new
 
       def s3_client
         @s3_client ||= Aws::S3::Client.new
@@ -26,6 +26,15 @@ module Barbeque
     def save_stdout_and_stderr(execution, stdout, stderr)
       put(execution, 'stdout.txt', stdout)
       put(execution, 'stderr.txt', stderr)
+    end
+
+    # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution
+    # @param [String] stdout
+    # @param [String] stderr
+    def try_save_stdout_and_stderr(execution, stdout, stderr)
+      save_stdout_and_stderr(execution, stdout, stderr)
+    rescue Aws::S3::Errors::ServiceError => e
+      ExceptionHandler.handle_exception(e)
     end
 
     # @param [Barbeque::JobExecution,Barbeque::JobRetry] execution

@@ -42,7 +42,7 @@ RSpec.describe Barbeque::Executor::Docker do
 
         it 'sets failed status' do
           expect(Open3).to receive(:capture3).with('docker', 'run', '--detach', job_execution.job_definition.app.docker_image, 'rake', 'test').and_return([stdout, stderr, status])
-          expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+          expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_execution, stdout, stderr)
           executor.start_execution(job_execution, {})
           job_execution.reload
           expect(job_execution).to be_failed
@@ -184,7 +184,7 @@ RSpec.describe Barbeque::Executor::Docker do
 
         it 'sets failed status' do
           expect(Open3).to receive(:capture3).with('docker', 'run', '--detach', job_execution.job_definition.app.docker_image, 'rake', 'test').and_return([stdout, stderr, status])
-          expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+          expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_retry, stdout, stderr)
           expect(job_retry).to be_pending
           expect(job_execution).to be_failed
           executor.start_retry(job_retry, {})

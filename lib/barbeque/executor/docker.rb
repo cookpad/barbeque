@@ -1,4 +1,5 @@
 require 'barbeque/docker_image'
+require 'barbeque/execution_log'
 require 'barbeque/slack_notifier'
 require 'open3'
 
@@ -21,7 +22,7 @@ module Barbeque
           Barbeque::DockerContainer.create!(message_id: job_execution.message_id, container_id: stdout.chomp)
           job_execution.update!(status: :running)
         else
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
+          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
           job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
         end
@@ -41,7 +42,7 @@ module Barbeque
             job_retry.update!(status: :running)
           end
         else
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
+          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
           Barbeque::ApplicationRecord.transaction do
             job_retry.update!(status: :failed, finished_at: Time.zone.now)
             job_execution.update!(status: :failed)
