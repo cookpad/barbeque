@@ -1,4 +1,5 @@
 require 'barbeque/docker_image'
+require 'barbeque/execution_log'
 require 'barbeque/slack_notifier'
 require 'open3'
 require 'uri'
@@ -31,10 +32,10 @@ module Barbeque
         if status.success?
           cluster, task_arn = extract_task_info(stdout)
           Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: cluster, task_arn: task_arn)
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
+          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
           job_execution.update!(status: :running)
         else
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
+          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
           job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
         end
@@ -50,13 +51,13 @@ module Barbeque
         if status.success?
           cluster, task_arn = extract_task_info(stdout)
           Barbeque::EcsHakoTask.create!(message_id: job_retry.message_id, cluster: cluster, task_arn: task_arn)
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
+          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
           Barbeque::ApplicationRecord.transaction do
             job_execution.update!(status: :retried)
             job_retry.update!(status: :running)
           end
         else
-          Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
+          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
           Barbeque::ApplicationRecord.transaction do
             job_retry.update!(status: :failed, finished_at: Time.zone.now)
             job_execution.update!(status: :failed)

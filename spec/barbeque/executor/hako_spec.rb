@@ -61,7 +61,7 @@ describe Barbeque::Executor::Hako do
       end
 
       it 'starts hako oneshot command within HAKO_DIR' do
-        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+        expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_execution, stdout, stderr)
         expect(Barbeque::EcsHakoTask.count).to eq(0)
         executor.start_execution(job_execution, envs)
         expect(Barbeque::EcsHakoTask.where(message_id: job_execution.message_id, cluster: 'barbeque', task_arn: task_arn)).to be_exists
@@ -69,7 +69,7 @@ describe Barbeque::Executor::Hako do
 
       it 'sets running status' do
         expect(job_execution).to be_pending
-        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+        expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_execution, stdout, stderr)
         executor.start_execution(job_execution, envs)
         job_execution.reload
         expect(job_execution).to be_running
@@ -81,7 +81,7 @@ describe Barbeque::Executor::Hako do
         end
 
         it 'sets failed status' do
-          expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+          expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_execution, stdout, stderr)
           executor.start_execution(job_execution, envs)
           job_execution.reload
           expect(job_execution).to be_failed
@@ -95,6 +95,21 @@ describe Barbeque::Executor::Hako do
         it 'raises error' do
           expect { executor.start_execution(job_execution, envs) }.to raise_error(Barbeque::Executor::Hako::HakoCommandError)
           expect(Barbeque::EcsHakoTask.count).to eq(0)
+        end
+      end
+
+      context 'when S3 returns error' do
+        let(:execution_log_s3_client) { double('Aws::S3::Client') }
+
+        before do
+          allow(Barbeque::ExecutionLog).to receive(:s3_client).and_return(execution_log_s3_client)
+          expect(execution_log_s3_client).to receive(:put_object).and_raise(Aws::S3::Errors::InternalError.new(nil, 'We encountered an internal error. Please try again.'))
+        end
+
+        it "doesn't fail job execution" do
+          expect(Barbeque::ExceptionHandler).to receive(:handle_exception).with(a_kind_of(Aws::S3::Errors::InternalError))
+          executor.start_execution(job_execution, envs)
+          expect(Barbeque::EcsHakoTask.where(message_id: job_execution.message_id, cluster: 'barbeque', task_arn: task_arn)).to be_exists
         end
       end
     end
@@ -201,14 +216,14 @@ describe Barbeque::Executor::Hako do
       end
 
       it 'starts hako oneshot command' do
-        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+        expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_retry, stdout, stderr)
         expect(Barbeque::EcsHakoTask.count).to eq(0)
         executor.start_retry(job_retry, envs)
         expect(Barbeque::EcsHakoTask.where(message_id: job_retry.message_id, cluster: 'barbeque', task_arn: task_arn)).to be_exists
       end
 
       it 'sets running status' do
-        expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+        expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_retry, stdout, stderr)
         expect(job_retry).to be_pending
         expect(job_execution).to be_failed
         executor.start_retry(job_retry, envs)
@@ -224,7 +239,7 @@ describe Barbeque::Executor::Hako do
         end
 
         it 'sets failed status' do
-          expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+          expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_retry, stdout, stderr)
           expect(job_retry).to be_pending
           expect(job_execution).to be_failed
           executor.start_retry(job_retry, envs)
