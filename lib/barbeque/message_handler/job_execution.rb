@@ -13,12 +13,7 @@ module Barbeque
       end
 
       def run
-        begin
-          job_execution = Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @message_queue.job_queue)
-        rescue ActiveRecord::RecordNotUnique => e
-          raise DuplicatedExecution.new(e.message)
-        end
-        Barbeque::ExecutionLog.save_message(job_execution, @message)
+        job_execution = create_job_execution
         @message_queue.delete_message(@message)
 
         begin
@@ -48,6 +43,16 @@ module Barbeque
           job: @message.job,
           barbeque_apps: { name: @message.application },
         )
+      end
+
+      def create_job_execution
+        Barbeque::JobExecution.transaction do
+          Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @message_queue.job_queue).tap do |job_execution|
+            Barbeque::ExecutionLog.save_message(job_execution, @message)
+          end
+        end
+      rescue ActiveRecord::RecordNotUnique => e
+        raise DuplicatedExecution.new(e.message)
       end
     end
   end

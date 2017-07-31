@@ -67,6 +67,17 @@ describe Barbeque::MessageHandler::JobExecution do
       end
     end
 
+    context 'when S3 returns error' do
+      before do
+        expect(Barbeque::ExecutionLog).to receive(:save_message).and_raise(Aws::S3::Errors::InternalError.new(nil, 'We encountered an internal error. Please try again.'))
+      end
+
+      it "doesn't create job_execution record" do
+        expect { handler.run }.to raise_error(Aws::S3::Errors::InternalError)
+        expect(Barbeque::JobExecution.count).to eq(0)
+      end
+    end
+
     context 'when unhandled exception is raised' do
       let(:exception) { Class.new(StandardError) }
 
