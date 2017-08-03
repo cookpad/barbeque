@@ -1,3 +1,12 @@
+## v1.2.1 (2017-08-03)
+### Bug fixes
+- Do not create job_execution record when S3 returns error
+- Ignore S3 errors when starting an execution
+
+### Improvements
+- Set descriptive title element
+- Add breadcrumbs to all pages
+
 ## v1.2.0 (2017-07-26)
 ### Changes
 - Update Rails to 5.1
