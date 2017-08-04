@@ -1,6 +1,7 @@
 require 'aws-sdk'
 require 'active_support'
 require 'active_support/core_ext'
+require 'barbeque/exception_handler'
 
 module Barbeque
   class ExecutionLog
