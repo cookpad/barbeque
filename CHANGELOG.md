@@ -1,3 +1,7 @@
+## v1.2.2 (2017-08-04)
+### Improvements
+- Extract S3 client for hako tasks
+
 ## v1.2.1 (2017-08-03)
 ### Bug fixes
 - Do not create job_execution record when S3 returns error
