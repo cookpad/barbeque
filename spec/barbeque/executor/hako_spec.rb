@@ -117,7 +117,7 @@ describe Barbeque::Executor::Hako do
     describe '#poll_execution' do
       before do
         Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: 'barbeque', task_arn: task_arn)
-        allow(executor).to receive(:s3_client).and_return(s3_client)
+        allow(executor.hako_s3_client).to receive(:s3_client).and_return(s3_client)
         job_execution.update!(status: :running)
       end
 
@@ -262,7 +262,7 @@ describe Barbeque::Executor::Hako do
     describe '#poll_retry' do
       before do
         Barbeque::EcsHakoTask.create!(message_id: job_retry.message_id, cluster: 'barbeque', task_arn: task_arn)
-        allow(executor).to receive(:s3_client).and_return(s3_client)
+        allow(executor.hako_s3_client).to receive(:s3_client).and_return(s3_client)
         job_retry.update!(status: :running)
         job_execution.update!(status: :retried)
       end

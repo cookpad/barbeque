@@ -1,14 +1,16 @@
 require 'barbeque/docker_image'
 require 'barbeque/execution_log'
+require 'barbeque/hako_s3_client'
 require 'barbeque/slack_notifier'
 require 'open3'
-require 'uri'
 
 module Barbeque
   module Executor
     class Hako
       class HakoCommandError < StandardError
       end
+
+      attr_reader :hako_s3_client
 
       # @param [String] hako_dir
       # @param [Hash] hako_env
@@ -17,10 +19,7 @@ module Barbeque
         @hako_dir = hako_dir
         @hako_env = hako_env
         @yaml_dir = yaml_dir
-        uri = URI.parse(oneshot_notification_prefix)
-        @s3_bucket = uri.host
-        @s3_prefix = uri.path.sub(%r{\A/}, '')
-        @s3_region = URI.decode_www_form(uri.query || '').to_h['region']
+        @hako_s3_client = HakoS3Client.new(oneshot_notification_prefix)
       end
 
       # @param [Barbeque::JobExecution] job_execution
@@ -69,10 +68,8 @@ module Barbeque
       # @param [Barbeque::JobExecution] job_execution
       def poll_execution(job_execution)
         hako_task = Barbeque::EcsHakoTask.find_by!(message_id: job_execution.message_id)
-        result = get_stopped_result(hako_task)
-        if result
-          detail = result.fetch('detail')
-          task = Aws::Json::Parser.new(Aws::ECS::Client.api.operation('describe_tasks').output.shape.member(:tasks).shape.member).parse(JSON.dump(detail))
+        task = @hako_s3_client.get_stopped_result(hako_task)
+        if task
           status = :failed
           task.containers.each do |container|
             if container.name == 'app'
@@ -88,10 +85,8 @@ module Barbeque
       def poll_retry(job_retry)
         hako_task = Barbeque::EcsHakoTask.find_by!(message_id: job_retry.message_id)
         job_execution = job_retry.job_execution
-        result = get_stopped_result(hako_task)
-        if result
-          detail = result.fetch('detail')
-          task = Aws::Json::Parser.new(Aws::ECS::Client.api.operation('describe_tasks').output.shape.member(:tasks).shape.member).parse(JSON.dump(detail))
+        task = @hako_s3_client.get_stopped_result(hako_task)
+        if task
           status = :failed
           task.containers.each do |container|
             if container.name == 'app'
@@ -119,21 +114,6 @@ module Barbeque
         envs.map do |key, value|
           "--env=#{key}=#{value}"
         end
-      end
-
-      def s3_key_for_stopped_result(hako_task)
-        "#{@s3_prefix}/#{hako_task.task_arn}/stopped.json"
-      end
-
-      def s3_client
-        @s3_client ||= Aws::S3::Client.new(region: @s3_region, http_read_timeout: 5)
-      end
-
-      def get_stopped_result(hako_task)
-        object = s3_client.get_object(bucket: @s3_bucket, key: s3_key_for_stopped_result(hako_task))
-        JSON.parse(object.body.read)
-      rescue Aws::S3::Errors::NoSuchKey
-        nil
       end
 
       def extract_task_info(stdout)
