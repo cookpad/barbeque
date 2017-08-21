@@ -26,13 +26,8 @@
     = link_to 'Destroy', job_queue_path(@job_queue),
       class: 'btn', method: :delete, data: { confirm: 'Are you sure to delete queue?' }
 
-.box
-  .box-header
-    %h3.box-title.with_padding
-      SQS attributes
-  .box-body
-    #sqs-attributes{data: {url: sqs_attributes_job_queue_url(@job_queue.id), metrics_url: sqs_metrics_job_queues_url}}
-      %i.loading-indicator.fa.fa-spinner.fa-spin
-    #sqs-dlq-attributes
+#sqs-attributes{data: {url: sqs_attributes_job_queue_url(@job_queue.id), metrics_url: sqs_metrics_job_queues_url}}
+  %i.loading-indicator.fa.fa-spinner.fa-spin
+#sqs-dlq-attributes
 
 = link_to 'Back', job_queues_path

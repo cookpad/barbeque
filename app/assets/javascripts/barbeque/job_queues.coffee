@@ -5,62 +5,13 @@ jQuery(($) ->
   if !sqsDiv
     return
 
-  createTable = (div, title, metricsUrl, data) =>
-    table = document.createElement('table')
-    table.classList.add('table')
-    table.classList.add('table-bordered')
-    h4 = document.createElement('h4')
-    h4.appendChild(document.createTextNode(title))
-    thead = document.createElement('thead')
-    theadTr = document.createElement('tr')
-    thead.appendChild(theadTr)
-    tbody = document.createElement('tbody')
-    tbodyTr = document.createElement('tr')
-    tbody.appendChild(tbodyTr)
-    for own name, value of data.attributes
-      th = document.createElement('th')
-      th.appendChild(document.createTextNode(name))
-      theadTr.appendChild(th)
-      td = document.createElement('td')
-      td.appendChild(document.createTextNode(value))
-      tbodyTr.appendChild(td)
-    table.appendChild(thead)
-    table.appendChild(tbody)
-
-    indicator = div.querySelector('.loading-indicator')
-    if indicator
-      indicator.parentNode.removeChild(indicator)
-    div.appendChild(h4)
-    div.appendChild(table)
-
-    metrics = {
-      NumberOfMessagesSent: 'Sum',
-      ApproximateNumberOfMessagesVisible: 'Sum',
-      ApproximateNumberOfMessagesNotVisible: 'Sum',
-      ApproximateAgeOfOldestMessage: 'Maximum',
-    }
-    row = document.createElement('div')
-    row.classList.add('row')
-    div.appendChild(row)
-    for own metricName, statistic of metrics
-      $.getJSON("#{metricsUrl}?queue_name=#{data.queue_name}&metric_name=#{metricName}&statistic=#{statistic}").done((data) =>
-        renderChart(row, data)
-      ).fail((jqxhr) =>
-        errorMessage = document.createElement('div')
-        errorMessage.classList.add('alert')
-        errorMessage.classList.add('alert-danger')
-        errorMessage.appendChild(document.createTextNode("Failed to load SQS metrics #{metricName}: #{jqxhr.status}: #{jqxhr.statusText}"))
-
-        div.appendChild(errorMessage)
-      )
-
   url = sqsDiv.dataset.url
   metricsUrl = sqsDiv.dataset.metricsUrl
   $.getJSON(url).done((data) =>
-    createTable(sqsDiv, 'Queue', metricsUrl, data)
+    renderBox(sqsDiv, 'SQS queue metrics', metricsUrl, data)
     if data.dlq
       dlqDiv = document.getElementById('sqs-dlq-attributes')
-      createTable(dlqDiv, 'Dead-letter queue', metricsUrl, data.dlq)
+      renderBox(dlqDiv, 'SQS dead-letter queue metrics', metricsUrl, data.dlq)
   ).fail((jqxhr) =>
     errorMessage = document.createElement('div')
     errorMessage.classList.add('alert')
@@ -73,6 +24,67 @@ jQuery(($) ->
     sqsDiv.appendChild(errorMessage)
   )
 )
+
+renderBox = (div, title, metricsUrl, data) =>
+  box = document.createElement('div')
+  box.classList.add('box')
+  boxHeader = document.createElement('div')
+  boxHeader.classList.add('box-header')
+  boxTitle = document.createElement('h3')
+  boxTitle.classList.add('box-title')
+  boxTitle.classList.add('with_padding')
+  boxTitle.appendChild(document.createTextNode(title))
+  boxHeader.appendChild(boxTitle)
+  boxBody = document.createElement('div')
+  boxBody.classList.add('box-body')
+  box.appendChild(boxHeader)
+  box.appendChild(boxBody)
+
+  table = document.createElement('table')
+  table.classList.add('table')
+  table.classList.add('table-bordered')
+  thead = document.createElement('thead')
+  theadTr = document.createElement('tr')
+  thead.appendChild(theadTr)
+  tbody = document.createElement('tbody')
+  tbodyTr = document.createElement('tr')
+  tbody.appendChild(tbodyTr)
+  for own name, value of data.attributes
+    th = document.createElement('th')
+    th.appendChild(document.createTextNode(name))
+    theadTr.appendChild(th)
+    td = document.createElement('td')
+    td.appendChild(document.createTextNode(value))
+    tbodyTr.appendChild(td)
+  table.appendChild(thead)
+  table.appendChild(tbody)
+  boxBody.appendChild(table)
+
+  indicator = div.querySelector('.loading-indicator')
+  if indicator
+    indicator.parentNode.removeChild(indicator)
+  div.appendChild(box)
+
+  metrics = {
+    NumberOfMessagesSent: 'Sum',
+    ApproximateNumberOfMessagesVisible: 'Sum',
+    ApproximateNumberOfMessagesNotVisible: 'Sum',
+    ApproximateAgeOfOldestMessage: 'Maximum',
+  }
+  row = document.createElement('div')
+  row.classList.add('row')
+  boxBody.appendChild(row)
+  for own metricName, statistic of metrics
+    $.getJSON("#{metricsUrl}?queue_name=#{data.queue_name}&metric_name=#{metricName}&statistic=#{statistic}").done((data) =>
+      renderChart(row, data)
+    ).fail((jqxhr) =>
+      errorMessage = document.createElement('div')
+      errorMessage.classList.add('alert')
+      errorMessage.classList.add('alert-danger')
+      errorMessage.appendChild(document.createTextNode("Failed to load SQS metrics #{metricName}: #{jqxhr.status}: #{jqxhr.statusText}"))
+
+      div.appendChild(errorMessage)
+    )
 
 renderChart = (row, data) ->
   div = document.createElement('div')
