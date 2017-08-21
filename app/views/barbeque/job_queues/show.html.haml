@@ -31,7 +31,7 @@
     %h3.box-title.with_padding
       SQS attributes
   .box-body
-    #sqs-attributes{data: {url: sqs_attributes_job_queue_url(@job_queue.id)}}
+    #sqs-attributes{data: {url: sqs_attributes_job_queue_url(@job_queue.id), metrics_url: sqs_metrics_job_queues_url}}
       %i.loading-indicator.fa.fa-spinner.fa-spin
     #sqs-dlq-attributes
 

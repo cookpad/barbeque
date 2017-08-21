@@ -5,7 +5,7 @@ jQuery(($) ->
   if !sqsDiv
     return
 
-  createTable = (div, title, data) =>
+  createTable = (div, title, metricsUrl, data) =>
     table = document.createElement('table')
     table.classList.add('table')
     table.classList.add('table-bordered')
@@ -33,12 +33,34 @@ jQuery(($) ->
     div.appendChild(h4)
     div.appendChild(table)
 
+    metrics = {
+      NumberOfMessagesSent: 'Sum',
+      ApproximateNumberOfMessagesVisible: 'Sum',
+      ApproximateNumberOfMessagesNotVisible: 'Sum',
+      ApproximateAgeOfOldestMessage: 'Maximum',
+    }
+    row = document.createElement('div')
+    row.classList.add('row')
+    div.appendChild(row)
+    for own metricName, statistic of metrics
+      $.getJSON("#{metricsUrl}?queue_name=#{data.queue_name}&metric_name=#{metricName}&statistic=#{statistic}").done((data) =>
+        renderChart(row, data)
+      ).fail((jqxhr) =>
+        errorMessage = document.createElement('div')
+        errorMessage.classList.add('alert')
+        errorMessage.classList.add('alert-danger')
+        errorMessage.appendChild(document.createTextNode("Failed to load SQS metrics #{metricName}: #{jqxhr.status}: #{jqxhr.statusText}"))
+
+        div.appendChild(errorMessage)
+      )
+
   url = sqsDiv.dataset.url
+  metricsUrl = sqsDiv.dataset.metricsUrl
   $.getJSON(url).done((data) =>
-    createTable(sqsDiv, 'Queue', data)
+    createTable(sqsDiv, 'Queue', metricsUrl, data)
     if data.dlq
       dlqDiv = document.getElementById('sqs-dlq-attributes')
-      createTable(dlqDiv, 'Dead-letter queue', data.dlq)
+      createTable(dlqDiv, 'Dead-letter queue', metricsUrl, data.dlq)
   ).fail((jqxhr) =>
     errorMessage = document.createElement('div')
     errorMessage.classList.add('alert')
@@ -51,3 +73,28 @@ jQuery(($) ->
     sqsDiv.appendChild(errorMessage)
   )
 )
+
+renderChart = (row, data) ->
+  div = document.createElement('div')
+  div.classList.add('col-md-3')
+  chartDiv = document.createElement('div')
+  div.appendChild(chartDiv)
+  div.dataset.label = data.label
+
+  # Insert charts ordered by label name
+  inserted = false
+  for child in row.children
+    if data.label < child.dataset.label
+      row.insertBefore(div, child)
+      inserted = true
+      break
+  if !inserted
+    row.appendChild(div)
+
+  Plotly.plot(chartDiv, [{
+    type: 'scatter',
+    x: data.datapoints.map((point) => point.timestamp),
+    y: data.datapoints.map((point) => point.value),
+  }], {
+    title: data.label,
+  })

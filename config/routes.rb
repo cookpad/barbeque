@@ -18,6 +18,10 @@ Barbeque::Engine.routes.draw do
     member do
       get :sqs_attributes
     end
+
+    collection do
+      get :sqs_metrics
+    end
   end
 
   resources :sns_subscriptions
