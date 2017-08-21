@@ -14,7 +14,11 @@ Barbeque::Engine.routes.draw do
     resources :job_retries, only: :show
   end
 
-  resources :job_queues
+  resources :job_queues do
+    member do
+      get :sqs_attributes
+    end
+  end
 
   resources :sns_subscriptions
 

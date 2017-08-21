@@ -44,6 +44,43 @@ class Barbeque::JobQueuesController < Barbeque::ApplicationController
     redirect_to job_queues_url, notice: 'Job queue was successfully destroyed.'
   end
 
+  def sqs_attributes
+    job_queue = Barbeque::JobQueue.find(params[:id])
+    attributes = self.class.sqs_client.get_queue_attributes(
+      queue_url: job_queue.queue_url,
+      attribute_names: %w[
+        ApproximateNumberOfMessages
+        ApproximateNumberOfMessagesNotVisible
+        RedrivePolicy
+      ],
+    ).attributes
+    dlq_metrics =
+      if attributes['RedrivePolicy']
+        dlq_arn = JSON.parse(attributes['RedrivePolicy']).fetch('deadLetterTargetArn')
+        dlq_name = queue_name_from_arn(dlq_arn)
+        dlq_url = self.class.sqs_client.get_queue_url(queue_name: dlq_name).queue_url
+        dlq_attributes = self.class.sqs_client.get_queue_attributes(
+          queue_url: dlq_url,
+          attribute_names: %w[
+            ApproximateNumberOfMessages
+            ApproximateNumberOfMessagesNotVisible
+          ],
+        ).attributes.transform_values(&:to_i)
+        {
+          attributes: dlq_attributes,
+        }
+      else
+        nil
+      end
+    render json: {
+      attributes: {
+        'ApproximateNumberOfMessages' => attributes['ApproximateNumberOfMessages'].to_i,
+        'ApproximateNumberOfMessagesNotVisible' => attributes['ApproximateNumberOfMessagesNotVisible'].to_i,
+      },
+      dlq: dlq_metrics,
+    }
+  end
+
   private
 
   # @return [Aws::SQS::Types::CreateQueueResult] A struct which has only queue_url.
@@ -54,5 +91,13 @@ class Barbeque::JobQueuesController < Barbeque::ApplicationController
         'ReceiveMessageWaitTimeSeconds' => Barbeque.config.sqs_receive_message_wait_time.to_s,
       },
     )
+  end
+
+  def self.sqs_client
+    @sqs_client ||= Aws::SQS::Client.new
+  end
+
+  def queue_name_from_arn(arn)
+    arn.slice(/[^:]+\z/)
   end
 end
