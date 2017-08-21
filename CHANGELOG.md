@@ -1,3 +1,14 @@
+## v1.3.0 (2017-08-21)
+### New features
+- Show SQS metrics in job queue page
+
+### Improvements
+- Update plotly.js to v1.29.3
+
+### Bug fixes
+- Do not truncate hover labels in /monitors chart
+- Fix Slack notification field in job definition form
+
 ## v1.2.2 (2017-08-04)
 ### Improvements
 - Extract S3 client for hako tasks
