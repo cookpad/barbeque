@@ -151,7 +151,7 @@ class Barbeque::JobQueuesController < Barbeque::ApplicationController
   end
 
   def compute_minimum_period(start_time, end_time, maximum_datapoint: 1440)
-    # - Datapoints cannot exceeds 1,440
+    # - Datapoints cannot exceed 1,440
     # - Period must be a multiple of 60
     maximum_datapoint = [maximum_datapoint, 1440].min.to_f
     minimum_period = ((end_time - start_time) / maximum_datapoint).ceil
