@@ -1,5 +1,5 @@
 jQuery ($) ->
-  return if $('.job_definitions_controller').length == 0
+  return if !document.querySelector('.barbeque_job_definitions_controller')
 
   $('.use_slack_notification').bind('change', (event) ->
     enabledField = $('.slack_notification_field')
