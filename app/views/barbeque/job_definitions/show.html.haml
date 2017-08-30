@@ -51,6 +51,20 @@
           Statistics
 
       .box-body
+        .nav-tabs-custom
+          %ul.nav.nav-tabs
+            %li.dropdown
+              %a.dropdown-toggle{href: '#', data: { toggle: 'dropdown' }}
+                Filter by status
+                %span.caret
+              %ul.dropdown-menu
+                - Barbeque::JobExecution.statuses.each do |name, value|
+                  %li{role: 'presentation'}
+                    = link_to(url_for(status: value), role: 'menuitem', class: 'active') do
+                      - if value == @status
+                        %b= name
+                      - else
+                        = name
         - if @job_executions.present?
           %table.table.table-bordered
             %thead
@@ -79,12 +93,12 @@
                           Retry
           .row
             .col-xs-4
-              = link_to url_for(page: @job_executions.prev_page),
+              = link_to url_for(request.query_parameters.merge(page: @job_executions.prev_page)),
                 class: "btn btn-default btn-sm btn-block #{'disabled' unless @job_executions.prev_page}" do
                 %i.fa.fa-angle-left
                 New
             .col-xs-4.col-xs-offset-4
-              = link_to url_for(page: @job_executions.next_page),
+              = link_to url_for(request.query_parameters.merge(page: @job_executions.next_page)),
                 class: "btn btn-default btn-sm btn-block #{'disabled' unless @job_executions.next_page}" do
                 Old
                 %i.fa.fa-angle-right
