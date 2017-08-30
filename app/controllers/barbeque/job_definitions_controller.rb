@@ -6,6 +6,10 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   def show
     @job_definition = Barbeque::JobDefinition.find(params[:id])
     @job_executions = @job_definition.job_executions.order(id: :desc).page(params[:page])
+    @status = params[:status].presence.try(&:to_i)
+    if @status
+      @job_executions = @job_executions.where(status: @status)
+    end
   end
 
   def new
