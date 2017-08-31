@@ -1,3 +1,8 @@
+## v1.4.0 (2017-08-31)
+### Improvements
+- Update aws-sdk to v3
+  - Use modularized aws-sdk gems
+
 ## v1.3.1 (2017-08-31)
 ### Improvements
 - Filter job executions by status
