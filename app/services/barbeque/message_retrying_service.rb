@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-sqs'
 
 class Barbeque::MessageRetryingService
   DEFAULT_DELAY_SECONDS = 0

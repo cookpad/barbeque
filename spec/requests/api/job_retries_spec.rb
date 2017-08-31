@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'aws-sdk'
 
 describe 'job_retries' do
   let(:result) { JSON.parse(response.body) }

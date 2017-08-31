@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'aws-sdk-core'
+require 'aws-sdk-s3'
 require 'json'
 require 'logger'
 

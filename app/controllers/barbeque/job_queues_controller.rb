@@ -1,3 +1,5 @@
+require 'aws-sdk-cloudwatch'
+require 'aws-sdk-sqs'
 require 'barbeque/config'
 
 class Barbeque::JobQueuesController < Barbeque::ApplicationController
