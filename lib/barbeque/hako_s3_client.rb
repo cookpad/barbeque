@@ -1,4 +1,6 @@
 require 'uri'
+require 'aws-sdk-ecs'
+require 'aws-sdk-s3'
 
 module Barbeque
   class HakoS3Client

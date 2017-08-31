@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-s3'
 require 'active_support'
 require 'active_support/core_ext'
 require 'barbeque/exception_handler'

@@ -17,7 +17,11 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.2.2'
 
   s.add_dependency "adminlte2-rails"
-  s.add_dependency "aws-sdk"
+  s.add_dependency "aws-sdk-cloudwatch"
+  s.add_dependency "aws-sdk-ecs"
+  s.add_dependency "aws-sdk-s3"
+  s.add_dependency "aws-sdk-sns"
+  s.add_dependency "aws-sdk-sqs"
   s.add_dependency "coffee-rails"
   s.add_dependency "hamlit"
   s.add_dependency "jquery-rails"

@@ -1,3 +1,6 @@
+require 'aws-sdk-sns'
+require 'aws-sdk-sqs'
+
 class Barbeque::SNSSubscriptionService
   def self.sqs_client
     @sqs_client ||= Aws::SQS::Client.new
