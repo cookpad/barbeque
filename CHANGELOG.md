@@ -1,3 +1,7 @@
+## v1.3.1 (2017-08-31)
+### Improvements
+- Filter job executions by status
+
 ## v1.3.0 (2017-08-21)
 ### New features
 - Show SQS metrics in job queue page
