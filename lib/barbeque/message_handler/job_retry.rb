@@ -15,12 +15,7 @@ module Barbeque
       end
 
       def run
-        begin
-          job_retry = Barbeque::JobRetry.create(message_id: @message.id, job_execution: job_execution)
-        rescue ActiveRecord::RecordNotUnique => e
-          raise DuplicatedExecution.new(e.message)
-        end
-        @message_queue.delete_message(@message)
+        job_retry = create_job_retry
 
         begin
           Executor.create.start_retry(job_retry, job_envs)
@@ -51,6 +46,16 @@ module Barbeque
           'BARBEQUE_QUEUE_NAME'  => @message_queue.job_queue.name,
           'BARBEQUE_RETRY_COUNT' => job_execution.job_retries.count.to_s,
         }
+      end
+
+      def create_job_retry
+        Barbeque::JobRetry.transaction do
+          Barbeque::JobRetry.create(message_id: @message.id, job_execution: job_execution).tap do
+            @message_queue.delete_message(@message)
+          end
+        end
+      rescue ActiveRecord::RecordNotUnique => e
+        raise DuplicatedExecution.new(e.message)
       end
     end
   end

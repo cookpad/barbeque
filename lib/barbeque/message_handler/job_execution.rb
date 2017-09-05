@@ -14,7 +14,6 @@ module Barbeque
 
       def run
         job_execution = create_job_execution
-        @message_queue.delete_message(@message)
 
         begin
           Executor.create.start_execution(job_execution, job_envs)
@@ -49,6 +48,7 @@ module Barbeque
         Barbeque::JobExecution.transaction do
           Barbeque::JobExecution.create(message_id: @message.id, job_definition: job_definition, job_queue: @message_queue.job_queue).tap do |job_execution|
             Barbeque::ExecutionLog.save_message(job_execution, @message)
+            @message_queue.delete_message(@message)
           end
         end
       rescue ActiveRecord::RecordNotUnique => e
