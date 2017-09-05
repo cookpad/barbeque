@@ -1,3 +1,7 @@
+## v1.4.1 (2017-09-05)
+### Bug fixes
+- Do not create execution record when sqs:DeleteMessage returns error
+
 ## v1.4.0 (2017-08-31)
 ### Improvements
 - Update aws-sdk to v3
