@@ -77,6 +77,17 @@ describe Barbeque::MessageHandler::JobRetry do
       end
     end
 
+    context 'when sqs:DeleteMessage returns error' do
+      before do
+        expect(message_queue).to receive(:delete_message).with(message).and_raise(Aws::SQS::Errors::InternalError.new(nil, 'We encountered an internal error. Please try again.'))
+      end
+
+      it "doesn't create job_retries record" do
+        expect { handler.run }.to raise_error(Aws::SQS::Errors::InternalError)
+        expect(Barbeque::JobRetry.count).to eq(0)
+      end
+    end
+
     context 'when unhandled exception is raised' do
       let(:exception) { Class.new(StandardError) }
 
