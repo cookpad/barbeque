@@ -24,4 +24,8 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
   def retryable?
     failed? || error?
   end
+
+  def to_param
+    message_id
+  end
 end

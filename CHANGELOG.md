@@ -1,3 +1,8 @@
+## v2.0.0 (xxxx-xx-xx)
+### Incompatibilities
+- Job execution URL was changed from `/job_executions/:id` to `/job_executions/:message_id`
+  - Barbeque v1.0 links are redirected to v2.0 links
+
 ## v1.4.1 (2017-09-05)
 ### Bug fixes
 - Do not create execution record when sqs:DeleteMessage returns error

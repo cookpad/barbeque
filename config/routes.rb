@@ -8,7 +8,7 @@ Barbeque::Engine.routes.draw do
     get :execution_stats
   end
 
-  resources :job_executions, only: :show do
+  resources :job_executions, only: :show, param: :message_id do
     post :retry
 
     resources :job_retries, only: :show
