@@ -25,7 +25,7 @@ describe 'job_executions' do
             'message_id' => job_execution.message_id,
             'status'     => status,
             'id'         => job_execution.id,
-            'html_url'   => "http://www.example.com/job_executions/#{job_execution.id}",
+            'html_url'   => "http://www.example.com/job_executions/#{job_execution.message_id}",
           )
         end
       end

@@ -19,13 +19,20 @@ describe Barbeque::JobExecutionsController do
     end
 
     it 'shows job definition' do
-      get :show, params: { id: job_execution.id }
+      get :show, params: { message_id: job_execution.message_id }
       expect(assigns(:job_execution)).to eq(job_execution)
     end
 
     it 'shows message, stdout, stderr in S3' do
-      get :show, params: { id: job_execution.id }
+      get :show, params: { message_id: job_execution.message_id }
       expect(assigns(:log)).to eq({ 'message' => message, 'stdout' => stdout, 'stderr' => stderr })
+    end
+
+    context 'with id' do
+      it 'redirects to job execution' do
+        get :show, params: { message_id: job_execution.id }
+        expect(response).to redirect_to(job_execution_path(job_execution))
+      end
     end
   end
 
@@ -46,7 +53,7 @@ describe Barbeque::JobExecutionsController do
       ).and_return(retrying_service)
 
       expect {
-        post :retry, params: { job_execution_id: job_execution.id }
+        post :retry, params: { job_execution_message_id: job_execution.message_id }
       }.to change {
         job_execution.reload.status
       }.from('failed').to('retried')
@@ -57,7 +64,7 @@ describe Barbeque::JobExecutionsController do
 
       it 'does not retry' do
         expect {
-          post :retry, params: { job_execution_id: job_execution.id }
+          post :retry, params: { job_execution_message_id: job_execution.message_id }
         }.to raise_error(ActionController::BadRequest)
       end
     end
@@ -71,7 +78,7 @@ describe Barbeque::JobExecutionsController do
         ).and_return(retrying_service)
 
         expect {
-          post :retry, params: { job_execution_id: job_execution.id }
+          post :retry, params: { job_execution_message_id: job_execution.message_id }
         }.to change {
           job_execution.reload.status
         }.from('error').to('retried')
