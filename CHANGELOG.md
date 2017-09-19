@@ -2,6 +2,7 @@
 ### Incompatibilities
 - Job execution URL was changed from `/job_executions/:id` to `/job_executions/:message_id`
   - Barbeque v1.0 links are redirected to v2.0 links
+  - Job retry URL `/job_executions/:id/job_retries/:id` is also redirected to `/job_executions/:message_id/job_retries/:id`
 
 ## v1.4.1 (2017-09-05)
 ### Bug fixes

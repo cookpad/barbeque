@@ -32,5 +32,12 @@ describe Barbeque::JobRetriesController do
       expect(assigns(:execution_log)).to eq(execution_log)
       expect(assigns(:retry_log)).to eq(retry_log)
     end
+
+    context 'when job_execution id is given' do
+      it "redirects to job_retry with job_execution's message id" do
+        get :show, params: { job_execution_message_id: job_execution.id, id: job_retry.id }
+        expect(response).to redirect_to(job_execution_job_retry_path(job_execution, job_retry))
+      end
+    end
   end
 end
