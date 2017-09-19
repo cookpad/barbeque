@@ -1,4 +1,4 @@
-## v2.0.0 (xxxx-xx-xx)
+## v2.0.0 (2017-09-19)
 ### Incompatibilities
 - Job execution URL was changed from `/job_executions/:id` to `/job_executions/:message_id`
   - Barbeque v1.0 links are redirected to v2.0 links
