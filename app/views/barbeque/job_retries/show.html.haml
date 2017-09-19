@@ -6,7 +6,7 @@
     %li= link_to('Home', root_path)
     %li= link_to(job_definition.app.name, app_path(job_definition.app.id))
     %li= link_to(job_definition.job, job_definition_path(job_definition.id))
-    %li= link_to("##{job_execution.message_id}", job_execution_path(job_execution))
+    %li= link_to(job_execution.message_id, job_execution_path(job_execution))
     %li.active ##{@job_retry.id}
 
 .row

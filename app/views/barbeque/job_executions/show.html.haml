@@ -5,7 +5,7 @@
     %li= link_to('Home', root_path)
     %li= link_to(job_definition.app.name, app_path(job_definition.app.id))
     %li= link_to(job_definition.job, job_definition_path(job_definition.id))
-    %li.active ##{@job_execution.message_id}
+    %li.active #{@job_execution.message_id}
 
 .row
   .col-sm-7
