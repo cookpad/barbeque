@@ -3,7 +3,7 @@ class Barbeque::JobExecutionsController < Barbeque::ApplicationController
 
   def show
     if ID_REGEXP === params[:message_id]
-      job_execution = Barbeque::JobExecution.find(params[:message_id])
+      job_execution = Barbeque::JobExecution.find_by(id: params[:message_id])
       if job_execution
         redirect_to(job_execution)
         return
