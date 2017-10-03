@@ -20,9 +20,9 @@ class Barbeque::MessageEnqueuingService
 
   # @return [String] message_id
   def run
-    queue = Barbeque::JobQueue.find_by!(name: @queue)
+    queue_url = Barbeque::JobQueue.queue_url_from_name(@queue)
     response = Barbeque::MessageEnqueuingService.sqs_client.send_message(
-      queue_url:    queue.queue_url,
+      queue_url:    queue_url,
       message_body: build_message.to_json,
     )
     response.message_id
