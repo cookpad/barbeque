@@ -1,3 +1,8 @@
+## v2.0.1 (2017-10-04)
+### Improvements
+- Build queue_url without database when maintenance mode is enabled
+  - See https://github.com/cookpad/barbeque/pull/58 for detail
+
 ## v2.0.0 (2017-09-19)
 ### Incompatibilities
 - Job execution URL was changed from `/job_executions/:id` to `/job_executions/:message_id`
