@@ -7,8 +7,7 @@ Job queue system to run job with Docker
 
 ## Project Status
 
-Barbeque is under development but already used on production at Cookpad.  
-Documentation is work in progress.
+Barbeque is used on production at Cookpad.
 
 ## What's Barbeque?
 
