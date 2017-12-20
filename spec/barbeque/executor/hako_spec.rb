@@ -9,7 +9,7 @@ describe Barbeque::Executor::Hako do
     described_class.new(
       hako_dir: hako_directory,
       hako_env: hako_env,
-      yaml_dir: '/yamls',
+      definition_dir: '/yamls',
       oneshot_notification_prefix: 's3://barbeque/task_statuses?region=ap-northeast-1',
     )
   end

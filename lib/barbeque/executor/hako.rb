@@ -14,11 +14,20 @@ module Barbeque
 
       # @param [String] hako_dir
       # @param [Hash] hako_env
-      # @param [String] yaml_dir
-      def initialize(hako_dir:, hako_env: {}, yaml_dir:, oneshot_notification_prefix:)
+      # @param [String] definition_dir
+      # @param [String] yaml_dir (deprecated: renamed to definition_dir)
+      def initialize(hako_dir:, hako_env: {}, yaml_dir: nil, definition_dir: nil, oneshot_notification_prefix:)
         @hako_dir = hako_dir
         @hako_env = hako_env
-        @yaml_dir = yaml_dir
+        @definition_dir =
+          if definition_dir
+            definition_dir
+          elsif yaml_dir
+            warn 'yaml_dir option is renamed to definition_dir. Please update config/barbeque.yml'
+            yaml_dir
+          else
+            raise ArgumentError.new('definition_dir is required')
+          end
         @hako_s3_client = HakoS3Client.new(oneshot_notification_prefix)
       end
 
@@ -106,7 +115,7 @@ module Barbeque
       def build_hako_oneshot_command(docker_image, command, envs)
         [
           'bundle', 'exec', 'hako', 'oneshot', '--no-wait', '--tag', docker_image.tag,
-          *env_options(envs), File.join(@yaml_dir, "#{docker_image.repository}.yml"), '--', *command,
+          *env_options(envs), File.join(@definition_dir, "#{docker_image.repository}.yml"), '--', *command,
         ]
       end
 
