@@ -113,10 +113,19 @@ module Barbeque
       private
 
       def build_hako_oneshot_command(docker_image, command, envs)
-        [
-          'bundle', 'exec', 'hako', 'oneshot', '--no-wait', '--tag', docker_image.tag,
-          *env_options(envs), File.join(@definition_dir, "#{docker_image.repository}.yml"), '--', *command,
-        ]
+        jsonnet_path = File.join(@definition_dir, "#{docker_image.repository}.jsonnet")
+        yaml_path = File.join(@definition_dir, "#{docker_image.repository}.yml")
+
+        cmd = ['bundle', 'exec', 'hako', 'oneshot', '--no-wait', '--tag', docker_image.tag, *env_options(envs)]
+        if File.readable?(jsonnet_path)
+          cmd << jsonnet_path
+        elsif File.readable?(yaml_path)
+          cmd << yaml_path
+        else
+          raise HakoCommandError.new("No definition found matching '#{docker_image.repository}' in #{@definition_dir}")
+        end
+        cmd << '--'
+        cmd.concat(command)
       end
 
       def env_options(envs)
