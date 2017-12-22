@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :slack_notification, class: Barbeque::SlackNotification do
     channel '#tech'
     notify_success false

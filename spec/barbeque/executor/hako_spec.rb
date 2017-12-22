@@ -14,9 +14,9 @@ describe Barbeque::Executor::Hako do
     )
   end
   let(:app_name) { 'dummy' }
-  let(:app) { FactoryGirl.create(:app, docker_image: app_name) }
-  let(:job_definition) { FactoryGirl.create(:job_definition, app: app, command: command) }
-  let(:job_execution) { FactoryGirl.create(:job_execution, job_definition: job_definition, status: :pending) }
+  let(:app) { FactoryBot.create(:app, docker_image: app_name) }
+  let(:job_definition) { FactoryBot.create(:job_definition, app: app, command: command) }
+  let(:job_execution) { FactoryBot.create(:job_execution, job_definition: job_definition, status: :pending) }
   let(:envs) { { 'FOO' => 'BAR' } }
   let(:task_arn) { 'arn:aws:ecs:ap-northeast-1:012345678901:task/01234567-89ab-cdef-0123-456789abcdef' }
 
@@ -138,7 +138,7 @@ describe Barbeque::Executor::Hako do
 
         context 'when successful slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: true) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: true) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)
@@ -181,7 +181,7 @@ describe Barbeque::Executor::Hako do
 
         context 'when slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: false) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)
@@ -198,7 +198,7 @@ describe Barbeque::Executor::Hako do
   end
 
   describe 'job_retry' do
-    let(:job_retry) { FactoryGirl.create(:job_retry, job_execution: job_execution, status: :pending) }
+    let(:job_retry) { FactoryBot.create(:job_retry, job_execution: job_execution, status: :pending) }
     let(:status) { double('Process::Status', success?: true) }
     let(:stdout) { JSON.dump(cluster: 'barbeque', task_arn: task_arn) }
     let(:stderr) { '' }
@@ -288,7 +288,7 @@ describe Barbeque::Executor::Hako do
 
         context 'when successful slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: true) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: true) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)
@@ -336,7 +336,7 @@ describe Barbeque::Executor::Hako do
 
         context 'when slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: false) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)

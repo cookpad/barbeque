@@ -44,9 +44,9 @@ RSpec.describe Barbeque::Runner do
         context "when there's many working executions" do
           before do
             2.times do
-              FactoryGirl.create(:job_execution, status: :running)
+              FactoryBot.create(:job_execution, status: :running)
             end
-            FactoryGirl.create(:job_execution, status: :retried)
+            FactoryBot.create(:job_execution, status: :retried)
           end
 
           it 'waits' do

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Barbeque::JobDefinition do
-  let(:job_definition) { FactoryGirl.create(:job_definition) }
+  let(:job_definition) { FactoryBot.create(:job_definition) }
 
   describe '#execution_stats' do
     let(:to) { Time.zone.now.beginning_of_hour }
@@ -9,11 +9,11 @@ RSpec.describe Barbeque::JobDefinition do
 
     before do
       # Out of range
-      FactoryGirl.create(:job_execution, job_definition_id: job_definition.id, created_at: 1.day.ago(from))
+      FactoryBot.create(:job_execution, job_definition_id: job_definition.id, created_at: 1.day.ago(from))
 
       # In range
-      FactoryGirl.create(:job_execution, job_definition_id: job_definition.id, created_at: from + 1.hour, finished_at: from + 1.hour + 10.seconds)
-      FactoryGirl.create(:job_execution, job_definition_id: job_definition.id, created_at: from + 1.hour, finished_at: from + 1.hour + 20.seconds)
+      FactoryBot.create(:job_execution, job_definition_id: job_definition.id, created_at: from + 1.hour, finished_at: from + 1.hour + 10.seconds)
+      FactoryBot.create(:job_execution, job_definition_id: job_definition.id, created_at: from + 1.hour, finished_at: from + 1.hour + 20.seconds)
     end
 
     it 'returns execution count' do

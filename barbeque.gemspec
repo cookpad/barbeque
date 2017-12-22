@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency "weak_parameters"
 
   s.add_development_dependency "autodoc"
-  s.add_development_dependency "factory_girl_rails"
+  s.add_development_dependency "factory_bot_rails"
   s.add_development_dependency "listen"
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rspec-rails"

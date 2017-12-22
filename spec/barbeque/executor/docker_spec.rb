@@ -4,8 +4,8 @@ require 'barbeque/executor/docker'
 RSpec.describe Barbeque::Executor::Docker do
   let(:executor) { described_class.new({}) }
   let(:command) { ['rake', 'test'] }
-  let(:job_definition) { FactoryGirl.create(:job_definition, command: ['rake', 'test']) }
-  let(:job_execution) { FactoryGirl.create(:job_execution, job_definition: job_definition, status: :pending) }
+  let(:job_definition) { FactoryBot.create(:job_definition, command: ['rake', 'test']) }
+  let(:job_execution) { FactoryBot.create(:job_execution, job_definition: job_definition, status: :pending) }
   let(:container_id) { '59efea4938e5d11ff6e70441d7442614dc1da014e64a8144c87a7608e27e240c' }
 
   around do |example|
@@ -85,7 +85,7 @@ RSpec.describe Barbeque::Executor::Docker do
 
         context 'when successful slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: true) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: true) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)
@@ -131,7 +131,7 @@ RSpec.describe Barbeque::Executor::Docker do
 
         context 'when slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: false) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)
@@ -150,7 +150,7 @@ RSpec.describe Barbeque::Executor::Docker do
   end
 
   describe 'job_retry' do
-    let(:job_retry) { FactoryGirl.create(:job_retry, job_execution: job_execution, status: :pending) }
+    let(:job_retry) { FactoryBot.create(:job_retry, job_execution: job_execution, status: :pending) }
     let(:status) { double('Process::Status', success?: true) }
     let(:stdout) { container_id }
     let(:stderr) { '' }
@@ -235,7 +235,7 @@ RSpec.describe Barbeque::Executor::Docker do
 
         context 'when successful slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: true) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: true) }
 
           before do
             allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
@@ -287,7 +287,7 @@ RSpec.describe Barbeque::Executor::Docker do
 
         context 'when slack_notification is configured' do
           let(:slack_client) { double('Barbeque::SlackClient') }
-          let(:slack_notification) { FactoryGirl.create(:slack_notification, notify_success: false) }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false) }
 
           before do
             job_execution.job_definition.update!(slack_notification: slack_notification)
