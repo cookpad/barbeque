@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :job_execution, class: Barbeque::JobExecution do
     message_id { SecureRandom.uuid }
     status :success

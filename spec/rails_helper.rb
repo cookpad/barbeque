@@ -5,7 +5,7 @@ require File.expand_path('../dummy/config/environment', __FILE__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
 require 'rspec/rails'
-require 'factory_girl_rails'
+require 'factory_bot_rails'
 require 'rails-controller-testing'
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -33,7 +33,7 @@ Autodoc.configuration.path = 'doc'
 Autodoc.configuration.toc  = true
 
 RSpec.configure do |config|
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false

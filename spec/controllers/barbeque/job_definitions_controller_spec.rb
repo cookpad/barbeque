@@ -186,7 +186,7 @@ describe Barbeque::JobDefinitionsController do
     context 'with SNS subscriptions' do
       let(:sns_client) { double('SNS client') }
       let(:sqs_client) { double('SQS client') }
-      let(:sns_subscription) { FactoryGirl.create(:sns_subscription, job_definition: job_definition) }
+      let(:sns_subscription) { FactoryBot.create(:sns_subscription, job_definition: job_definition) }
       let(:queue_arn) { 'arn:aws:sqs:ap-northeast-1:012345678901:barbeque-spec' }
       let(:subscription_arn) { 'arn:aws:sns:ap-northeast-1:012345678912:barbeque-spec:01234567-89ab-cdef-0123-456789abcdef' }
 
