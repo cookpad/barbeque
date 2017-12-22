@@ -1,3 +1,10 @@
+## v2.1.0 (2017-12-22)
+### Improvements
+- Support Hako definitions written in Jsonnet
+  - Jsonnet format is supported since Hako v2.0.0
+- Rename yaml_dir to definition_dir in config/barbeque.yml
+  - yaml_dir is still supported with warnings for now
+
 ## v2.0.1 (2017-10-04)
 ### Improvements
 - Build queue_url without database when maintenance mode is enabled
