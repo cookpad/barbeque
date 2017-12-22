@@ -9,7 +9,7 @@ describe Barbeque::Executor::Hako do
     described_class.new(
       hako_dir: hako_directory,
       hako_env: hako_env,
-      yaml_dir: '/yamls',
+      definition_dir: '/yamls',
       oneshot_notification_prefix: 's3://barbeque/task_statuses?region=ap-northeast-1',
     )
   end
@@ -52,6 +52,8 @@ describe Barbeque::Executor::Hako do
       let(:stderr) { '' }
 
       before do
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.jsonnet").and_return(false)
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.yml").and_return(true)
         expect(Open3).to receive(:capture3).with(
           hako_env,
           'bundle', 'exec', 'hako', 'oneshot', '--no-wait', '--tag', 'latest',
@@ -207,6 +209,8 @@ describe Barbeque::Executor::Hako do
 
     describe '#start_retry' do
       before do
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.jsonnet").and_return(false)
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.yml").and_return(true)
         expect(Open3).to receive(:capture3).with(
           hako_env,
           'bundle', 'exec', 'hako', 'oneshot', '--no-wait', '--tag', 'latest',
