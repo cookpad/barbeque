@@ -6,6 +6,8 @@ require 'serverengine'
 
 module Barbeque
   module Worker
+    DEFAULT_QUEUE = ENV['BARBEQUE_DEFAULT_QUEUE'] || 'default'
+
     class UnexpectedMessageType < StandardError; end
 
     def self.run(
@@ -32,14 +34,17 @@ module Barbeque
     end
 
     def initialize
+      queue_name = ENV['BARBEQUE_QUEUE'] || DEFAULT_QUEUE
+      queue      = Barbeque::JobQueue.find_by!(name: queue_name)
+
       @command =
         case worker_id
         when 0
-          ExecutionPoller.new
+          ExecutionPoller.new(queue)
         when 1
-          RetryPoller.new
+          RetryPoller.new(queue)
         else
-          Runner.new
+          Runner.new(queue)
         end
     end
 

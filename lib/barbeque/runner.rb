@@ -10,10 +10,8 @@ module Barbeque
   # it to message handler.
 
   class Runner
-    DEFAULT_QUEUE = 'default'
-
-    def initialize(queue_name: ENV['BARBEQUE_QUEUE'] || DEFAULT_QUEUE)
-      @job_queue = Barbeque::JobQueue.find_by!(name: queue_name)
+    def initialize(job_queue)
+      @job_queue = job_queue
     end
 
     def run

@@ -24,6 +24,12 @@ describe Barbeque::Worker do
   end
   let(:worker) { worker_class.new }
 
+  around do |example|
+    ENV['BARBEQUE_QUEUE'], original = job_queue.name, ENV['BARBEQUE_QUEUE']
+    example.run
+    ENV['BARBEQUE_QUEUE'] = original
+  end
+
   before do
     allow(Barbeque::MessageQueue).to receive(:new).and_return(message_queue)
     allow(Barbeque::MessageHandler::JobExecution).to receive(:new).with(message: message, message_queue: message_queue).and_return(job)
@@ -33,29 +39,35 @@ describe Barbeque::Worker do
     let(:message) { double('Barbeque::Message::Base', body: message_body, id: message_id, type: 'JobExecution') }
 
     context 'with worker_id = 0' do
+      let(:execution_poller) { Barbeque::ExecutionPoller.new(job_queue) }
+
       before do
         worker_class.worker_id = 0
+        allow(Barbeque::ExecutionPoller).to receive(:new).and_return(execution_poller)
       end
 
       it 'runs ExecutionPoller' do
-        expect_any_instance_of(Barbeque::ExecutionPoller).to receive(:run)
+        expect(execution_poller).to receive(:run)
         worker.execute_command
       end
     end
 
     context 'with worker_id = 1' do
+      let(:retry_poller) { Barbeque::RetryPoller.new(job_queue) }
+
       before do
         worker_class.worker_id = 1
+        allow(Barbeque::RetryPoller).to receive(:new).and_return(retry_poller)
       end
 
       it 'runs RetryPoller' do
-        expect_any_instance_of(Barbeque::RetryPoller).to receive(:run)
+        expect(retry_poller).to receive(:run)
         worker.execute_command
       end
     end
 
     context 'with worker_id >= 2' do
-      let(:runner) { Barbeque::Runner.new(queue_name: job_queue.name) }
+      let(:runner) { Barbeque::Runner.new(job_queue) }
 
       before do
         worker_class.worker_id = 2

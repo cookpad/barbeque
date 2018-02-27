@@ -1,13 +1,15 @@
 require 'barbeque/exception_handler'
+require 'barbeque/executor'
 
 module Barbeque
   class ExecutionPoller
-    def initialize
+    def initialize(job_queue)
+      @job_queue      = job_queue
       @stop_requested = false
     end
 
     def run
-      Barbeque::JobExecution.running.find_in_batches do |job_executions|
+      @job_queue.job_executions.running.find_in_batches do |job_executions|
         job_executions.shuffle.each do |job_execution|
           if @stop_requested
             return

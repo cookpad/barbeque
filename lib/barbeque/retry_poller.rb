@@ -1,11 +1,19 @@
+require 'barbeque/exception_handler'
+require 'barbeque/executor'
+
 module Barbeque
   class RetryPoller
-    def initialize
+    def initialize(job_queue)
+      @job_queue      = job_queue
       @stop_requested = false
     end
 
     def run
-      Barbeque::JobRetry.running.find_in_batches do |job_retries|
+      Barbeque::JobRetry
+        .joins(:job_execution)
+        .running
+        .where("#{Barbeque::JobExecution.table_name}.job_queue_id = #{@job_queue.id}")
+        .find_in_batches do |job_retries|
         job_retries.shuffle.each do |job_retry|
           if @stop_requested
             return
