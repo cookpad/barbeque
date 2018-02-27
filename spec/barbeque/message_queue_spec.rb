@@ -4,7 +4,7 @@ require 'barbeque/worker'
 describe Barbeque::MessageQueue do
   describe '#dequeue' do
     let(:job_queue) { create(:job_queue) }
-    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue) }
     let(:client) { double('Aws::SQS::Client') }
     let(:result) { Aws::SQS::Types::ReceiveMessageResult.new(messages: [raw_message]) }
     let(:message_id) { SecureRandom.uuid }

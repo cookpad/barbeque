@@ -13,7 +13,7 @@ module Barbeque
     DEFAULT_QUEUE = 'default'
 
     def initialize(queue_name: ENV['BARBEQUE_QUEUE'] || DEFAULT_QUEUE)
-      @queue_name = queue_name
+      @job_queue = Barbeque::JobQueue.find_by!(name: queue_name)
     end
 
     def run
@@ -34,7 +34,7 @@ module Barbeque
     private
 
     def message_queue
-      @message_queue ||= MessageQueue.new(@queue_name)
+      @message_queue ||= MessageQueue.new(@job_queue)
     end
 
     def keep_maximum_concurrent_executions
@@ -45,7 +45,7 @@ module Barbeque
       end
 
       loop do
-        current_num = Barbeque::JobExecution.where(status: [:running, :retried]).count
+        current_num = @job_queue.job_executions.where(status: [:running, :retried]).count
         if current_num < max_num
           return
         end

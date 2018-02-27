@@ -13,7 +13,7 @@ describe Barbeque::MessageHandler::Notification do
         }
       )
     end
-    let(:message_queue) { Barbeque::MessageQueue.new(sns_subscription.job_queue.name) }
+    let(:message_queue) { Barbeque::MessageQueue.new(sns_subscription.job_queue) }
 
     it 'creates Notification message handler from Notification message' do
       handler = Barbeque::MessageHandler::Notification.new(message: message, message_queue: message_queue)

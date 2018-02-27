@@ -2,7 +2,8 @@ require 'rails_helper'
 require 'barbeque/runner'
 
 RSpec.describe Barbeque::Runner do
-  let(:runner) { described_class.new }
+  let(:job_queue) { create(:job_queue) }
+  let(:runner) { described_class.new(queue_name: job_queue.name) }
   let(:message_body) do
     JSON.dump(
       'Type' => 'JobExecution',
@@ -44,9 +45,9 @@ RSpec.describe Barbeque::Runner do
         context "when there's many working executions" do
           before do
             2.times do
-              FactoryBot.create(:job_execution, status: :running)
+              FactoryBot.create(:job_execution, status: :running, job_queue: job_queue)
             end
-            FactoryBot.create(:job_execution, status: :retried)
+            FactoryBot.create(:job_execution, status: :retried, job_queue: job_queue)
           end
 
           it 'waits' do

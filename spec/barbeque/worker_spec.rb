@@ -55,12 +55,15 @@ describe Barbeque::Worker do
     end
 
     context 'with worker_id >= 2' do
+      let(:runner) { Barbeque::Runner.new(queue_name: job_queue.name) }
+
       before do
         worker_class.worker_id = 2
+        allow(Barbeque::Runner).to receive(:new).and_return(runner)
       end
 
       it 'runs Runner' do
-        expect_any_instance_of(Barbeque::Runner).to receive(:run)
+        expect(runner).to receive(:run)
         worker.execute_command
       end
 
