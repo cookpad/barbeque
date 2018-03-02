@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180226171602) do
+ActiveRecord::Schema.define(version: 20170724025542) do
 
   create_table "barbeque_apps", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
     t.string   "name",                       null: false
@@ -57,7 +57,6 @@ ActiveRecord::Schema.define(version: 20180226171602) do
     t.datetime "finished_at"
     t.integer  "job_queue_id"
     t.index ["job_definition_id"], name: "index_barbeque_job_executions_on_job_definition_id", using: :btree
-    t.index ["job_queue_id", "status"], name: "index_barbeque_job_executions_on_job_queue_id_and_status", using: :btree
     t.index ["message_id"], name: "index_barbeque_job_executions_on_message_id", unique: true, using: :btree
     t.index ["status"], name: "index_barbeque_job_executions_on_status", using: :btree
   end
