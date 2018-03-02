@@ -6,8 +6,8 @@ module Barbeque
   class MessageQueue
     attr_reader :job_queue
 
-    def initialize(queue_name)
-      @job_queue = Barbeque::JobQueue.find_by!(name: queue_name)
+    def initialize(job_queue)
+      @job_queue = job_queue
       @messages  = []
       @stop      = false
     end

@@ -5,7 +5,7 @@ describe Barbeque::MessageHandler::JobRetry do
   describe '#run' do
     let(:handler) { Barbeque::MessageHandler::JobRetry.new(message: message, message_queue: message_queue) }
     let(:job_queue) { create(:job_queue) }
-    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue) }
     let(:job_definition) { create(:job_definition) }
     let(:job_execution) { create(:job_execution, status: :failed, job_definition: job_definition, job_queue: job_queue) }
     let(:message) do

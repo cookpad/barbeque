@@ -2,6 +2,7 @@ class Barbeque::JobQueue < Barbeque::ApplicationRecord
   SQS_NAME_PREFIX = ENV['BARBEQUE_SQS_NAME_PREFIX'] || 'Barbeque-'
   SQS_NAME_MAX_LENGTH = 80
 
+  has_many :job_executions, dependent: :destroy
   has_many :sns_subscriptions, class_name: 'SNSSubscription', dependent: :destroy
 
   # SQS queue allows [a-zA-Z0-9_-]+ as queue name. Its maximum length is 80.

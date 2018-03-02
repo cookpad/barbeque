@@ -6,7 +6,7 @@ describe Barbeque::MessageHandler::JobExecution do
     let(:handler) { Barbeque::MessageHandler::JobExecution.new(message: message, message_queue: message_queue) }
     let(:job_definition) { create(:job_definition) }
     let(:job_queue)      { create(:job_queue) }
-    let(:message_queue) { Barbeque::MessageQueue.new(job_queue.name) }
+    let(:message_queue) { Barbeque::MessageQueue.new(job_queue) }
     let(:message) do
       Barbeque::Message::JobExecution.new(
         Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle'),
