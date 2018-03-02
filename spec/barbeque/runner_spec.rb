@@ -3,7 +3,7 @@ require 'barbeque/runner'
 
 RSpec.describe Barbeque::Runner do
   let(:job_queue) { create(:job_queue) }
-  let(:runner) { described_class.new(queue_name: job_queue.name) }
+  let(:runner) { described_class.new(job_queue) }
   let(:message_body) do
     JSON.dump(
       'Type' => 'JobExecution',
