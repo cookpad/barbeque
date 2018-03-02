@@ -12,7 +12,7 @@ module Barbeque
       Barbeque::JobRetry
         .joins(:job_execution)
         .running
-        .where("#{Barbeque::JobExecution.table_name}.job_queue_id = #{@job_queue.id}")
+        .merge(Barbeque::JobExecution.where(job_queue: @job_queue))
         .find_in_batches do |job_retries|
         job_retries.shuffle.each do |job_retry|
           if @stop_requested
