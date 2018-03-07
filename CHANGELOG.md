@@ -1,3 +1,12 @@
+## v2.2.0 (2018-03-07)
+### Changes
+- Limit concurrent executions per job queue
+  - `maximum_concurrent_executions` was applied to all job executions regardless of job queues.
+  - Now `maximum_concurrent_executions` is applied to each job queue.
+- Poll job executions and job retries only of the specified queue
+  - All execution pollers ware polling all job execution/retry statuses.
+  - Now execution pollers poll execution/retry statuses of their own job queue.
+
 ## v2.1.0 (2017-12-22)
 ### Improvements
 - Support Hako definitions written in Jsonnet
