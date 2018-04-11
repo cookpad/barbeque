@@ -3,21 +3,40 @@ class Barbeque::MonitorsController < Barbeque::ApplicationController
     hour_sql = "date_format(#{Barbeque::JobExecution.table_name}.created_at, '%Y-%m-%d %H:00:00')"
     now = Time.zone.now
     from = 6.hours.ago(now.beginning_of_hour)
-    rows = Barbeque::JobExecution.
-      joins(job_definition: :app).
-      where(created_at: from .. now).
-      group("#{hour_sql}, #{Barbeque::JobDefinition.table_name}.id").
-      pluck("#{hour_sql}, #{Barbeque::App.table_name}.id, #{Barbeque::App.table_name}.name, #{Barbeque::JobDefinition.table_name}.id, #{Barbeque::JobDefinition.table_name}.job, count(1)")
+    rows = Barbeque::JobExecution.find_by_sql([<<SQL.strip_heredoc, from, now]).map(&:attributes)
+    select
+      t.date_hour
+      , app.id as app_id
+      , app.name as app_name
+      , def.id as job_id
+      , def.job as job_name
+      , t.cnt
+    from
+      (
+        select
+          date_format(e.created_at, '%Y-%m-%d %H:00:00') as date_hour
+          , e.job_definition_id
+          , count(1) as cnt
+        from #{Barbeque::JobExecution.table_name} e
+        where
+          e.created_at between ? and ?
+        group by
+          date_hour
+          , e.job_definition_id
+      ) t
+      inner join #{Barbeque::JobDefinition.table_name} def on def.id = t.job_definition_id
+      inner join #{Barbeque::App.table_name} app on app.id = def.app_id
+SQL
 
     jobs = {}
-    rows.each do |_, app_id, app_name, job_id, job_name, _|
+    rows.each do |row|
       job = {
-        app_id: app_id,
-        app_name: app_name,
-        job_id: job_id,
-        job_name: job_name,
+        app_id: row.fetch('app_id'),
+        app_name: row.fetch('app_name'),
+        job_id: row.fetch('job_id'),
+        job_name: row.fetch('job_name'),
       }
-      jobs[job_id] = job
+      jobs[job[:job_id]] = job
     end
 
     @recently_processed_jobs = {}
@@ -30,9 +49,10 @@ class Barbeque::MonitorsController < Barbeque::ApplicationController
       t += 1.hour
     end
 
-    rows.each do |date_hour, _, _, job_id, _, count|
-      date_hour = Time.zone.parse("#{date_hour} UTC")
-      @recently_processed_jobs[date_hour][job_id] = jobs[job_id].merge(count: count)
+    rows.each do |row|
+      date_hour = Time.zone.parse("#{row.fetch('date_hour')} UTC")
+      job_id = row.fetch('job_id')
+      @recently_processed_jobs[date_hour][job_id] = jobs[job_id].merge(count: row.fetch('cnt'))
     end
   end
 end
