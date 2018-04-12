@@ -1,6 +1,5 @@
 class Barbeque::MonitorsController < Barbeque::ApplicationController
   def index
-    hour_sql = "date_format(#{Barbeque::JobExecution.table_name}.created_at, '%Y-%m-%d %H:00:00')"
     now = Time.zone.now
     from = 6.hours.ago(now.beginning_of_hour)
     rows = Barbeque::JobExecution.find_by_sql([<<SQL.strip_heredoc, from, now]).map(&:attributes)
