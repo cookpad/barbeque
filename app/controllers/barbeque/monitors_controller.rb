@@ -30,13 +30,14 @@ SQL
 
     jobs = {}
     rows.each do |row|
+      job_id = row.fetch('job_id')
       job = {
         app_id: row.fetch('app_id'),
         app_name: row.fetch('app_name'),
-        job_id: row.fetch('job_id'),
+        job_id: job_id,
         job_name: row.fetch('job_name'),
       }
-      jobs[job[:job_id]] = job
+      jobs[job_id] = job
     end
 
     @recently_processed_jobs = {}
