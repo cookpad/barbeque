@@ -1,3 +1,8 @@
+## v2.3.0 (2018-04-12)
+### Changes
+- Add index to barbeque_job_executions.created_at
+  - Be careful when you have large number of records in barbeque_job_executions table.
+
 ## v2.2.0 (2018-03-07)
 ### Changes
 - Limit concurrent executions per job queue
