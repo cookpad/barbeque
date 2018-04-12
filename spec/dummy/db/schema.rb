@@ -12,90 +12,90 @@
 
 ActiveRecord::Schema.define(version: 20170724025542) do
 
-  create_table "barbeque_apps", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "name",                       null: false
-    t.string   "docker_image",               null: false
-    t.text     "description",  limit: 65535
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.index ["name"], name: "index_barbeque_apps_on_name", unique: true, using: :btree
-  end
-
-  create_table "barbeque_docker_containers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "message_id",   null: false
-    t.string   "container_id", null: false
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-    t.index ["message_id"], name: "index_barbeque_docker_containers_on_message_id", unique: true, using: :btree
-  end
-
-  create_table "barbeque_ecs_hako_tasks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "message_id", null: false
-    t.string   "cluster",    null: false
-    t.string   "task_arn",   null: false
+  create_table "barbeque_apps", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "name", null: false
+    t.string "docker_image", null: false
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["message_id"], name: "index_barbeque_ecs_hako_tasks_on_message_id", unique: true, using: :btree
+    t.index ["name"], name: "index_barbeque_apps_on_name", unique: true
   end
 
-  create_table "barbeque_job_definitions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "job",                       null: false
-    t.integer  "app_id",                    null: false
-    t.string   "command",                   null: false
-    t.text     "description", limit: 65535
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.index ["job", "app_id"], name: "index_barbeque_job_definitions_on_job_and_app_id", unique: true, using: :btree
+  create_table "barbeque_docker_containers", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "message_id", null: false
+    t.string "container_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_barbeque_docker_containers_on_message_id", unique: true
   end
 
-  create_table "barbeque_job_executions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "message_id",                    null: false
-    t.integer  "status",            default: 0, null: false
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.integer  "job_definition_id"
+  create_table "barbeque_ecs_hako_tasks", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "message_id", null: false
+    t.string "cluster", null: false
+    t.string "task_arn", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_barbeque_ecs_hako_tasks_on_message_id", unique: true
+  end
+
+  create_table "barbeque_job_definitions", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "job", null: false
+    t.integer "app_id", null: false
+    t.string "command", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job", "app_id"], name: "index_barbeque_job_definitions_on_job_and_app_id", unique: true
+  end
+
+  create_table "barbeque_job_executions", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "message_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "job_definition_id"
     t.datetime "finished_at"
-    t.integer  "job_queue_id"
-    t.index ["job_definition_id"], name: "index_barbeque_job_executions_on_job_definition_id", using: :btree
-    t.index ["message_id"], name: "index_barbeque_job_executions_on_message_id", unique: true, using: :btree
-    t.index ["status"], name: "index_barbeque_job_executions_on_status", using: :btree
+    t.integer "job_queue_id"
+    t.index ["job_definition_id"], name: "index_barbeque_job_executions_on_job_definition_id"
+    t.index ["message_id"], name: "index_barbeque_job_executions_on_message_id", unique: true
+    t.index ["status"], name: "index_barbeque_job_executions_on_status"
   end
 
-  create_table "barbeque_job_queues", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "name",                      null: false
-    t.text     "description", limit: 65535
-    t.string   "queue_url",                 null: false
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.index ["name"], name: "index_barbeque_job_queues_on_name", unique: true, using: :btree
+  create_table "barbeque_job_queues", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "queue_url", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_barbeque_job_queues_on_name", unique: true
   end
 
-  create_table "barbeque_job_retries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.string   "message_id",                   null: false
-    t.integer  "job_execution_id",             null: false
-    t.integer  "status",           default: 0, null: false
+  create_table "barbeque_job_retries", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.string "message_id", null: false
+    t.integer "job_execution_id", null: false
+    t.integer "status", default: 0, null: false
     t.datetime "finished_at"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.index ["message_id"], name: "index_barbeque_job_retries_on_message_id", unique: true, using: :btree
-    t.index ["status"], name: "index_barbeque_job_retries_on_status", using: :btree
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_barbeque_job_retries_on_message_id", unique: true
   end
 
-  create_table "barbeque_slack_notifications", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
-    t.integer  "job_definition_id"
-    t.string   "channel",                                   null: false
-    t.boolean  "notify_success",            default: false, null: false
-    t.string   "failure_notification_text"
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+  create_table "barbeque_slack_notifications", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+    t.integer "job_definition_id"
+    t.string "channel", null: false
+    t.boolean "notify_success", default: false, null: false
+    t.string "failure_notification_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "barbeque_sns_subscriptions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "topic_arn",         null: false
-    t.integer  "job_queue_id",      null: false
-    t.integer  "job_definition_id", null: false
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+  create_table "barbeque_sns_subscriptions", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "topic_arn", null: false
+    t.integer "job_queue_id", null: false
+    t.integer "job_definition_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["topic_arn"], name: "index_barbeque_sns_subscriptions_on_topic_arn", unique: true
   end
 
 end
