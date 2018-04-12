@@ -19,7 +19,7 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
     from = from.beginning_of_hour
     to = to.beginning_of_hour
     stats = Hash.new { |h, k| h[k] = { count: 0, avg_time: 0 } }
-    job_executions.where(created_at: from .. to).group(DATE_HOUR_SQL).order(DATE_HOUR_SQL).pluck("#{DATE_HOUR_SQL}, count(1), avg(timestampdiff(second, created_at, finished_at))").each do |date_hour, count, avg_time|
+    job_executions.where(created_at: from .. to).group(DATE_HOUR_SQL).order(Arel.sql(DATE_HOUR_SQL)).pluck(Arel.sql("#{DATE_HOUR_SQL}, count(1), avg(timestampdiff(second, created_at, finished_at))")).each do |date_hour, count, avg_time|
       time = Time.zone.parse("#{date_hour} UTC")
       stats[time] = {
         count: count,
