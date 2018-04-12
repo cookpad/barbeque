@@ -1,6 +1,6 @@
 require 'garage'
 
-class Barbeque::Api::ApplicationController < ActionController::Base
+class Barbeque::Api::ApplicationController < ActionController::API
   include Garage::ControllerHelper
 
   rescue_from ActiveRecord::RecordNotFound do |exception|
