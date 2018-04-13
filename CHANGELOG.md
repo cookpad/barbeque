@@ -1,3 +1,7 @@
+## v2.4.0 (2018-04-13)
+### Changes
+- Update Rails to 5.2
+
 ## v2.3.0 (2018-04-12)
 ### Changes
 - Add index to barbeque_job_executions.created_at
