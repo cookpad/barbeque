@@ -8,7 +8,7 @@ Enqueues a message to retry a specified message.
 
 #### Request
 ```
-POST /v1/job_executions/aad5f81d-99d0-43ce-b294-b24f35569848/retries HTTP/1.1
+POST /v1/job_executions/de79c839-1952-4b24-9afc-7651070202ad/retries HTTP/1.1
 Accept: application/json
 Content-Length: 0
 Content-Type: application/json
@@ -21,15 +21,12 @@ HTTP/1.1 201
 Cache-Control: max-age=0, private, must-revalidate
 Content-Length: 72
 Content-Type: application/json; charset=utf-8
-ETag: W/"f841b1a72e241c4a187ba74447f78349"
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Request-Id: 8b1ccd38-1f5e-4b2b-abcd-21a55d1b4864
-X-Runtime: 0.012412
-X-XSS-Protection: 1; mode=block
+ETag: W/"9002f23876371ddabaf452d6b814473f"
+X-Request-Id: e96d66f9-b6d8-42b2-8df4-e5b2df61085a
+X-Runtime: 0.005293
 
 {
-  "message_id": "780e8972-a466-4f9d-9a8a-3a1409b85450",
+  "message_id": "e18bc218-370e-4b8c-a586-732fcb53ea3d",
   "status": "pending"
 }
 ```

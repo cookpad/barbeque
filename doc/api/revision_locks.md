@@ -8,7 +8,7 @@ Updates a tag of docker_image.
 
 #### Request
 ```
-POST /v1/apps/app-52/revision_lock HTTP/1.1
+POST /v1/apps/app-104/revision_lock HTTP/1.1
 Accept: application/json
 Content-Length: 55
 Content-Type: application/json
@@ -26,11 +26,8 @@ Cache-Control: max-age=0, private, must-revalidate
 Content-Length: 55
 Content-Type: application/json; charset=utf-8
 ETag: W/"a3f0b3d8c32ee1e318357b5276e50a3c"
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Request-Id: 82f9d82a-d887-4ebe-b784-bd3865b057ae
-X-Runtime: 0.011747
-X-XSS-Protection: 1; mode=block
+X-Request-Id: 3173b89d-b5ce-4464-af51-6d17684cf3de
+X-Runtime: 0.008263
 
 {
   "revision": "798926db1e623cd51245b70b1f1acb40d780ddc1"
@@ -44,7 +41,7 @@ Updates a tag of docker_image.
 
 #### Request
 ```
-DELETE /v1/apps/app-54/revision_lock HTTP/1.1
+DELETE /v1/apps/app-106/revision_lock HTTP/1.1
 Accept: application/json
 Content-Length: 0
 Content-Type: application/json
@@ -55,9 +52,6 @@ Host: www.example.com
 ```
 HTTP/1.1 204
 Cache-Control: no-cache
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Request-Id: 68cbf752-1e39-4a2d-b26a-3ea65694f5bb
-X-Runtime: 0.008371
-X-XSS-Protection: 1; mode=block
+X-Request-Id: b968f324-529b-4b79-a3e7-70f0f6b01e48
+X-Runtime: 0.003531
 ```

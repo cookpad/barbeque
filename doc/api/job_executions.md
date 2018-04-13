@@ -5,7 +5,7 @@ Shows a status of a job_execution.
 
 #### Request
 ```
-GET /v1/job_executions/a0cb3899-f458-4389-bc45-f3e1380ebe94 HTTP/1.1
+GET /v1/job_executions/15aca944-317a-41e0-b516-11b521b112bc HTTP/1.1
 Accept: application/json
 Content-Length: 0
 Content-Type: application/json
@@ -18,17 +18,14 @@ HTTP/1.1 200
 Cache-Control: max-age=0, private, must-revalidate
 Content-Length: 81
 Content-Type: application/json; charset=utf-8
-ETag: W/"fd6c1c7a7d062a6d47b978a65ced9d08"
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Request-Id: afbf03b0-450f-49d5-8741-14906ff4495e
-X-Runtime: 0.011198
-X-XSS-Protection: 1; mode=block
+ETag: W/"acc93d8f520e4573bb3d45e21e012e61"
+X-Request-Id: 61b69fa5-8c82-4a61-b724-87ebc017860b
+X-Runtime: 0.008871
 
 {
-  "message_id": "a0cb3899-f458-4389-bc45-f3e1380ebe94",
+  "message_id": "15aca944-317a-41e0-b516-11b521b112bc",
   "status": "success",
-  "id": 277
+  "id": 676
 }
 ```
 
@@ -39,7 +36,7 @@ Shows url to job_execution.
 
 #### Request
 ```
-GET /v1/job_executions/f3e3b7a2-3517-47d4-aa58-8e531c2bfa3b?fields=__default__,html_url HTTP/1.1
+GET /v1/job_executions/2dd71a56-4739-4fcc-9e0b-84ff54aca52a?fields=__default__,html_url HTTP/1.1
 Accept: application/json
 Content-Length: 0
 Content-Type: application/json
@@ -50,20 +47,17 @@ Host: www.example.com
 ```
 HTTP/1.1 200
 Cache-Control: max-age=0, private, must-revalidate
-Content-Length: 136
+Content-Length: 169
 Content-Type: application/json; charset=utf-8
-ETag: W/"4c1e26dbc5c441e68ced4559ae1ca13c"
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Request-Id: 9eef7915-4054-4494-8c2d-6f9312c208f6
-X-Runtime: 0.005148
-X-XSS-Protection: 1; mode=block
+ETag: W/"974f9e490c2546d3eae7c2a472c9a807"
+X-Request-Id: bc484f21-85a4-414e-aca0-ecac8e088858
+X-Runtime: 0.003213
 
 {
-  "message_id": "f3e3b7a2-3517-47d4-aa58-8e531c2bfa3b",
+  "message_id": "2dd71a56-4739-4fcc-9e0b-84ff54aca52a",
   "status": "success",
-  "id": 278,
-  "html_url": "http://www.example.com/job_executions/278"
+  "id": 677,
+  "html_url": "http://www.example.com/job_executions/2dd71a56-4739-4fcc-9e0b-84ff54aca52a"
 }
 ```
 
@@ -82,14 +76,14 @@ Enqueues a job execution.
 ```
 POST /v2/job_executions HTTP/1.1
 Accept: application/json
-Content-Length: 88
+Content-Length: 89
 Content-Type: application/json
 Host: www.example.com
 
 {
   "application": "blog",
   "job": "NotifyAuthor",
-  "queue": "queue-45",
+  "queue": "queue-101",
   "message": {
     "recipe_id": 1
   }
@@ -102,15 +96,12 @@ HTTP/1.1 201
 Cache-Control: max-age=0, private, must-revalidate
 Content-Length: 82
 Content-Type: application/json; charset=utf-8
-ETag: W/"989676f33ea349525dc206be62f5fa74"
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Request-Id: fe0b4e31-3e13-40b8-a7bc-25c99a1bc912
-X-Runtime: 0.005131
-X-XSS-Protection: 1; mode=block
+ETag: W/"f0b0641b47334a8d8a7aca05c315bc9f"
+X-Request-Id: 6f7344d8-c99e-48f3-a573-ce6a4e74eb76
+X-Runtime: 0.002492
 
 {
-  "message_id": "ea17fa06-9581-4252-9f42-7474e16ab679",
+  "message_id": "7a21b14d-64d2-42ad-a482-00088f48aa47",
   "status": "pending",
   "id": null
 }
