@@ -29,6 +29,29 @@ describe 'job_executions' do
           )
         end
       end
+
+      context 'when requested with fields=message', :autodoc do
+        let(:execution_log) do
+          { 'message' => message, 'stdout' => '', 'stderr' => '' }
+        end
+        let(:message) do
+          { 'recipe_id' => 12345 }
+        end
+
+        before do
+          allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return(execution_log)
+        end
+
+        it 'returns message of the job_execution' do
+          get "/v1/job_executions/#{job_execution.message_id}?fields=__default__,message", env: env
+          expect(result).to eq(
+            'message_id' => job_execution.message_id,
+            'status' => status,
+            'id' => job_execution.id,
+            'message' => message,
+          )
+        end
+      end
     end
 
     context 'when job_execution does not exist' do
@@ -51,6 +74,18 @@ describe 'job_executions' do
             'status'     => 'pending',
             'id'         => nil,
             'html_url'   => nil,
+          )
+        end
+      end
+
+      context 'when requested with fields=message' do
+        it "returns nil message" do
+          get "/v1/job_executions/#{message_id}?fields=__default__,message", env: env
+          expect(result).to eq(
+            'message_id' => message_id,
+            'status' => 'pending',
+            'id' => nil,
+            'message' => nil,
           )
         end
       end
