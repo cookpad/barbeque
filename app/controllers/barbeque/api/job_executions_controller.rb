@@ -8,6 +8,10 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
     any :message, required: true, description: 'Free-format JSON'
   end
 
+  rescue_from Barbeque::MessageEnqueuingService::BadRequest do |exc|
+    render status: 400, json: { error: exc.message }
+  end
+
   private
 
   def require_resources
