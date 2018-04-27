@@ -38,6 +38,11 @@ And deploy it as you like.
 
 You also need to prepare MySQL, Amazon SQS and Amazon S3.
 
+#### For sandbox environment
+Barbeque's enqueue API tries to be independent of MySQL by design.
+Although that design policy, verifying the enqueued job is useful in some environment (such as sandboxed environment).
+Passing `BARBEQUE_VERIFY_ENQUEUED_JOBS=1` to the Web API server enables the feature that verifies the enqueued job by accessing MySQL.
+
 ### Worker
 
 ```bash

@@ -147,5 +147,44 @@ describe 'job_executions' do
         )
       end
     end
+
+    context 'when BARBEQUE_VERIFY_ENQUEUED_JOBS is enabled' do
+      before do
+        stub_const('Barbeque::MessageEnqueuingService::VERIFY_ENQUEUED_JOBS', '1')
+      end
+
+      context 'without valid job definition' do
+        it 'returns 400' do
+          post '/v2/job_executions', params: params.to_json, env: env
+          expect(response).to have_http_status(400)
+          expect(result).to match('error' => String)
+        end
+      end
+
+      context 'with valid job definition' do
+        before do
+          app = FactoryBot.create(:app, name: application)
+          FactoryBot.create(:job_definition, app: app, job: job)
+        end
+
+        it 'enqueues a job execution' do
+          expect(Barbeque::MessageEnqueuingService).to receive(:new).with(
+            application: application,
+            job: job,
+            queue: job_queue.name,
+            message: ActionController::Parameters.new(message),
+          ).and_return(enqueuing_service)
+          expect(enqueuing_service).to receive(:run).and_return(message_id)
+
+          post '/v2/job_executions', params: params.to_json, env: env
+          expect(response).to have_http_status(201)
+          expect(result).to eq(
+            'message_id' => message_id,
+            'status' => 'pending',
+            'id' => nil,
+          )
+        end
+      end
+    end
   end
 end
