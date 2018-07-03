@@ -44,6 +44,6 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
   private
 
   def fetch_sns_topic_arns
-    Barbeque::SNSSubscriptionService.sns_client.list_topics.topics.map(&:topic_arn)
+    Barbeque::SNSSubscriptionService.sns_client.list_topics.flat_map(&:topics).map(&:topic_arn)
   end
 end
