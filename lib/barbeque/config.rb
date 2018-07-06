@@ -3,7 +3,7 @@ require 'yaml'
 
 module Barbeque
   class Config
-    attr_accessor :exception_handler, :executor, :executor_options, :sqs_receive_message_wait_time, :maximum_concurrent_executions, :runner_wait_seconds
+    attr_accessor :exception_handler, :executor, :executor_options, :sqs_receive_message_wait_time, :maximum_concurrent_executions, :runner_wait_seconds, :sns_regions
 
     def initialize(options = {})
       options.each do |key, value|
@@ -27,6 +27,7 @@ module Barbeque
       # nil means unlimited
       'maximum_concurrent_executions' => nil,
       'runner_wait_seconds' => 10,
+      'sns_regions' => [],
     }
 
     def config
