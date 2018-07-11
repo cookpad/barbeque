@@ -9,7 +9,7 @@ module Barbeque
       presence: true
 
     def region
-      /\Aarn:aws:sns:([a-z0-9-]+):/.match(topic_arn)[1]
+      topic_arn.slice(/\Aarn:aws:sns:([a-z0-9-]+):/, 1)
     end
   end
 end
