@@ -5,7 +5,7 @@ describe Barbeque::SnsSubscriptionsController do
 
   before do
     allow(Barbeque::SNSSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
-    allow(Aws::SNS::Client).to receive(:new).with(region: 'ap-northeast-1').and_return(sns_client)
+    allow(Barbeque::SNSSubscriptionService).to receive(:sns_client).with('ap-northeast-1').and_return(sns_client)
   end
 
   describe '#create' do

@@ -1,5 +1,3 @@
-require 'aws-sdk-sns'
-
 class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
   def index
     @sns_subscriptions = Barbeque::SNSSubscription.all
@@ -47,10 +45,10 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
 
   def fetch_sns_topic_arns
     if Barbeque.config.sns_regions.empty?
-      Aws::SNS::Client.new.list_topics.flat_map(&:topics).map(&:topic_arn)
+      Barbeque::SNSSubscriptionService.sns_client.list_topics.flat_map(&:topics).map(&:topic_arn)
     else
       Barbeque.config.sns_regions.flat_map do |region|
-        Aws::SNS::Client.new(region: region).list_topics.flat_map(&:topics).map(&:topic_arn)
+        Barbeque::SNSSubscriptionService.sns_client(region).list_topics.flat_map(&:topics).map(&:topic_arn)
       end
     end
   end

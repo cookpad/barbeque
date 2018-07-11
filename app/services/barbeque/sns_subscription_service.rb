@@ -6,6 +6,11 @@ class Barbeque::SNSSubscriptionService
     @sqs_client ||= Aws::SQS::Client.new
   end
 
+  def self.sns_client(region = nil)
+    @sns_clients ||= {}
+    @sns_clients[region] ||= Aws::SNS::Client.new(region: region)
+  end
+
   # @param [Barbeque::SNSSubscription] sns_subscription
   # @return [Boolean] `true` if succeeded to subscribe
   def subscribe(sns_subscription)
@@ -38,7 +43,11 @@ class Barbeque::SNSSubscriptionService
   private
 
   def sqs_client
-    Barbeque::SNSSubscriptionService.sqs_client
+    self.class.sqs_client
+  end
+
+  def sns_client(region)
+    self.class.sns_client(region)
   end
 
   # @param [Barbeque::SNSSubscription] sns_subscription
@@ -90,8 +99,7 @@ class Barbeque::SNSSubscriptionService
     )
     queue_arn = sqs_attrs.attributes['QueueArn']
 
-    sns_client = Aws::SNS::Client.new(region: sns_subscription.region)
-    sns_client.subscribe(
+    sns_client(sns_subscription.region).subscribe(
       topic_arn: sns_subscription.topic_arn,
       protocol: 'sqs',
       endpoint: queue_arn
@@ -106,15 +114,13 @@ class Barbeque::SNSSubscriptionService
     )
     queue_arn = sqs_attrs.attributes['QueueArn']
 
-    sns_client = Aws::SNS::Client.new(region: sns_subscription.region)
-
-    subscriptions = sns_client.list_subscriptions_by_topic(
+    subscriptions = sns_client(sns_subscription.region).list_subscriptions_by_topic(
       topic_arn: sns_subscription.topic_arn,
     )
     subscription_arn = subscriptions.subscriptions.find {|subscription| subscription.endpoint == queue_arn }.try!(:subscription_arn)
 
     if subscription_arn
-      sns_client.unsubscribe(
+      sns_client(sns_subscription.region).unsubscribe(
         subscription_arn: subscription_arn,
       )
     end
