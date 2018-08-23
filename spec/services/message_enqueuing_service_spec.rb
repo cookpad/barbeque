@@ -31,7 +31,6 @@ describe Barbeque::MessageEnqueuingService do
         queue:   job_queue.name,
         message: message,
         application: application,
-        delay_seconds: nil,
       ).run
       expect(result).to eq(message_id)
     end
@@ -47,7 +46,6 @@ describe Barbeque::MessageEnqueuingService do
             queue:   queue_name,
             message: message,
             application: application,
-            delay_seconds: nil,
           ).run
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
@@ -72,7 +70,6 @@ describe Barbeque::MessageEnqueuingService do
           queue: job_queue.name,
           message: message,
           application: application,
-          delay_seconds: nil,
         ).run
         expect(result).to eq(message_id)
       end

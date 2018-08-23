@@ -16,7 +16,7 @@ class Barbeque::MessageEnqueuingService
   # @param [Object] message
   # @param [String] queue
   # @param [Integer, nil] delay_seconds
-  def initialize(application:, job:, message:, queue: nil, delay_seconds:)
+  def initialize(application:, job:, message:, queue: nil, delay_seconds: nil)
     @application = application
     @job         = job
     @queue       = queue || DEFAULT_QUEUE
