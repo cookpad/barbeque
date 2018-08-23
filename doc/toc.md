@@ -4,6 +4,7 @@
  * [GET /v1/job_executions/:message_id](api/job_executions.md#get-v1job_executionsmessage_id-1)
  * [GET /v1/job_executions/:message_id](api/job_executions.md#get-v1job_executionsmessage_id-2)
  * [POST /v2/job_executions](api/job_executions.md#post-v2job_executions)
+ * [POST /v2/job_executions](api/job_executions.md#post-v2job_executions-1)
 * [api/job_retries.md](api/job_retries.md)
  * [POST /v1/job_executions/:job_execution_message_id/retries](api/job_retries.md#post-v1job_executionsjob_execution_message_idretries)
 * [api/revision_locks.md](api/revision_locks.md)
