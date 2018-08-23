@@ -115,6 +115,7 @@ describe 'job_executions' do
         job:     job,
         queue:   job_queue.name,
         message: ActionController::Parameters.new(message),
+        delay_seconds: nil,
       ).and_return(enqueuing_service)
       expect(enqueuing_service).to receive(:run).and_return(message_id)
 
@@ -173,6 +174,7 @@ describe 'job_executions' do
             job: job,
             queue: job_queue.name,
             message: ActionController::Parameters.new(message),
+            delay_seconds: nil,
           ).and_return(enqueuing_service)
           expect(enqueuing_service).to receive(:run).and_return(message_id)
 
@@ -184,6 +186,33 @@ describe 'job_executions' do
             'id' => nil,
           )
         end
+      end
+    end
+
+    context 'with delay_seconds' do
+      let(:delay_seconds) { 300 }
+
+      before do
+        params[:delay_seconds] = delay_seconds
+      end
+
+      it 'enqueues a job execution with delay_seconds', :autodoc do
+        expect(Barbeque::MessageEnqueuingService).to receive(:new).with(
+          application: application,
+          job:     job,
+          queue:   job_queue.name,
+          message: ActionController::Parameters.new(message),
+          delay_seconds: delay_seconds,
+        ).and_return(enqueuing_service)
+        expect(enqueuing_service).to receive(:run).and_return(message_id)
+
+        post '/v2/job_executions', params: params.to_json, env: env
+        expect(response).to have_http_status(201)
+        expect(result).to eq({
+          'message_id' => message_id,
+          'status'     => 'pending',
+          'id'         => nil,
+        })
       end
     end
   end

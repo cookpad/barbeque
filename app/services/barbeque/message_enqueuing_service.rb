@@ -15,11 +15,13 @@ class Barbeque::MessageEnqueuingService
   # @param [String] job
   # @param [Object] message
   # @param [String] queue
-  def initialize(application:, job:, message:, queue: nil)
+  # @param [Integer, nil] delay_seconds
+  def initialize(application:, job:, message:, queue: nil, delay_seconds: nil)
     @application = application
     @job         = job
     @queue       = queue || DEFAULT_QUEUE
     @message     = message
+    @delay_seconds = delay_seconds
   end
 
   # @return [String] message_id
@@ -33,8 +35,11 @@ class Barbeque::MessageEnqueuingService
     response = Barbeque::MessageEnqueuingService.sqs_client.send_message(
       queue_url:    queue_url,
       message_body: build_message.to_json,
+      delay_seconds: @delay_seconds,
     )
     response.message_id
+  rescue Aws::SQS::Errors::InvalidParameterValue => e
+    raise BadRequest.new(e.message)
   end
 
   private

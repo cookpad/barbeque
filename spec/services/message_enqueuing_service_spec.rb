@@ -23,6 +23,7 @@ describe Barbeque::MessageEnqueuingService do
           'Job'         => job,
           'Message'     => message,
         }.to_json,
+        delay_seconds: nil,
       ).and_return(send_message_result)
 
       result = Barbeque::MessageEnqueuingService.new(
@@ -71,6 +72,61 @@ describe Barbeque::MessageEnqueuingService do
           application: application,
         ).run
         expect(result).to eq(message_id)
+      end
+    end
+
+    context 'with delay_seconds' do
+      let(:delay_seconds) { 300 }
+
+      it 'enqueues a message with delay_seconds' do
+        expect(sqs_client).to receive(:send_message).with(
+          queue_url: job_queue.queue_url,
+          message_body: {
+            'Type'        => 'JobExecution',
+            'Application' => application,
+            'Job'         => job,
+            'Message'     => message,
+          }.to_json,
+          delay_seconds: delay_seconds,
+        ).and_return(send_message_result)
+
+        result = Barbeque::MessageEnqueuingService.new(
+          job:     job,
+          queue:   job_queue.name,
+          message: message,
+          application: application,
+          delay_seconds: delay_seconds,
+        ).run
+        expect(result).to eq(message_id)
+      end
+
+      context 'with too large delay_seconds' do
+        let(:delay_seconds) { 6000 }
+        let(:invalid_parameter_value_exception) do
+          Aws::SQS::Errors::InvalidParameterValue.new(nil, "Value #{delay_seconds} for parameter DelaySeconds is invalid. Reason: DelaySeconds must be >= 0 and <= 900.")
+        end
+
+        it 'raises BadRequest' do
+          expect(sqs_client).to receive(:send_message).with(
+            queue_url: job_queue.queue_url,
+            message_body: {
+              'Type'        => 'JobExecution',
+              'Application' => application,
+              'Job'         => job,
+              'Message'     => message,
+            }.to_json,
+            delay_seconds: delay_seconds,
+          ).and_raise(invalid_parameter_value_exception)
+
+          service = Barbeque::MessageEnqueuingService.new(
+            job:     job,
+            queue:   job_queue.name,
+            message: message,
+            application: application,
+            delay_seconds: delay_seconds,
+          )
+          expect { service.run }.to raise_error(Barbeque::MessageEnqueuingService::BadRequest)
+        end
       end
     end
   end

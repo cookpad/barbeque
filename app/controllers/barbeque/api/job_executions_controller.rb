@@ -6,6 +6,7 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
     string :job, required: true, description: 'Class of Job to be enqueued'
     string :queue, required: true, description: 'Queue name to enqueue a job'
     any :message, required: true, description: 'Free-format JSON'
+    integer :delay_seconds, description: 'Set message timer of SQS'
   end
 
   rescue_from Barbeque::MessageEnqueuingService::BadRequest do |exc|
@@ -36,6 +37,7 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
       job:         params[:job],
       queue:       params[:queue],
       message:     params[:message],
+      delay_seconds: params[:delay_seconds],
     ).run
   end
 
