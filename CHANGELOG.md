@@ -1,3 +1,13 @@
+## v2.5.0 (2018-08-24)
+### New features
+- Add selectable `message` field to `GET /v1/job_executions/:message_id` response
+- Add `BARBEQUE_VERIFY_ENQUEUED_JOBS` flag to API server which enables the feature that verifies the enqueued job by accessing MySQL
+- Add `delay_seconds` parameter to support SQS's delay_seconds
+  - This also supports ActiveJob's enqueue_at method.
+
+### Bug fixes
+- Show all SNS topics in /sns_subscriptions/new
+
 ## v2.4.0 (2018-04-13)
 ### Changes
 - Update Rails to 5.2
