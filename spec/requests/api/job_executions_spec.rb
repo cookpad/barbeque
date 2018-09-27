@@ -90,6 +90,45 @@ describe 'job_executions' do
         end
       end
     end
+
+    context 'when database maintenance mode' do
+      around do |example|
+        env = ENV.to_h
+        ENV['BARBEQUE_DATABASE_MAINTENANCE'] = '1'
+        ENV['AWS_REGION'] = 'ap-northeast-1'
+        ENV['AWS_ACCOUNT_ID'] = '123456789012'
+        example.run
+        ENV.replace(env)
+      end
+
+      let!(:job_execution) { FactoryBot.create(:job_execution) }
+
+      context 'when database is available' do
+        it 'returns execution status' do
+          get "/v1/job_executions/#{job_execution.message_id}", env: env
+          expect(response).to have_http_status(200)
+          expect(result).to eq(
+            'message_id' => job_execution.message_id,
+            'status' => job_execution.status,
+            'id' => job_execution.id,
+          )
+        end
+      end
+
+      context 'when database is unavailable', :autodoc do
+        before do
+          allow_any_instance_of(Mysql2::Client).to receive(:query).and_raise(Mysql2::Error::ConnectionError.new("Can't connect to MySQL server"))
+        end
+
+        it 'returns error message' do
+          get "/v1/job_executions/#{job_execution.message_id}", env: env
+          expect(response).to have_http_status(503)
+          expect(result).to match(
+            'message' => a_kind_of(String),
+          )
+        end
+      end
+    end
   end
 
   describe 'POST /v2/job_executions' do

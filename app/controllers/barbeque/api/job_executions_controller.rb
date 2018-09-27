@@ -1,3 +1,5 @@
+require 'barbeque/maintenance'
+
 class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationController
   include Garage::RestfulActions
 
@@ -22,6 +24,13 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
   def require_resource
     model = Barbeque::JobExecution.find_or_initialize_by(message_id: params[:message_id])
     @resource = Barbeque::Api::JobExecutionResource.new(model, url_options)
+  rescue ActiveRecord::StatementInvalid, Mysql2::Error::ConnectionError => e
+    if Barbeque::Maintenance.database_maintenance_mode?
+      Barbeque::ExceptionHandler.handle_exception(e)
+      @resource = Barbeque::Api::DatabaseMaintenanceResource.new(e)
+    else
+      raise e
+    end
   end
 
   def create_resource
@@ -47,6 +56,14 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
       super
     else
       nil
+    end
+  end
+
+  def respond_with_resource_options
+    if @resource.is_a?(Barbeque::Api::DatabaseMaintenanceResource)
+      super.merge(status: 503)
+    else
+      super
     end
   end
 end
