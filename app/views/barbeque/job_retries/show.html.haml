@@ -1,12 +1,10 @@
-- content_for(:title, "Job retry ##{@job_retry.id} of #{@job_retry.job_execution.job_definition.job} - Barbeque")
+- content_for(:title, "Job retry ##{@job_retry.id} of #{@job_definition.job} - Barbeque")
 - content_for(:header) do
   %ol.breadcrumb
-    - job_execution = @job_retry.job_execution
-    - job_definition = job_execution.job_definition
     %li= link_to('Home', root_path)
-    %li= link_to(job_definition.app.name, app_path(job_definition.app.id))
-    %li= link_to(job_definition.job, job_definition_path(job_definition.id))
-    %li= link_to(job_execution.message_id, job_execution_path(job_execution))
+    %li= link_to(@app.name, app_path(@app.id))
+    %li= link_to(@job_definition.job, job_definition_path(@job_definition.id))
+    %li= link_to(@job_execution.message_id, job_execution_path(@job_execution))
     %li.active ##{@job_retry.id}
 
 .row
@@ -17,8 +15,8 @@
           .col-md-10
             %h3.box-title.with_padding
               Retry ##{@job_retry.id} of
-              = link_to @job_retry.job_definition do
-                #{@job_retry.job_definition.job}
+              = link_to @job_definition do
+                #{@job_definition.job}
               = link_to @job_execution do
                 \##{@job_execution.id}
 

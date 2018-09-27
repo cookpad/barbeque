@@ -175,12 +175,12 @@ describe Barbeque::JobDefinitionsController do
       create(:job_execution, job_definition: job_definition)
     end
 
-    it 'destroys a requested app and its executions' do
+    it 'destroys a requested app' do
       expect {
         delete :destroy, params: { id: job_definition.id }
       }.to change {
         [Barbeque::JobDefinition.count, Barbeque::JobExecution.count]
-      }.from([1, 1]).to([0, 0])
+      }.from([1, 1]).to([0, 1])
     end
 
     context 'with SNS subscriptions' do

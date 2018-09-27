@@ -10,6 +10,9 @@ class Barbeque::JobExecutionsController < Barbeque::ApplicationController
       end
     end
     @job_execution = Barbeque::JobExecution.find_by!(message_id: params[:message_id])
+    # Return 404 when job_definition or app is deleted
+    @job_definition = Barbeque::JobDefinition.find(@job_execution.job_definition_id)
+    @app = Barbeque::App.find(@job_definition.app_id)
     @log = @job_execution.execution_log
     @job_retries = @job_execution.job_retries.order(id: :desc)
   end

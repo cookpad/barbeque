@@ -1,10 +1,9 @@
-- content_for(:title, "Job execution ##{@job_execution.id} of #{@job_execution.job_definition.job} - Barbeque")
+- content_for(:title, "Job execution ##{@job_execution.id} of #{@job_definition.job} - Barbeque")
 - content_for(:header) do
   %ol.breadcrumb
-    - job_definition = @job_execution.job_definition
     %li= link_to('Home', root_path)
-    %li= link_to(job_definition.app.name, app_path(job_definition.app.id))
-    %li= link_to(job_definition.job, job_definition_path(job_definition.id))
+    %li= link_to(@app.name, app_path(@app.id))
+    %li= link_to(@job_definition.job, job_definition_path(@job_definition.id))
     %li.active #{@job_execution.message_id}
 
 .row
@@ -15,12 +14,12 @@
           .col-md-10
             %h3.box-title.with_padding
               \##{@job_execution.id} of
-              = link_to @job_execution.job_definition do
-                #{@job_execution.job_definition.job}
+              = link_to @job_definition do
+                #{@job_definition.job}
           - if @job_execution.retryable?
             .col-md-2
               = link_to job_execution_retry_path(@job_execution), method: :post, class: 'btn btn-default btn-block pull-right',
-                data: { disable_with: 'retrying...', confirm: "Are you sure to retry #{@job_execution.job_definition.job} ##{@job_execution.id}?" } do
+                data: { disable_with: 'retrying...', confirm: "Are you sure to retry #{@job_definition.job} ##{@job_execution.id}?" } do
                 Retry
 
       .box-body
@@ -107,4 +106,4 @@
         - else
           Log was not found.
 
-= link_to 'Back', job_definition_path(@job_execution.job_definition)
+= link_to 'Back', job_definition_path(@job_definition)
