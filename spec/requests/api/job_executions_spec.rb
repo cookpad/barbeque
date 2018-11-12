@@ -19,13 +19,20 @@ describe 'job_executions' do
       end
 
       context 'when requested with fields=html_url', :autodoc do
+        around do |example|
+          original = ENV['BARBEQUE_HOST']
+          ENV['BARBEQUE_HOST'] = 'https://barbeque'
+          example.run
+          ENV['BARBEQUE_HOST'] = original
+        end
+
         it 'shows url to job_execution' do
           get "/v1/job_executions/#{job_execution.message_id}?fields=__default__,html_url", env: env
           expect(result).to eq(
             'message_id' => job_execution.message_id,
             'status'     => status,
             'id'         => job_execution.id,
-            'html_url'   => "http://www.example.com/job_executions/#{job_execution.message_id}",
+            'html_url'   => "https://barbeque/job_executions/#{job_execution.message_id}",
           )
         end
       end

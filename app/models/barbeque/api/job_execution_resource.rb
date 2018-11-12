@@ -7,14 +7,9 @@ class Barbeque::Api::JobExecutionResource < Barbeque::Api::ApplicationResource
 
   delegate :message_id, :status, :id, to: :model
 
-  def initialize(model, url_options)
-    super(model)
-    @url_options = url_options
-  end
-
   def html_url
     if model.id
-      Barbeque::Engine.routes.url_helpers.job_execution_url(model, @url_options)
+      Barbeque::Engine.routes.url_helpers.job_execution_url(model, host: ENV['BARBEQUE_HOST'])
     else
       nil
     end

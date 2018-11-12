@@ -23,7 +23,7 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
 
   def require_resource
     model = Barbeque::JobExecution.find_or_initialize_by(message_id: params[:message_id])
-    @resource = Barbeque::Api::JobExecutionResource.new(model, url_options)
+    @resource = Barbeque::Api::JobExecutionResource.new(model)
   rescue ActiveRecord::StatementInvalid, Mysql2::Error::ConnectionError => e
     if Barbeque::Maintenance.database_maintenance_mode?
       Barbeque::ExceptionHandler.handle_exception(e)
@@ -36,7 +36,7 @@ class Barbeque::Api::JobExecutionsController < Barbeque::Api::ApplicationControl
   def create_resource
     message_id = enqueue_message
     model = Barbeque::JobExecution.new(message_id: message_id)
-    @resource = Barbeque::Api::JobExecutionResource.new(model, url_options)
+    @resource = Barbeque::Api::JobExecutionResource.new(model)
   end
 
   # @return [String] id of a message queued to SQS.
