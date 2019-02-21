@@ -36,6 +36,13 @@
                   Yes (#{@job_definition.slack_notification.channel})
                 - else
                   No
+            %tr
+              %th Retry configuration
+              %td
+                - if @retry_config
+                  Yes (retry_limit=#{@retry_config.retry_limit} base_delay=#{@retry_config.base_delay} max_delay=#{@retry_config.max_delay || '+inf'} jitter=#{@retry_config.jitter ? 'enabled' : 'disabled'})
+                - else
+                  No
 
         = link_to 'Edit', edit_job_definition_path(@job_definition), class: 'btn btn-primary'
         = link_to 'Destroy', job_definition_path(@job_definition),

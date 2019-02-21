@@ -19,6 +19,7 @@ describe Barbeque::Executor::Hako do
   let(:job_execution) { FactoryBot.create(:job_execution, job_definition: job_definition, status: :pending) }
   let(:envs) { { 'FOO' => 'BAR' } }
   let(:task_arn) { 'arn:aws:ecs:ap-northeast-1:012345678901:task/01234567-89ab-cdef-0123-456789abcdef' }
+  let(:sqs_client) { instance_double(Aws::SQS::Client) }
 
   let(:s3_client) { double('Aws::S3::Client') }
   let(:stopped_info) do
@@ -43,6 +44,10 @@ describe Barbeque::Executor::Hako do
     ENV['BARBEQUE_HOST'] = 'https://barbeque'
     example.run
     ENV['BARBEQUE_HOST'] = original
+  end
+
+  before do
+    allow(Barbeque::MessageRetryingService).to receive(:sqs_client).and_return(sqs_client)
   end
 
   describe 'job_execution' do
@@ -88,6 +93,21 @@ describe Barbeque::Executor::Hako do
           job_execution.reload
           expect(job_execution).to be_failed
           expect(Barbeque::EcsHakoTask.count).to eq(0)
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_execution, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            executor.start_execution(job_execution, envs)
+            job_execution.reload
+            expect(job_execution).to be_retried
+            expect(Barbeque::EcsHakoTask.count).to eq(0)
+          end
         end
       end
 
@@ -193,6 +213,20 @@ describe Barbeque::Executor::Hako do
             executor.poll_execution(job_execution)
           end
         end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(job_execution).to be_running
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            executor.poll_execution(job_execution)
+            job_execution.reload
+            expect(job_execution).to be_retried
+          end
+        end
       end
     end
   end
@@ -251,6 +285,24 @@ describe Barbeque::Executor::Hako do
           job_execution.reload
           expect(job_retry).to be_failed
           expect(job_execution).to be_failed
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_retry, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(job_retry).to be_pending
+            expect(job_execution).to be_failed
+            executor.start_retry(job_retry, envs)
+            job_retry.reload
+            job_execution.reload
+            expect(job_retry).to be_failed
+            expect(job_execution).to be_retried
+          end
         end
       end
 
@@ -346,6 +398,23 @@ describe Barbeque::Executor::Hako do
           it 'sends slack notification' do
             expect(slack_client).to receive(:notify_failure)
             executor.poll_retry(job_retry)
+          end
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(job_retry).to be_running
+            expect(job_execution).to be_retried
+            executor.poll_retry(job_retry)
+            job_retry.reload
+            job_execution.reload
+            expect(job_retry).to be_failed
+            expect(job_execution).to be_retried
           end
         end
       end

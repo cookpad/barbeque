@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180411070937) do
+ActiveRecord::Schema.define(version: 2019_02_21_050714) do
 
-  create_table "barbeque_apps", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_apps", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.string "docker_image", null: false
     t.text "description"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["name"], name: "index_barbeque_apps_on_name", unique: true
   end
 
-  create_table "barbeque_docker_containers", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_docker_containers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "message_id", null: false
     t.string "container_id", null: false
     t.datetime "created_at", null: false
@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["message_id"], name: "index_barbeque_docker_containers_on_message_id", unique: true
   end
 
-  create_table "barbeque_ecs_hako_tasks", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_ecs_hako_tasks", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "message_id", null: false
     t.string "cluster", null: false
     t.string "task_arn", null: false
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["message_id"], name: "index_barbeque_ecs_hako_tasks_on_message_id", unique: true
   end
 
-  create_table "barbeque_job_definitions", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_job_definitions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "job", null: false
     t.integer "app_id", null: false
     t.string "command", null: false
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["job", "app_id"], name: "index_barbeque_job_definitions_on_job_and_app_id", unique: true
   end
 
-  create_table "barbeque_job_executions", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_job_executions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "message_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["status"], name: "index_barbeque_job_executions_on_status"
   end
 
-  create_table "barbeque_job_queues", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_job_queues", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
     t.string "queue_url", null: false
@@ -71,7 +71,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["name"], name: "index_barbeque_job_queues_on_name", unique: true
   end
 
-  create_table "barbeque_job_retries", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_job_retries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "message_id", null: false
     t.integer "job_execution_id", null: false
     t.integer "status", default: 0, null: false
@@ -81,7 +81,18 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.index ["message_id"], name: "index_barbeque_job_retries_on_message_id", unique: true
   end
 
-  create_table "barbeque_slack_notifications", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC" do |t|
+  create_table "barbeque_retry_configs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.integer "job_definition_id", null: false
+    t.integer "retry_limit", default: 3, null: false
+    t.float "base_delay", default: 0.3, null: false
+    t.integer "max_delay"
+    t.boolean "jitter", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_definition_id"], name: "index_barbeque_retry_configs_on_job_definition_id", unique: true
+  end
+
+  create_table "barbeque_slack_notifications", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "job_definition_id"
     t.string "channel", null: false
     t.boolean "notify_success", default: false, null: false
@@ -90,7 +101,7 @@ ActiveRecord::Schema.define(version: 20180411070937) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "barbeque_sns_subscriptions", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "barbeque_sns_subscriptions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "topic_arn", null: false
     t.integer "job_queue_id", null: false
     t.integer "job_definition_id", null: false

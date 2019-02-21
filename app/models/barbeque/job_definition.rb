@@ -3,6 +3,7 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   has_many :job_executions
   has_many :sns_subscriptions, class_name: 'SNSSubscription'
   has_one :slack_notification, dependent: :destroy
+  has_one :retry_config, dependent: :destroy
 
   validates :job, uniqueness: { scope: :app_id }
 
@@ -12,6 +13,7 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   serialize :command, Array
 
   accepts_nested_attributes_for :slack_notification, allow_destroy: true
+  accepts_nested_attributes_for :retry_config, allow_destroy: true
 
   DATE_HOUR_SQL = 'date_format(created_at, "%Y-%m-%d %H:00:00")'
 

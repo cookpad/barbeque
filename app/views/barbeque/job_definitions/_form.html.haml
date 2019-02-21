@@ -40,6 +40,7 @@
           = f.text_area :description, class: 'form-control', rows: 10
 
       = render 'slack_notification_field', job_definition: @job_definition
+      = render 'retry_configuration_field', job_definition: @job_definition
 
       .form-group
         = f.submit 'Save', class: 'btn btn-primary'
