@@ -246,7 +246,7 @@ RSpec.describe Barbeque::Executor::Docker do
             expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
             job_execution.job_definition.update!(slack_notification: slack_notification)
             expect(slack_client).to receive(:notify_success)
-            executor.poll_execution(job_retry)
+            executor.poll_retry(job_retry)
           end
         end
       end
