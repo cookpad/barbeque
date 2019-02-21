@@ -26,7 +26,7 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
         avg_time: avg_time,
       }
     end
-    (from.to_i ... to.to_i).step(1.hour).map do |t|
+    (from.to_i ... to.to_i).step(1.hour.to_i).map do |t|
       time = Time.at(t)
       stats[time].merge(date_hour: time)
     end
