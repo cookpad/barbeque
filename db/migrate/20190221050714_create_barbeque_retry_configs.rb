@@ -5,7 +5,7 @@ class CreateBarbequeRetryConfigs < ActiveRecord::Migration[5.2]
       t.integer :retry_limit, null: false, default: 3
       t.float :base_delay, null: false, default: '0.3'
       t.integer :max_delay
-      t.boolean :jitter, default: true
+      t.boolean :jitter, null: false, default: true
       t.timestamps
 
       t.index [:job_definition_id], unique: true

@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(version: 2019_02_21_050714) do
     t.integer "retry_limit", default: 3, null: false
     t.float "base_delay", default: 0.3, null: false
     t.integer "max_delay"
-    t.boolean "jitter", default: true
+    t.boolean "jitter", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["job_definition_id"], name: "index_barbeque_retry_configs_on_job_definition_id", unique: true
