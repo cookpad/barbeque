@@ -1,0 +1,38 @@
+= fields_for(job_definition) do |job_definition_f|
+  = job_definition_f.fields_for(:retry_config) do |f|
+    = f.hidden_field :id
+
+    .row
+      .col-md-8
+        %label Retry configuration
+
+    - retry_enabled = f.object.persisted?
+    .row.form-group
+      .col-md-8.retry_configuration_wrapper
+        = f.label :_destroy_true do
+          = f.radio_button :_destroy, true, class: 'enable_retry_configuration', checked: !retry_enabled
+          No
+        = f.label :_destroy_false do
+          = f.radio_button :_destroy, false, class: 'enable_retry_configuration', checked: retry_enabled
+          Yes
+
+    .retry_configuration_field{ class: ('active' if retry_enabled) }
+      .row.form-group
+        .col-md-4
+          = f.label :retry_limit
+          = f.number_field :retry_limit, min: 1, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :base_delay
+          = f.number_field :base_delay, min: 0.1, step: 0.1, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :max_delay
+          = f.number_field :max_delay, min: 1, class: 'form-control'
+
+      .row.form-group
+        .col-md-4
+          = f.label :jitter
+          = f.check_box :jitter

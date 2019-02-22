@@ -18,4 +18,24 @@
       display: block;
     }
   }
+
+  .retry_configuration_wrapper label {
+    font-weight: normal;
+  }
+
+  .enable_retry_configuration {
+    margin: 0 2px 0 8px;
+  }
+
+  .retry_configuration_field {
+    display: none;
+
+    label {
+      font-weight: normal;
+    }
+
+    &.active {
+      display: block;
+    }
+  }
 }

@@ -28,4 +28,21 @@ class Barbeque::JobExecution < Barbeque::ApplicationRecord
   def to_param
     message_id
   end
+
+  def retry_if_possible!
+    unless retryable?
+      return
+    end
+    retry_config = job_definition.retry_config
+    unless retry_config
+      return
+    end
+
+    retries = job_retries.count
+    if retry_config.should_retry?(retries)
+      delay_seconds = retry_config.delay_seconds(retries).to_i
+      Barbeque::MessageRetryingService.new(message_id: message_id, delay_seconds: delay_seconds).run
+      retried!
+    end
+  end
 end

@@ -7,12 +7,17 @@ RSpec.describe Barbeque::Executor::Docker do
   let(:job_definition) { FactoryBot.create(:job_definition, command: ['rake', 'test']) }
   let(:job_execution) { FactoryBot.create(:job_execution, job_definition: job_definition, status: :pending) }
   let(:container_id) { '59efea4938e5d11ff6e70441d7442614dc1da014e64a8144c87a7608e27e240c' }
+  let(:sqs_client) { instance_double(Aws::SQS::Client) }
 
   around do |example|
     original = ENV['BARBEQUE_HOST']
     ENV['BARBEQUE_HOST'] = 'https://barbeque'
     example.run
     ENV['BARBEQUE_HOST'] = original
+  end
+
+  before do
+    allow(Barbeque::MessageRetryingService).to receive(:sqs_client).and_return(sqs_client)
   end
 
   describe 'job_execution' do
@@ -46,6 +51,21 @@ RSpec.describe Barbeque::Executor::Docker do
           executor.start_execution(job_execution, {})
           job_execution.reload
           expect(job_execution).to be_failed
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Open3).to receive(:capture3).with('docker', 'run', '--detach', job_execution.job_definition.app.docker_image, 'rake', 'test').and_return([stdout, stderr, status])
+            expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_execution, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            executor.start_execution(job_execution, {})
+            job_execution.reload
+            expect(job_execution).to be_retried
+          end
         end
       end
     end
@@ -145,6 +165,22 @@ RSpec.describe Barbeque::Executor::Docker do
             executor.poll_execution(job_execution)
           end
         end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+          expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+            expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(job_execution).to be_running
+            executor.poll_execution(job_execution)
+            job_execution.reload
+            expect(job_execution).to be_retried
+          end
+        end
       end
     end
   end
@@ -192,6 +228,25 @@ RSpec.describe Barbeque::Executor::Docker do
           job_execution.reload
           expect(job_retry).to be_failed
           expect(job_execution).to be_failed
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Open3).to receive(:capture3).with('docker', 'run', '--detach', job_execution.job_definition.app.docker_image, 'rake', 'test').and_return([stdout, stderr, status])
+            expect(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr).with(job_retry, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(job_retry).to be_pending
+            expect(job_execution).to be_failed
+            executor.start_retry(job_retry, {})
+            job_retry.reload
+            job_execution.reload
+            expect(job_retry).to be_failed
+            expect(job_execution).to be_retried
+          end
         end
       end
     end
@@ -299,6 +354,25 @@ RSpec.describe Barbeque::Executor::Docker do
             expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
             expect(slack_client).to receive(:notify_failure)
             executor.poll_retry(job_retry)
+          end
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+            expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(job_retry).to be_running
+            expect(job_execution).to be_retried
+            executor.poll_retry(job_retry)
+            job_retry.reload
+            job_execution.reload
+            expect(job_retry).to be_failed
+            expect(job_execution).to be_retried
           end
         end
       end

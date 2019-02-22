@@ -46,6 +46,7 @@ module Barbeque
           Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
           job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
+          job_execution.retry_if_possible!
         end
       end
 
@@ -71,6 +72,7 @@ module Barbeque
             job_execution.update!(status: :failed)
           end
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
+          job_execution.retry_if_possible!
         end
       end
 
@@ -87,6 +89,9 @@ module Barbeque
           end
           job_execution.update!(status: status, finished_at: task.stopped_at)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
+          if status == :failed
+            job_execution.retry_if_possible!
+          end
         end
       end
 
@@ -107,6 +112,9 @@ module Barbeque
             job_execution.update!(status: status)
           end
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
+          if status == :failed
+            job_execution.retry_if_possible!
+          end
         end
       end
 

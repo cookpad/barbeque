@@ -25,6 +25,7 @@ module Barbeque
           Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
           job_execution.update!(status: :failed, finished_at: Time.zone.now)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
+          job_execution.retry_if_possible!
         end
       end
 
@@ -48,6 +49,7 @@ module Barbeque
             job_execution.update!(status: :failed)
           end
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
+          job_execution.retry_if_possible!
         end
       end
 
@@ -63,6 +65,9 @@ module Barbeque
           stdout, stderr = get_logs(container.container_id)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_execution, stdout, stderr)
           Barbeque::SlackNotifier.notify_job_execution(job_execution)
+          if exit_code != 0
+            job_execution.retry_if_possible!
+          end
         end
       end
 
@@ -83,6 +88,9 @@ module Barbeque
           stdout, stderr = get_logs(container.container_id)
           Barbeque::ExecutionLog.save_stdout_and_stderr(job_retry, stdout, stderr)
           Barbeque::SlackNotifier.notify_job_retry(job_retry)
+          if status == :failed
+            job_execution.retry_if_possible!
+          end
         end
       end
 
