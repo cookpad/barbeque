@@ -1,3 +1,13 @@
+## v2.6.0 (2019-02-25)
+### New features
+- Add server-side retry feature
+
+### Changes
+- Stop deleting job executions when job definition is deleted
+  - Job executions tend to have large number of records, so deleting them is impossible.
+- Return 503 in maintenance mode when mysql2 error occurs
+- Use `BARBEQUE_HOST` environment variable to generate `html_url` field in API response
+
 ## v2.5.0 (2018-08-24)
 ### New features
 - Add selectable `message` field to `GET /v1/job_executions/:message_id` response
