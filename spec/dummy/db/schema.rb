@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_21_050714) do
+ActiveRecord::Schema.define(version: 2019_03_11_034445) do
 
   create_table "barbeque_apps", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
@@ -79,6 +79,7 @@ ActiveRecord::Schema.define(version: 2019_02_21_050714) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["message_id"], name: "index_barbeque_job_retries_on_message_id", unique: true
+    t.index ["status"], name: "index_barbeque_job_retries_on_status"
   end
 
   create_table "barbeque_retry_configs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -99,6 +100,7 @@ ActiveRecord::Schema.define(version: 2019_02_21_050714) do
     t.string "failure_notification_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "notify_failure_only_if_retry_limit_reached", default: false, null: false
   end
 
   create_table "barbeque_sns_subscriptions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -107,7 +109,6 @@ ActiveRecord::Schema.define(version: 2019_02_21_050714) do
     t.integer "job_definition_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["topic_arn"], name: "index_barbeque_sns_subscriptions_on_topic_arn", unique: true
   end
 
 end

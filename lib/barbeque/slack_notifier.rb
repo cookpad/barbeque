@@ -13,10 +13,12 @@ module Barbeque
             client.notify_success("*[SUCCESS]* Succeeded to execute #{job_execution_link(job_execution)}")
           end
         elsif job_execution.failed?
-          client.notify_failure(
-            "*[FAILURE]* Failed to execute #{job_execution_link(job_execution)}" \
-            " #{job_execution.slack_notification.failure_notification_text}"
-          )
+          if should_notify_failure?(job_execution)
+            client.notify_failure(
+              "*[FAILURE]* Failed to execute #{job_execution_link(job_execution)}" \
+              " #{job_execution.slack_notification.failure_notification_text}"
+            )
+          end
         else
           client.notify_failure(
             "*[ERROR]* Failed to execute #{job_execution_link(job_execution)}" \
@@ -35,10 +37,12 @@ module Barbeque
             client.notify_success("*[SUCCESS]* Succeeded to retry #{job_retry_link(job_retry)}")
           end
         elsif job_retry.failed?
-          client.notify_failure(
-            "*[FAILURE]* Failed to retry #{job_retry_link(job_retry)}" \
-            " #{job_retry.slack_notification.failure_notification_text}"
-          )
+          if should_notify_failure?(job_retry.job_execution)
+            client.notify_failure(
+              "*[FAILURE]* Failed to retry #{job_retry_link(job_retry)}" \
+              " #{job_retry.slack_notification.failure_notification_text}"
+            )
+          end
         else
           client.notify_failure(
             "*[ERROR]* Failed to retry #{job_retry_link(job_retry)}" \
@@ -67,6 +71,18 @@ module Barbeque
 
       def job_retry_url(job_retry)
         Barbeque::Engine.routes.url_helpers.job_execution_job_retry_url(job_retry.job_execution, job_retry, host: barbeque_host)
+      end
+
+      def should_notify_failure?(job_execution_with_slack_notification)
+        unless job_execution_with_slack_notification.slack_notification.notify_failure_only_if_retry_limit_reached
+          return true
+        end
+
+        unless job_execution_with_slack_notification.job_definition.retry_config
+          return true
+        end
+
+        job_execution_with_slack_notification.job_definition.retry_config.retry_limit == job_execution_with_slack_notification.job_retries.count
       end
     end
   end

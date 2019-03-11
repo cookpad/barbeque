@@ -81,7 +81,7 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
   private
 
   def slack_notification_params
-    %i[id channel notify_success failure_notification_text _destroy]
+    %i[id channel notify_success notify_failure_only_if_retry_limit_reached failure_notification_text _destroy]
   end
 
   def retry_config_params
