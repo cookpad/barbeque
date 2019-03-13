@@ -172,7 +172,7 @@ RSpec.describe Barbeque::Executor::Docker do
           end
 
           it 'performs retry' do
-          expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+            expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
             expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
             expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
             expect(job_execution).to be_running
