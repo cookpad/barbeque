@@ -420,7 +420,6 @@ RSpec.describe Barbeque::Executor::Docker do
           let(:job_retry2) { FactoryBot.create(:job_retry, job_execution: job_execution, status: :pending) }
 
           before do
-            container_info['State']['ExitCode'] = 1
             job_execution.job_definition.update!(slack_notification: slack_notification)
             allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
             FactoryBot.create(:retry_config, job_definition: job_definition, retry_limit: 2)
