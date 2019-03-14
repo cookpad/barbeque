@@ -82,7 +82,7 @@ module Barbeque
           return true
         end
 
-        job_execution_with_slack_notification.job_definition.retry_config.retry_limit == job_execution_with_slack_notification.job_retries.count
+        job_execution_with_slack_notification.job_definition.retry_config.retry_limit <= job_execution_with_slack_notification.job_retries.count
       end
     end
   end
