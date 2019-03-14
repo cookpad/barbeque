@@ -172,13 +172,51 @@ RSpec.describe Barbeque::Executor::Docker do
           end
 
           it 'performs retry' do
-          expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+            expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
             expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
             expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
             expect(job_execution).to be_running
             executor.poll_execution(job_execution)
             job_execution.reload
             expect(job_execution).to be_retried
+          end
+        end
+
+        context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: false)' do
+          let(:slack_client) { double('Barbeque::SlackClient') }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false) }
+
+          before do
+            job_execution.job_definition.update!(slack_notification: slack_notification)
+            allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'sends slack notification' do
+            expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+            expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(slack_client).to receive(:notify_failure)
+            executor.poll_execution(job_execution)
+          end
+        end
+
+        context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: true)' do
+          let(:slack_client) { double('Barbeque::SlackClient') }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false, notify_failure_only_if_retry_limit_reached: true) }
+
+          before do
+            job_execution.job_definition.update!(slack_notification: slack_notification)
+            allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'does not send slack notification' do
+            expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+            expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_execution, stdout, stderr)
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(slack_client).not_to receive(:notify_failure)
+            executor.poll_execution(job_execution)
           end
         end
       end
@@ -373,6 +411,58 @@ RSpec.describe Barbeque::Executor::Docker do
             job_execution.reload
             expect(job_retry).to be_failed
             expect(job_execution).to be_retried
+          end
+        end
+
+        context 'when retried job fails for retry limit of times' do
+          let(:slack_client) { double('Barbeque::SlackClient') }
+          let(:container_id2) { '40fa4fcb316f90f65d70717f66357e065747f8c216f392817bb8237f51dc416e' }
+          let(:job_retry2) { FactoryBot.create(:job_retry, job_execution: job_execution, status: :pending) }
+
+          before do
+            job_execution.job_definition.update!(slack_notification: slack_notification)
+            allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+            FactoryBot.create(:retry_config, job_definition: job_definition, retry_limit: 2)
+          end
+
+          context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: false)' do
+            let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false ) }
+
+            it 'performs retry with sending slack notification for two times' do
+              expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+              expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+              expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+              expect(slack_client).to receive(:notify_failure).twice
+              executor.poll_retry(job_retry)
+
+              Barbeque::DockerContainer.create!(message_id: job_retry2.message_id, container_id: container_id2)
+              expect(Open3).to receive(:capture3).with('docker', 'logs', container_id2).and_return([stdout, stderr, log_status])
+              expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry2, stdout, stderr)
+              expect(Open3).to receive(:capture3).with('docker', 'inspect', container_id2) {
+                [JSON.dump([container_info]), '', inspect_status]
+              }
+              executor.poll_retry(job_retry2)
+            end
+          end
+
+          context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: true)' do
+            let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false, notify_failure_only_if_retry_limit_reached: true) }
+
+            it 'performs retry with sending only one slack notification' do
+              expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
+              expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
+              expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+              executor.poll_retry(job_retry)
+
+              Barbeque::DockerContainer.create!(message_id: job_retry2.message_id, container_id: container_id2)
+              expect(Open3).to receive(:capture3).with('docker', 'logs', container_id2).and_return([stdout, stderr, log_status])
+              expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry2, stdout, stderr)
+              expect(Open3).to receive(:capture3).with('docker', 'inspect', container_id2) {
+                [JSON.dump([container_info]), '', inspect_status]
+              }
+              expect(slack_client).to receive(:notify_failure).once
+              executor.poll_retry(job_retry2)
+            end
           end
         end
       end

@@ -25,6 +25,9 @@
         .col-md-8
           = f.check_box :notify_success
           = f.label :notify_success, 'Notify success event to Slack'
+        .col-md-8
+          = f.check_box :notify_failure_only_if_retry_limit_reached
+          = f.label :notify_failure_only_if_retry_limit_reached, 'Notify failure event to Slack only if retry limit reached'
 
       .row
         .col-md-8

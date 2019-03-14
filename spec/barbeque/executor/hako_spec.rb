@@ -227,6 +227,42 @@ describe Barbeque::Executor::Hako do
             expect(job_execution).to be_retried
           end
         end
+
+        context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: false)' do
+          let(:slack_client) { double('Barbeque::SlackClient') }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false) }
+
+          before do
+            job_execution.job_definition.update!(slack_notification: slack_notification)
+            allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'sends slack notification' do
+            expect(job_execution).to be_running
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(slack_client).to receive(:notify_failure)
+            executor.poll_execution(job_execution)
+          end
+        end
+
+        context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: true)' do
+          let(:slack_client) { double('Barbeque::SlackClient') }
+          let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false, notify_failure_only_if_retry_limit_reached: true) }
+
+          before do
+            job_execution.job_definition.update!(slack_notification: slack_notification)
+            allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'does not send slack notification' do
+            expect(job_execution).to be_running
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            expect(slack_client).not_to receive(:notify_failure)
+            executor.poll_execution(job_execution)
+          end
+        end
       end
     end
   end
@@ -415,6 +451,47 @@ describe Barbeque::Executor::Hako do
             job_execution.reload
             expect(job_retry).to be_failed
             expect(job_execution).to be_retried
+          end
+        end
+
+        context 'when retried job fails for retry limit of times' do
+          let(:slack_client) { double('Barbeque::SlackClient') }
+          let(:task_arn2) { 'arn:aws:ecs:ap-northeast-1:123456789012:task/01234567-89ab-cdef-0123-456789abcdef' }
+          let(:job_retry2) { FactoryBot.create(:job_retry, job_execution: job_execution, status: :pending) }
+
+          before do
+            job_execution.job_definition.update!(slack_notification: slack_notification)
+            allow(Barbeque::SlackClient).to receive(:new).with(slack_notification.channel).and_return(slack_client)
+            allow(executor.hako_s3_client).to receive(:get_stopped_result).and_return(
+              Aws::Json::Parser.new(Aws::ECS::Client.api.operation('describe_tasks').output.shape.member(:tasks).shape.member).parse(JSON.dump(stopped_info["detail"]))
+            )
+            FactoryBot.create(:retry_config, job_definition: job_definition, retry_limit: 2)
+          end
+
+          context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: false)' do
+            let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false ) }
+
+            it 'performs retry with sending slack notification for two times' do
+              expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+              expect(slack_client).to receive(:notify_failure).twice
+              executor.poll_retry(job_retry)
+
+              Barbeque::EcsHakoTask.create!(message_id: job_retry2.message_id, cluster: 'barbeque', task_arn: task_arn2)
+              executor.poll_retry(job_retry)
+            end
+          end
+
+          context 'with retry_config and slack_notification (notify_failure_only_if_retry_limit_reached: true)' do
+            let(:slack_notification) { FactoryBot.create(:slack_notification, notify_success: false, notify_failure_only_if_retry_limit_reached: true) }
+
+            it 'performs retry with sending only one slack notification' do
+              expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+              expect(slack_client).to receive(:notify_failure).once
+              executor.poll_retry(job_retry)
+
+              Barbeque::EcsHakoTask.create!(message_id: job_retry2.message_id, cluster: 'barbeque', task_arn: task_arn2)
+              executor.poll_retry(job_retry)
+            end
           end
         end
       end
