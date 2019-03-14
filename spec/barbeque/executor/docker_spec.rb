@@ -452,7 +452,6 @@ RSpec.describe Barbeque::Executor::Docker do
               expect(Open3).to receive(:capture3).with('docker', 'logs', container_id).and_return([stdout, stderr, log_status])
               expect(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr).with(job_retry, stdout, stderr)
               expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
-              expect(slack_client).to receive(:notify_failure).once
               executor.poll_retry(job_retry)
 
               Barbeque::DockerContainer.create!(message_id: job_retry2.message_id, container_id: container_id2)
@@ -461,6 +460,7 @@ RSpec.describe Barbeque::Executor::Docker do
               expect(Open3).to receive(:capture3).with('docker', 'inspect', container_id2) {
                 [JSON.dump([container_info]), '', inspect_status]
               }
+              expect(slack_client).to receive(:notify_failure).once
               executor.poll_retry(job_retry2)
             end
           end
