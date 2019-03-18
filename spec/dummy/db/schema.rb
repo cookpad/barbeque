@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_11_034445) do
+ActiveRecord::Schema.define(version: 2019_03_15_052951) do
 
   create_table "barbeque_apps", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
@@ -85,7 +85,7 @@ ActiveRecord::Schema.define(version: 2019_03_11_034445) do
   create_table "barbeque_retry_configs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "job_definition_id", null: false
     t.integer "retry_limit", default: 3, null: false
-    t.float "base_delay", default: 0.3, null: false
+    t.float "base_delay", default: 15.0, null: false
     t.integer "max_delay"
     t.boolean "jitter", default: true, null: false
     t.datetime "created_at", null: false
