@@ -1,3 +1,10 @@
+## v2.7.0 (2019-03-18)
+### New features
+- Add "Notify failure event to Slack only if retry limit reached" option
+
+### Changes
+- Change the default value of "Base delay" option from 0.3 seconds to 15 seconds
+
 ## v2.6.0 (2019-02-25)
 ### New features
 - Add server-side retry feature
