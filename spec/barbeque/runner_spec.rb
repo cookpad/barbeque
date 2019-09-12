@@ -47,7 +47,9 @@ RSpec.describe Barbeque::Runner do
             2.times do
               FactoryBot.create(:job_execution, status: :running, job_queue: job_queue)
             end
-            FactoryBot.create(:job_execution, status: :retried, job_queue: job_queue)
+            retried_executions = 2.times.map { FactoryBot.create(:job_execution, status: :retried, job_queue: job_queue) }
+            # One retried execution is already running
+            FactoryBot.create(:job_retry, status: :running, job_execution: retried_executions[0])
           end
 
           it 'waits' do
