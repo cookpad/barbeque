@@ -1,3 +1,7 @@
+## v2.7.1 (2019-09-13)
+### Bug fixes
+- Do not count pending retried job executions when checking `maximum_concurrent_executions`
+
 ## v2.7.0 (2019-03-18)
 ### New features
 - Add "Notify failure event to Slack only if retry limit reached" option
