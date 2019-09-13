@@ -43,7 +43,7 @@ module Barbeque
       end
 
       loop do
-        current_num = @job_queue.job_executions.where(status: [:running, :retried]).count
+        current_num = @job_queue.job_executions.where(status: :running).count + Barbeque::JobRetry.where(status: :running).joins(job_execution: :job_queue).merge(Barbeque::JobQueue.where(id: @job_queue.id)).count
         if current_num < max_num
           return
         end
