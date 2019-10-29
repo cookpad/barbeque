@@ -45,7 +45,8 @@
               %th Message
               %td
                 - if @execution_log
-                  %code= @execution_log['message']
+                  %pre
+                    %code= @execution_log['message']
                 - else
                   Execution log was not found.
 

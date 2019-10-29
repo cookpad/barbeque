@@ -47,7 +47,8 @@
               %th Message
               %td
                 - if @log
-                  %code= @log['message']
+                  %pre
+                    %code= @log['message']
                 - else
                   Log was not found.
   .col-sm-5
