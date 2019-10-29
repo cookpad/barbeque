@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_15_052951) do
+ActiveRecord::Schema.define(version: 2019_10_29_105530) do
 
   create_table "barbeque_apps", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2019_03_15_052951) do
   end
 
   create_table "barbeque_job_definitions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "job", null: false
+    t.string "job", null: false, collation: "utf8mb4_bin"
     t.integer "app_id", null: false
     t.string "command", null: false
     t.text "description"
