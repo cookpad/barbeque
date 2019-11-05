@@ -1,3 +1,10 @@
+## v2.7.2 (2019-11-05)
+### Bug fixes
+- Wrap JSON message in pre tag for large message
+
+### Changes
+- Change job name to case-sensitive
+
 ## v2.7.1 (2019-09-13)
 ### Bug fixes
 - Do not count pending retried job executions when checking `maximum_concurrent_executions`
