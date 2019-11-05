@@ -111,6 +111,16 @@ describe Barbeque::JobDefinitionsController do
         }.to_not change(Barbeque::JobDefinition, :count)
       end
     end
+
+    it 'treats job name as case-sensitive' do
+      expect {
+        post :create, params: { job_definition: attributes }
+      }.to change(Barbeque::JobDefinition, :count).by(1)
+      attributes[:job].downcase!
+      expect {
+        post :create, params: { job_definition: attributes }
+      }.to change(Barbeque::JobDefinition, :count).by(1)
+    end
   end
 
   describe '#update' do
