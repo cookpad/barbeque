@@ -98,6 +98,7 @@ class Barbeque::JobDefinitionsController < Barbeque::ApplicationController
       :app_id,
       :description,
       slack_notification_attributes: slack_notification_params,
+      retry_config_attributes: retry_config_params,
     )
   end
 end
