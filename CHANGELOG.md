@@ -1,3 +1,7 @@
+## v2.7.3 (2020-01-08)
+### Bug fixes
+- Accept retry configuration on create
+
 ## v2.7.2 (2019-11-05)
 ### Bug fixes
 - Wrap JSON message in pre tag for large message
