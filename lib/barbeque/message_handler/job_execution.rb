@@ -52,6 +52,9 @@ module Barbeque
           end
         end
       rescue ActiveRecord::RecordNotUnique => e
+        # There's a case where Barbeque receives message which was already received or deleted.
+        # https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html
+        @message_queue.delete_message(@message)
         raise DuplicatedExecution.new(e.message)
       end
     end

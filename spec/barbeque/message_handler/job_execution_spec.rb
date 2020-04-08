@@ -63,6 +63,7 @@ describe Barbeque::MessageHandler::JobExecution do
       end
 
       it 'raises DuplicatedExecution' do
+        expect(message_queue).to receive(:delete_message).with(message)
         expect { handler.run }.to raise_error(Barbeque::MessageHandler::DuplicatedExecution)
       end
     end
