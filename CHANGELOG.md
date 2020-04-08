@@ -1,3 +1,7 @@
+## v2.7.4 (2020-04-08)
+### Bug fixes
+- Delete the same message multiple times when DeleteMessage results in partial deletion of copies
+
 ## v2.7.3 (2020-01-08)
 ### Bug fixes
 - Accept retry configuration on create
