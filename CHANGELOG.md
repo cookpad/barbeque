@@ -1,3 +1,7 @@
+## v2.7.5 (2020-05-29)
+### Bug fixes
+- Use kaminari helper to generate links safely
+
 ## v2.7.4 (2020-04-08)
 ### Bug fixes
 - Delete the same message multiple times when DeleteMessage results in partial deletion of copies
