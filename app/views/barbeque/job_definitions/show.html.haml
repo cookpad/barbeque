@@ -100,12 +100,12 @@
                           Retry
           .row
             .col-xs-4
-              = link_to url_for(request.query_parameters.merge(page: @job_executions.prev_page)),
+              = link_to path_to_prev_page(@job_executions),
                 class: "btn btn-default btn-sm btn-block #{'disabled' unless @job_executions.prev_page}" do
                 %i.fa.fa-angle-left
                 New
             .col-xs-4.col-xs-offset-4
-              = link_to url_for(request.query_parameters.merge(page: @job_executions.next_page)),
+              = link_to path_to_next_page(@job_executions),
                 class: "btn btn-default btn-sm btn-block #{'disabled' unless @job_executions.next_page}" do
                 Old
                 %i.fa.fa-angle-right
