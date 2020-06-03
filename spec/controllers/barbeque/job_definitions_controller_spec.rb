@@ -201,7 +201,7 @@ describe Barbeque::JobDefinitionsController do
       let(:subscription_arn) { 'arn:aws:sns:ap-northeast-1:012345678912:barbeque-spec:01234567-89ab-cdef-0123-456789abcdef' }
 
       before do
-        allow(Barbeque::SNSSubscriptionService).to receive(:sns_client).and_return(sns_client)
+        allow(Barbeque::SNSSubscriptionService).to receive(:sns_client).with('ap-northeast-1').and_return(sns_client)
         allow(Barbeque::SNSSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
 
         allow(sqs_client).to receive(:get_queue_attributes).
