@@ -48,6 +48,7 @@ module Barbeque
         queue_url: @job_queue.queue_url,
         wait_time_seconds: Barbeque.config.sqs_receive_message_wait_time,
         max_number_of_messages: 1,
+        attribute_names: ['SentTimestamp'],
       )
       if result.messages[0]
         Barbeque::Message.parse(result.messages[0])

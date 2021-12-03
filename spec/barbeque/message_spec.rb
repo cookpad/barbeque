@@ -21,7 +21,12 @@ describe Barbeque::Message::Base do
     }.to_json
   end
   let(:sqs_message) do
-    double('Aws::SQS::Types::Message', body: raw_sqs_message, message_id: message_id, receipt_handle: receipt_handle)
+    Aws::SQS::Types::Message.new(
+      body: raw_sqs_message,
+      message_id: message_id,
+      receipt_handle: receipt_handle,
+      attributes: { 'SentTimestamp' => '1638514604302' },
+    )
   end
 
   context 'given JobExecution' do

@@ -45,6 +45,7 @@ module Barbeque
           'BARBEQUE_MESSAGE_ID'  => @message.retry_message_id,
           'BARBEQUE_QUEUE_NAME'  => @message_queue.job_queue.name,
           'BARBEQUE_RETRY_COUNT' => job_execution.job_retries.count.to_s,
+          'BARBEQUE_SENT_TIMESTAMP' => @message.sent_timestamp,
         }
       end
 

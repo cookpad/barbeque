@@ -16,6 +16,7 @@ describe Barbeque::MessageQueue do
         message_id: message_id,
         receipt_handle: receipt_handle,
         body: { 'Type' => type, 'Job' => job }.to_json,
+        attributes: { 'SentTimestamp' => '1638514604302' },
       )
     end
     let(:message) { Barbeque::Message.parse(raw_message) }

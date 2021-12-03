@@ -9,7 +9,7 @@ describe Barbeque::MessageHandler::JobExecution do
     let(:message_queue) { Barbeque::MessageQueue.new(job_queue) }
     let(:message) do
       Barbeque::Message::JobExecution.new(
-        Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle'),
+        Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle', attributes: { 'SentTimestamp' => '1638514604302' }),
         {
           'Application' => job_definition.app.name,
           'Job'         => job_definition.job,
@@ -51,6 +51,7 @@ describe Barbeque::MessageHandler::JobExecution do
           'BARBEQUE_MESSAGE_ID'  => message.id,
           'BARBEQUE_QUEUE_NAME'  => job_queue.name,
           'BARBEQUE_RETRY_COUNT' => '0',
+          'BARBEQUE_SENT_TIMESTAMP' => '1638514604302',
         )
       }
       expect(message_queue).to receive(:delete_message).with(message)
