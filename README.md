@@ -1,4 +1,4 @@
-# Barbeque [![Build Status](https://travis-ci.org/cookpad/barbeque.svg?branch=master)](https://travis-ci.org/cookpad/barbeque)
+# Barbeque [![Build Status](https://github.com/cookpad/barbeque/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/cookpad/barbeque/actions/workflows/ci.yml)
 
 Job queue system to run job with Docker
 

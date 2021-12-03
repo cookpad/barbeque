@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - 2.6
+          - 2.7
+          # TODO: Add 3.0 after upgrading Rails
+    name: Run test with Ruby ${{ matrix.ruby }}
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: barbeque_root
+          MYSQL_USER: barbeque
+          MYSQL_PASSWORD: barbeque
+          MYSQL_DATABASE: barbeque
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: mysql2://barbeque:barbeque@127.0.0.1:3306/barbeque
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - run: bin/rails db:setup
+      - run: bundle exec rspec
