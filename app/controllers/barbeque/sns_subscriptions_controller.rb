@@ -44,6 +44,12 @@ class Barbeque::SnsSubscriptionsController < Barbeque::ApplicationController
   private
 
   def fetch_sns_topic_arns
-    Barbeque::SNSSubscriptionService.sns_client.list_topics.flat_map(&:topics).map(&:topic_arn)
+    if Barbeque.config.sns_regions.empty?
+      Barbeque::SNSSubscriptionService.sns_client.list_topics.flat_map(&:topics).map(&:topic_arn)
+    else
+      Barbeque.config.sns_regions.flat_map do |region|
+        Barbeque::SNSSubscriptionService.sns_client(region).list_topics.flat_map(&:topics).map(&:topic_arn)
+      end
+    end
   end
 end
