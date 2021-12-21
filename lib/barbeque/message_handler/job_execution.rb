@@ -34,6 +34,7 @@ module Barbeque
           'BARBEQUE_MESSAGE_ID'  => @message.id,
           'BARBEQUE_QUEUE_NAME'  => @message_queue.job_queue.name,
           'BARBEQUE_RETRY_COUNT' => '0',
+          'BARBEQUE_SENT_TIMESTAMP' => @message.sent_timestamp,
         }
       end
 

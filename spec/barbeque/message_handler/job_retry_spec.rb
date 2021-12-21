@@ -10,7 +10,7 @@ describe Barbeque::MessageHandler::JobRetry do
     let(:job_execution) { create(:job_execution, status: :failed, job_definition: job_definition, job_queue: job_queue) }
     let(:message) do
       Barbeque::Message::JobRetry.new(
-        Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle'),
+        Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle', attributes: { 'SentTimestamp' => '1638514604302' }),
         { "RetryMessageId" => job_execution.message_id },
       )
     end
@@ -40,6 +40,7 @@ describe Barbeque::MessageHandler::JobRetry do
           'BARBEQUE_MESSAGE_ID'  => job_execution.message_id,
           'BARBEQUE_QUEUE_NAME'  => job_queue.name,
           'BARBEQUE_RETRY_COUNT' => '1',
+          'BARBEQUE_SENT_TIMESTAMP' => '1638514604302',
         )
       }
       expect(message_queue).to receive(:delete_message).with(message)

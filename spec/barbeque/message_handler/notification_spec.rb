@@ -6,7 +6,7 @@ describe Barbeque::MessageHandler::Notification do
     let(:sns_subscription) { create(:sns_subscription) }
     let(:message) do
       Barbeque::Message::Notification.new(
-        Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle'),
+        Aws::SQS::Types::Message.new(message_id: SecureRandom.uuid, receipt_handle: 'dummy receipt handle', attributes: { 'SentTimestamp' => '1638514604302' }),
         {
           'TopicArn'  => sns_subscription.topic_arn,
           'Message'   => ['hello'].to_json,

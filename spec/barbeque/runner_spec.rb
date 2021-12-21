@@ -12,7 +12,7 @@ RSpec.describe Barbeque::Runner do
       'Message' => { 'FOO' => 'BAR' },
     )
   end
-  let(:sqs_message) { Aws::SQS::Types::Message.new(body: message_body) }
+  let(:sqs_message) { Aws::SQS::Types::Message.new(body: message_body, attributes: { 'SentTimestamp' => '1638514604302' }) }
   let(:message) { Barbeque::Message.parse(sqs_message) }
   let(:message_queue) { double('Barbeque::MessageQueue', job_queue: 'default') }
   let(:handler) { double('Barbeque::MessageHandler') }

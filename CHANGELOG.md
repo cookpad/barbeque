@@ -1,3 +1,8 @@
+## v2.x.x (xxxx-xx-xx)
+### New features
+- Pass `BARBEQUE_SENT_TIMESTAMP` variable to invoked jobs
+  - The value is epoch time in milliseconds when the message is sent to the queue. See also: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
+
 ## v2.7.5 (2020-05-29)
 ### Bug fixes
 - Use kaminari helper to generate links safely
