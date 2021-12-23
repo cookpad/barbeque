@@ -1,4 +1,4 @@
-## v2.x.x (xxxx-xx-xx)
+## v2.8.0 (2021-12-23)
 ### New features
 - Pass `BARBEQUE_SENT_TIMESTAMP` variable to invoked jobs
   - The value is epoch time in milliseconds when the message is sent to the queue. See also: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
