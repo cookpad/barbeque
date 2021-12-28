@@ -23,7 +23,7 @@ module Barbeque
   module Executor
     def self.create
       klass = const_get(Barbeque.config.executor, false)
-      klass.new(Barbeque.config.executor_options)
+      klass.new(**Barbeque.config.executor_options)
     end
   end
 end

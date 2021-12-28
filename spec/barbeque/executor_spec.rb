@@ -12,7 +12,12 @@ describe Barbeque::Executor do
       let(:barbeque_yml) { 'barbeque' }
 
       it 'initializes a configured executor' do
-        expect(Barbeque::Executor::Docker).to receive(:new).with({})
+        if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('2.7.0')
+          # Ruby < 2.7 isn't ready for keyword arguments
+          expect(Barbeque::Executor::Docker).to receive(:new).with({})
+        else
+          expect(Barbeque::Executor::Docker).to receive(:new).with(no_args)
+        end
         Barbeque::Executor.create
       end
     end
