@@ -18,7 +18,7 @@ module Barbeque
       # @param [String] yaml_dir (deprecated: renamed to definition_dir)
       def initialize(hako_dir:, hako_env: {}, yaml_dir: nil, definition_dir: nil, oneshot_notification_prefix:)
         @hako_dir = hako_dir
-        @hako_env = hako_env
+        @hako_env = hako_env.stringify_keys
         @definition_dir =
           if definition_dir
             definition_dir
