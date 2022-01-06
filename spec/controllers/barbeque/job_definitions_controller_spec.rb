@@ -201,8 +201,8 @@ describe Barbeque::JobDefinitionsController do
       let(:subscription_arn) { 'arn:aws:sns:ap-northeast-1:012345678912:barbeque-spec:01234567-89ab-cdef-0123-456789abcdef' }
 
       before do
-        allow(Barbeque::SNSSubscriptionService).to receive(:sns_client).and_return(sns_client)
-        allow(Barbeque::SNSSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
+        allow(Barbeque::SnsSubscriptionService).to receive(:sns_client).and_return(sns_client)
+        allow(Barbeque::SnsSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
 
         allow(sqs_client).to receive(:get_queue_attributes).
           with(queue_url: sns_subscription.job_queue.queue_url, attribute_names: ['QueueArn']).
@@ -216,7 +216,7 @@ describe Barbeque::JobDefinitionsController do
         expect(sqs_client).to receive(:set_queue_attributes).with(queue_url: sns_subscription.job_queue.queue_url, attributes: { 'Policy' => '' })
         expect(sns_client).to receive(:unsubscribe).with(subscription_arn: subscription_arn)
         delete :destroy, params: { id: job_definition.id }
-        expect(Barbeque::SNSSubscription.all).to be_empty
+        expect(Barbeque::SnsSubscription.all).to be_empty
       end
     end
   end

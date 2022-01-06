@@ -1,7 +1,7 @@
 require 'aws-sdk-sns'
 require 'aws-sdk-sqs'
 
-class Barbeque::SNSSubscriptionService
+class Barbeque::SnsSubscriptionService
   def self.sqs_client
     @sqs_client ||= Aws::SQS::Client.new
   end
@@ -10,7 +10,7 @@ class Barbeque::SNSSubscriptionService
     @sns_client ||= Aws::SNS::Client.new
   end
 
-  # @param [Barbeque::SNSSubscription] sns_subscription
+  # @param [Barbeque::SnsSubscription] sns_subscription
   # @return [Boolean] `true` if succeeded to subscribe
   def subscribe(sns_subscription)
     if sns_subscription.valid?
@@ -31,7 +31,7 @@ class Barbeque::SNSSubscriptionService
     end
   end
 
-  # @param [Barbeque::SNSSubscription] sns_subscription
+  # @param [Barbeque::SnsSubscription] sns_subscription
   def unsubscribe(sns_subscription)
     sns_subscription.destroy
     update_sqs_policy!(sns_subscription)
@@ -42,14 +42,14 @@ class Barbeque::SNSSubscriptionService
   private
 
   def sqs_client
-    Barbeque::SNSSubscriptionService.sqs_client
+    Barbeque::SnsSubscriptionService.sqs_client
   end
 
   def sns_client
-    Barbeque::SNSSubscriptionService.sns_client
+    Barbeque::SnsSubscriptionService.sns_client
   end
 
-  # @param [Barbeque::SNSSubscription] sns_subscription
+  # @param [Barbeque::SnsSubscription] sns_subscription
   def update_sqs_policy!(sns_subscription)
     attrs = sqs_client.get_queue_attributes(
       queue_url: sns_subscription.job_queue.queue_url,
@@ -90,7 +90,7 @@ class Barbeque::SNSSubscriptionService
     }.to_json
   end
 
-  # @param [Barbeque::SNSSubscription] sns_subscription
+  # @param [Barbeque::SnsSubscription] sns_subscription
   def subscribe_topic!(sns_subscription)
     sqs_attrs = sqs_client.get_queue_attributes(
       queue_url: sns_subscription.job_queue.queue_url,
@@ -105,7 +105,7 @@ class Barbeque::SNSSubscriptionService
     )
   end
 
-  # @param [Barbeque::SNSSubscription] sns_subscription
+  # @param [Barbeque::SnsSubscription] sns_subscription
   def unsubscribe_topic!(sns_subscription)
     sqs_attrs = sqs_client.get_queue_attributes(
       queue_url: sns_subscription.job_queue.queue_url,

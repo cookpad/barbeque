@@ -1,7 +1,7 @@
 class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   belongs_to :app
   has_many :job_executions
-  has_many :sns_subscriptions, class_name: 'SNSSubscription'
+  has_many :sns_subscriptions
   has_one :slack_notification, dependent: :destroy
   has_one :retry_config, dependent: :destroy
 

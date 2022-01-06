@@ -8,7 +8,7 @@ module Barbeque
       attr_reader :application # [String] To specify `job_definitions.app.name`
       attr_reader :job         # [String] To specify `job_definitions.job`
 
-      # @param [Barneque::SNSSubscription] subscription
+      # @param [Barneque::SnsSubscription] subscription
       # @return [Barbeque::Message::Notification]
       def set_params_from_subscription(subscription)
         @application = subscription.app.name
