@@ -1,3 +1,8 @@
+## v2.x.x (xxxx-xx-xx)
+### Changes
+- Update Rails to 6.1
+- Support Ruby 3.0
+
 ## v2.8.0 (2021-12-23)
 ### New features
 - Pass `BARBEQUE_SENT_TIMESTAMP` variable to invoked jobs

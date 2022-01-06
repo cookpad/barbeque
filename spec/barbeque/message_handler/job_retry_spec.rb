@@ -22,7 +22,7 @@ describe Barbeque::MessageHandler::JobRetry do
     before do
       allow(Barbeque::ExecutionLog).to receive(:save_stdout_and_stderr)
       allow(Barbeque::ExecutionLog).to receive(:load).with(execution: job_execution).and_return({ 'message' => message_body })
-      allow(Barbeque::Executor::Docker).to receive(:new).with({}).and_return(executor)
+      allow(Barbeque::Executor::Docker).to receive(:new).and_return(executor)
     end
 
     around do |example|

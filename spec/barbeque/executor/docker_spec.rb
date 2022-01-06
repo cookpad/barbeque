@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'barbeque/executor/docker'
 
 RSpec.describe Barbeque::Executor::Docker do
-  let(:executor) { described_class.new({}) }
+  let(:executor) { described_class.new }
   let(:command) { ['rake', 'test'] }
   let(:job_definition) { FactoryBot.create(:job_definition, command: ['rake', 'test']) }
   let(:job_execution) { FactoryBot.create(:job_execution, job_definition: job_definition, status: :pending) }

@@ -20,10 +20,10 @@ class Barbeque::SNSSubscriptionService
         update_sqs_policy!(sns_subscription)
         true
       rescue Aws::SNS::Errors::AuthorizationError
-        sns_subscription.errors[:topic_arn] << 'is not authorized'
+        sns_subscription.errors.add(:topic_arn, 'is not authorized')
         false
       rescue Aws::SNS::Errors::NotFound
-        sns_subscription.errors[:topic_arn] << 'is not found'
+        sns_subscription.errors.add(:topic_arn, 'is not found')
         false
       end
     else

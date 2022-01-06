@@ -12,7 +12,12 @@ describe Barbeque::Executor do
       let(:barbeque_yml) { 'barbeque' }
 
       it 'initializes a configured executor' do
-        expect(Barbeque::Executor::Docker).to receive(:new).with({})
+        if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('2.7.0')
+          # Ruby < 2.7 isn't ready for keyword arguments
+          expect(Barbeque::Executor::Docker).to receive(:new).with({})
+        else
+          expect(Barbeque::Executor::Docker).to receive(:new).with(no_args)
+        end
         Barbeque::Executor.create
       end
     end
@@ -23,11 +28,12 @@ describe Barbeque::Executor do
       it 'initializes a configured executor with configured options' do
         expect(Barbeque::Executor::Hako).to receive(:new).with(
           hako_dir: '/home/k0kubun/hako_repo',
-          hako_env: { 'ACCESS_TOKEN' => 'token' },
+          hako_env: { ACCESS_TOKEN: 'token' },
           yaml_dir: '/yamls',
           oneshot_notification_prefix: 's3://barbeque/task_statuses?region=ap-northeast-1',
-        )
-        Barbeque::Executor.create
+        ).and_call_original
+        hako = Barbeque::Executor.create
+        expect(hako.instance_variable_get(:@hako_env)).to eq({ 'ACCESS_TOKEN' => 'token' })
       end
     end
   end

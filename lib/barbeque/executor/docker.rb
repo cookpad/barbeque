@@ -9,7 +9,7 @@ module Barbeque
       class DockerCommandError < StandardError
       end
 
-      def initialize(_options)
+      def initialize(**)
       end
 
       # @param [Barbeque::JobExecution] job_execution
