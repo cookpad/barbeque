@@ -1,5 +1,5 @@
 module Barbeque
-  class SNSSubscription < ApplicationRecord
+  class SnsSubscription < ApplicationRecord
     belongs_to :job_queue
     belongs_to :job_definition
     has_one :app, through: :job_definition

@@ -40,4 +40,5 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - run: bin/rails db:setup
+      - run: bin/rails zeitwerk:check
       - run: bundle exec rspec

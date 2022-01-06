@@ -4,19 +4,19 @@ describe Barbeque::SnsSubscriptionsController do
   routes { Barbeque::Engine.routes }
 
   before do
-    allow(Barbeque::SNSSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
-    allow(Barbeque::SNSSubscriptionService).to receive(:sns_client).and_return(sns_client)
+    allow(Barbeque::SnsSubscriptionService).to receive(:sqs_client).and_return(sqs_client)
+    allow(Barbeque::SnsSubscriptionService).to receive(:sns_client).and_return(sns_client)
   end
 
   describe '#create' do
     let(:job_queue) { create(:job_queue) }
-    let(:job_definition) { create(:job_definition) } 
+    let(:job_definition) { create(:job_definition) }
     let(:sqs_client) do
       double(
         'Aws::SQS::Client',
         get_queue_attributes: get_queue_attrs_response,
         set_queue_attributes: set_queue_attrs_response,
-      ) 
+      )
     end
     let(:get_queue_attrs_response) do
       double(
@@ -40,7 +40,7 @@ describe Barbeque::SnsSubscriptionsController do
       double(
         'Aws::SNS::Client',
         subscribe: subscribe_response,
-      ) 
+      )
     end
     let(:subscribe_response) { double('Aws::SNS::Types::SubscribeResult') }
 
@@ -55,7 +55,7 @@ describe Barbeque::SnsSubscriptionsController do
         )
       expect(sns_client).to receive(:subscribe).with(topic_arn: topic_arn, protocol: 'sqs', endpoint: queue_arn)
       expect { post :create , params: { sns_subscription: attributes } }.
-        to change { Barbeque::SNSSubscription.count }.by(1)
+        to change { Barbeque::SnsSubscription.count }.by(1)
     end
 
     context 'with NotFound error' do
@@ -89,7 +89,7 @@ describe Barbeque::SnsSubscriptionsController do
         'Aws::SQS::Client',
         get_queue_attributes: get_queue_attrs_response,
         set_queue_attributes: set_queue_attrs_response,
-      ) 
+      )
     end
     let(:queue_arn) { "arn:aws:sqs:ap-northeast-1:123456789012:#{sns_subscription.job_queue.name}" }
     let(:get_queue_attrs_response) { double('Aws::SQS::Types::GetQueueAttributesResult', attributes: { 'QueueArn' => queue_arn }) }
@@ -100,7 +100,7 @@ describe Barbeque::SnsSubscriptionsController do
         'Aws::SNS::Client',
         list_subscriptions_by_topic: list_subscriptions_by_topic_response,
         unsubscribe: unsubscribe_response
-      ) 
+      )
     end
     let(:list_subscriptions_by_topic_response) do
       double(
@@ -128,7 +128,7 @@ describe Barbeque::SnsSubscriptionsController do
           }
         )
       expect { delete :destroy, params: { id: sns_subscription.id } }.
-        to change { Barbeque::SNSSubscription.count }.by(-1)
+        to change { Barbeque::SnsSubscription.count }.by(-1)
     end
   end
 end
