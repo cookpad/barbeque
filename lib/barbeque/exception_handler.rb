@@ -51,5 +51,32 @@ module Barbeque
         ::Raven.capture_exception(e)
       end
     end
+
+    class Sentry
+      def initialize
+        ::Sentry.get_current_hub.push_scope
+      end
+
+      def clear_context
+        ::Sentry.get_current_hub.pop_scope
+        ::Sentry.get_current_hub.push_scope
+      end
+
+      # @param [String] message_id
+      # @param [String, nil] message_type
+      def set_message_context(message_id, message_type)
+        ::Sentry.configure_scope do |scope|
+          scope.set_tags(
+            message_id: message_id,
+            message_type: message_type
+          )
+        end
+      end
+
+      # @param [Exception] e
+      def handle_exception(e)
+        ::Sentry.capture_exception(e)
+      end
+    end
   end
 end
