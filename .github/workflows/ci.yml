@@ -35,7 +35,7 @@ jobs:
       RAILS_ENV: test
       DATABASE_URL: mysql2://barbeque:barbeque@127.0.0.1:3306/barbeque
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
