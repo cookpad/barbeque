@@ -17,7 +17,7 @@ jobs:
     name: Run test with Ruby ${{ matrix.ruby }}
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: barbeque_root
           MYSQL_USER: barbeque
