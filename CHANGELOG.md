@@ -5,6 +5,7 @@
 - Support Ruby 3.0
   - Drop support for Ruby < 3.0
 - Drop support for MySQL 5.7
+  - A new migration is added to fix collations properly in MySQL 8.0
 
 ## v2.8.0 (2021-12-23)
 ### New features
