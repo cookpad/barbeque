@@ -36,7 +36,7 @@ module Barbeque
       def start_execution(job_execution, envs)
         docker_image = DockerImage.new(job_execution.job_definition.app.docker_image)
         cmd = build_hako_oneshot_command(docker_image, job_execution.job_definition.command, envs)
-        stdout, stderr, status = Bundler.with_clean_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
+        stdout, stderr, status = Bundler.with_unbundled_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
         if status.success?
           cluster, task_arn = extract_task_info(stdout)
           Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: cluster, task_arn: task_arn)
@@ -56,7 +56,7 @@ module Barbeque
         job_execution = job_retry.job_execution
         docker_image = DockerImage.new(job_execution.job_definition.app.docker_image)
         cmd = build_hako_oneshot_command(docker_image, job_execution.job_definition.command, envs)
-        stdout, stderr, status = Bundler.with_clean_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
+        stdout, stderr, status = Bundler.with_unbundled_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
         if status.success?
           cluster, task_arn = extract_task_info(stdout)
           Barbeque::EcsHakoTask.create!(message_id: job_retry.message_id, cluster: cluster, task_arn: task_arn)
