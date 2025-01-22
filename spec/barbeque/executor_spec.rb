@@ -24,7 +24,7 @@ describe Barbeque::Executor do
         expect(Barbeque::Executor::Hako).to receive(:new).with(
           hako_dir: '/home/k0kubun/hako_repo',
           hako_env: { ACCESS_TOKEN: 'token' },
-          yaml_dir: '/yamls',
+          definition_dir: '/yamls',
           oneshot_notification_prefix: 's3://barbeque/task_statuses?region=ap-northeast-1',
         ).and_call_original
         hako = Barbeque::Executor.create
