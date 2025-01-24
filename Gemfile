@@ -20,3 +20,6 @@ end
 group :test do
   gem 'rails-controller-testing'
 end
+
+# Workaround for https://github.com/rails/rails/pull/54264
+gem 'concurrent-ruby', '< 1.3.5'
