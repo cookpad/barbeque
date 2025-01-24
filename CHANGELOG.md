@@ -1,4 +1,4 @@
-## v2.x.x (xxxx-xx-xx)
+## v2.9.0 (2025-01-24)
 ### Changes
 - Update Rails to 6.1
   - For Zeitwerk, Barbeque::SNSSubscription and Barbeque::SNSSubscriptionService are renamed to Barbeque::SnsSubscription and Barbeque::SnsSubscriptionService respectively
