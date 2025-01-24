@@ -29,31 +29,35 @@
                   %td= link_to(job[:job_name], job_definition_path(job[:job_id]))
                   %td= job[:count]
 
-:coffee
-  chartDiv = document.getElementById('recently-processed-jobs-chart')
-  recentlyProcesedJobs = JSON.parse(chartDiv.dataset.jobs)
+:javascript
+  const chartDiv = document.getElementById('recently-processed-jobs-chart');
+  const recentlyProcesedJobs = JSON.parse(chartDiv.dataset.jobs);
 
-  countsPerJob = {}
-  for own dateHour, jobs of recentlyProcesedJobs
-    for own jobId, job of jobs
-      name = job.app_name + ' - ' + job.job_name
-      countsPerJob[name] ||= []
-      countsPerJob[name][dateHour] ||= job.count
+  const countsPerJob = {};
+  for (const [dateHour, jobs] of Object.entries(recentlyProcesedJobs)) {
+    for (const job of Object.values(jobs)) {
+      const name = job.app_name + ' - ' + job.job_name;
+      if (!countsPerJob[name]) { countsPerJob[name] = []; }
+      if (!countsPerJob[name][dateHour]) { countsPerJob[name][dateHour] = job.count; }
+    }
+  }
 
-  plotlyArgs = []
-  for own name, series of countsPerJob
-    x = []
-    y = []
-    for own dateHour, count of series
-      x.push(dateHour)
-      y.push(count)
+  const plotlyArgs = [];
+  for (const [name, series] of Object.entries(countsPerJob)) {
+    const x = [];
+    const y = [];
+    for (const [dateHour, count] of Object.entries(series)) {
+      x.push(dateHour);
+      y.push(count);
+    }
     plotlyArgs.push({
       type: 'scatter',
-      name: name,
-      x: x,
-      y: y,
+      name,
+      x,
+      y,
       hoverlabel: {
         namelength: -1,
       }
-    })
-  Plotly.plot(chartDiv, plotlyArgs)
+    });
+  }
+  Plotly.plot(chartDiv, plotlyArgs);

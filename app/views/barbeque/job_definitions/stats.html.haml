@@ -25,15 +25,15 @@
 
 = link_to 'Back', job_definition_path(@job_definition)
 
-:coffee
-  jQuery(($) ->
-    $.getJSON('#{job_definition_execution_stats_path(@job_definition, days: @days)}').then((stats) ->
-      countDiv = document.getElementById('execution-count-chart')
-      timeDiv = document.getElementById('execution-time-chart')
+:javascript
+  jQuery(function($) {
+    $.getJSON('#{job_definition_execution_stats_path(@job_definition, days: @days)}').then(stats => {
+      const countDiv = document.getElementById('execution-count-chart');
+      const timeDiv = document.getElementById('execution-time-chart');
 
-      date_hours = stats.map((stat) -> stat.date_hour)
-      counts = stats.map((stat) -> stat.count)
-      avg_times = stats.map((stat) -> stat.avg_time)
+      const date_hours = stats.map(stat => stat.date_hour);
+      const counts = stats.map(stat => stat.count);
+      const avg_times = stats.map(stat => stat.avg_time);
 
       Plotly.plot(countDiv, [
         {
@@ -44,7 +44,7 @@
         },
       ], {
         title: 'Number of executions (hourly)',
-      })
+      });
       Plotly.plot(timeDiv, [
         {
           type: 'scatter',
@@ -54,6 +54,6 @@
         },
       ], {
         title: 'Average execution time (hourly)',
-      })
-    )
-  )
+      });
+    });
+  });

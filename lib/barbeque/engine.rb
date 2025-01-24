@@ -9,7 +9,6 @@ module Barbeque
       # Gems used by Barbeque::Engine, which also have Railtie or Mountable::Engine.
       # Railtie and Mountable::Engine aren't executed when required normally.
       require 'adminlte2-rails'
-      require 'coffee-rails'
       require 'hamlit'
       require 'jquery-rails'
       require 'kaminari'
