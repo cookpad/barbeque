@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mysql:8.0
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: barbeque_root
+      MYSQL_USER: barbeque
+      MYSQL_PASSWORD: barbeque
+      MYSQL_DATABASE: barbeque

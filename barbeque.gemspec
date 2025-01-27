@@ -13,8 +13,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib,vendor}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  # The same as Rails 5
-  s.required_ruby_version = '>= 2.2.2'
+  s.required_ruby_version = '>= 3.0.0'
 
   s.add_dependency "adminlte2-rails"
   s.add_dependency "aws-sdk-cloudwatch"
@@ -26,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "hamlit"
   s.add_dependency "jquery-rails"
   s.add_dependency "kaminari", ">= 1.2.1"
-  s.add_dependency "rails", "~> 6.1.4"
+  s.add_dependency "rails", "~> 7.0.5"
   s.add_dependency "rinku"
   s.add_dependency "sass-rails"
   s.add_dependency "serverengine"
