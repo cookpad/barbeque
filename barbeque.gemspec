@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency "aws-sdk-s3"
   s.add_dependency "aws-sdk-sns"
   s.add_dependency "aws-sdk-sqs"
-  s.add_dependency "coffee-rails"
   s.add_dependency "hamlit"
   s.add_dependency "jquery-rails"
   s.add_dependency "kaminari", ">= 1.2.1"
