@@ -1,3 +1,8 @@
+## v2.10.0 (2025-07-22)
+### Changes
+- Update Rails to 7.0
+- Use `Bundler.with_unbundled_env` instead of deprecated `Bundler.with_clean_env`
+
 ## v2.9.0 (2025-01-24)
 ### Changes
 - Update Rails to 6.1
