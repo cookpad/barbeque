@@ -1,0 +1,29 @@
+/*
+ *= require bootstrap
+ *= require AdminLTE
+ *= require skins/skin-blue
+
+ *= require barbeque/job_definitions
+ */
+
+:root {
+  --barbeque-border-color: #ececec;
+}
+
+.box-body {
+  padding: 12px;
+}
+
+.box-header .box-title.with_padding {
+  padding: 6px;
+  font-size: 22px;
+}
+
+.table.table-bordered {
+  margin-bottom: 12px;
+  border-color: var(--barbeque-border-color);
+}
+
+.table.table-bordered td, .table.table-bordered th {
+  border-color: var(--barbeque-border-color);
+}

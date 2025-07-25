@@ -11,7 +11,7 @@ module Barbeque
       require 'hamlit'
       require 'jquery-rails'
       require 'kaminari'
-      require 'sass-rails'
+      require 'sprockets/railtie'
       require 'weak_parameters'
     end
   end

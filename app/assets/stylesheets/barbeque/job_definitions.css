@@ -1,0 +1,39 @@
+.barbeque_job_definitions_controller .use_slack_notification_wrapper label {
+  font-weight: normal;
+}
+
+.barbeque_job_definitions_controller .use_slack_notification {
+  margin: 0 2px 0 8px;
+}
+
+.barbeque_job_definitions_controller .slack_notification_field {
+  display: none;
+}
+
+.barbeque_job_definitions_controller .slack_notification_field label {
+  font-weight: normal;
+}
+
+.barbeque_job_definitions_controller .slack_notification_field.active {
+  display: block;
+}
+
+.barbeque_job_definitions_controller .retry_configuration_wrapper label {
+  font-weight: normal;
+}
+
+.barbeque_job_definitions_controller .enable_retry_configuration {
+  margin: 0 2px 0 8px;
+}
+
+.barbeque_job_definitions_controller .retry_configuration_field {
+  display: none;
+}
+
+.barbeque_job_definitions_controller .retry_configuration_field label {
+  font-weight: normal;
+}
+
+.barbeque_job_definitions_controller .retry_configuration_field.active {
+  display: block;
+}
