@@ -28,9 +28,9 @@ describe Barbeque::Executor::Hako do
       'detail' => {
         'containers' => [
           {
-            'exitCode': 0,
-            'lastStatus': 'STOPPED',
-            'name': 'app',
+            'exitCode' => 0,
+            'lastStatus' => 'STOPPED',
+            'name' => 'app',
           }
         ],
         'stoppedAt' => '2017-06-20T07:29:53.695Z',
