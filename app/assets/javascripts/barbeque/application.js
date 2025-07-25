@@ -11,8 +11,8 @@
 // about supported directives.
 //
 //= require jquery
-//= require bootstrap-sprockets
+//= require bootstrap
 //= require jquery_ujs
-//= require app
+//= require adminlte
 //= require plotly-basic
 //= require_tree .

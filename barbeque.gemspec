@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 3.0.0'
 
-  s.add_dependency "adminlte2-rails"
   s.add_dependency "aws-sdk-cloudwatch"
   s.add_dependency "aws-sdk-ecs"
   s.add_dependency "aws-sdk-s3"
