@@ -37,3 +37,9 @@
 .barbeque_job_definitions_controller .retry_configuration_field.active {
   display: block;
 }
+
+.barbeque_job_definitions_controller .table.table-bordered td,
+.barbeque_job_definitions_controller .table.table-bordered th {
+  overflow-wrap: anywhere;
+  min-width: 100px;
+}
