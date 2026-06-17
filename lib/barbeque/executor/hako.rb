@@ -36,17 +36,27 @@ module Barbeque
       def start_execution(job_execution, envs)
         docker_image = DockerImage.new(job_execution.job_definition.app.docker_image)
         cmd = build_hako_oneshot_command(docker_image, job_execution.job_definition.command, envs)
-        stdout, stderr, status = Bundler.with_unbundled_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
-        if status.success?
-          cluster, task_arn = extract_task_info(stdout)
-          Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: cluster, task_arn: task_arn)
-          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
-          job_execution.update!(status: :running)
-        else
-          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
-          job_execution.update!(status: :failed, finished_at: Time.zone.now)
-          Barbeque::SlackNotifier.notify_job_execution(job_execution)
-          job_execution.retry_if_possible!
+
+        max_no_tasks_started_retries = 10
+        max_no_tasks_started_retries.times do |i|
+          stdout, stderr, status = Bundler.with_unbundled_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
+          if status.success?
+            cluster, task_arn = extract_task_info(stdout)
+            Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: cluster, task_arn: task_arn)
+            Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
+            job_execution.update!(status: :running)
+            return
+          end
+
+          if !no_tasks_started?(stdout) || i == max_no_tasks_started_retries - 1
+            Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_execution, stdout, stderr)
+            job_execution.update!(status: :failed, finished_at: Time.zone.now)
+            Barbeque::SlackNotifier.notify_job_execution(job_execution)
+            job_execution.retry_if_possible!
+            return
+          end
+
+          # Retry if NoTasksStarted
         end
       end
 
@@ -56,23 +66,31 @@ module Barbeque
         job_execution = job_retry.job_execution
         docker_image = DockerImage.new(job_execution.job_definition.app.docker_image)
         cmd = build_hako_oneshot_command(docker_image, job_execution.job_definition.command, envs)
-        stdout, stderr, status = Bundler.with_unbundled_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
-        if status.success?
-          cluster, task_arn = extract_task_info(stdout)
-          Barbeque::EcsHakoTask.create!(message_id: job_retry.message_id, cluster: cluster, task_arn: task_arn)
-          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
-          Barbeque::ApplicationRecord.transaction do
-            job_execution.update!(status: :retried)
-            job_retry.update!(status: :running)
+
+        max_no_tasks_started_retries = 10
+        max_no_tasks_started_retries.times do |i|
+          stdout, stderr, status = Bundler.with_unbundled_env { Open3.capture3(@hako_env, *cmd, chdir: @hako_dir) }
+          if status.success?
+            cluster, task_arn = extract_task_info(stdout)
+            Barbeque::EcsHakoTask.create!(message_id: job_retry.message_id, cluster: cluster, task_arn: task_arn)
+            Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
+            Barbeque::ApplicationRecord.transaction do
+              job_execution.update!(status: :retried)
+              job_retry.update!(status: :running)
+            end
+            return
           end
-        else
-          Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
-          Barbeque::ApplicationRecord.transaction do
-            job_retry.update!(status: :failed, finished_at: Time.zone.now)
-            job_execution.update!(status: :failed)
+
+          if !no_tasks_started?(stdout) || i == max_no_tasks_started_retries - 1
+            Barbeque::ExecutionLog.try_save_stdout_and_stderr(job_retry, stdout, stderr)
+            Barbeque::ApplicationRecord.transaction do
+              job_retry.update!(status: :failed, finished_at: Time.zone.now)
+              job_execution.update!(status: :failed)
+            end
+            Barbeque::SlackNotifier.notify_job_retry(job_retry)
+            job_execution.retry_if_possible!
+            return
           end
-          Barbeque::SlackNotifier.notify_job_retry(job_retry)
-          job_execution.retry_if_possible!
         end
       end
 
@@ -159,6 +177,21 @@ module Barbeque
           end
         else
           raise HakoCommandError.new('stdout is empty')
+        end
+      end
+
+      def no_tasks_started?(stdout)
+        # See https://github.com/eagletmt/hako/pull/121
+        last_line = stdout.lines.last
+        if last_line
+          begin
+            info = JSON.parse(last_line)
+            info['error'] == 'NoTasksStarted'
+          rescue JSON::ParserError
+            false
+          end
+        else
+          false
         end
       end
     end

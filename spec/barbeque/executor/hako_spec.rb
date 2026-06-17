@@ -136,6 +136,66 @@ describe Barbeque::Executor::Hako do
       end
     end
 
+    describe '#start_execution when hako oneshot fails with NoTasksStarted' do
+      let(:success_status) { instance_double(Process::Status, success?: true) }
+      let(:failed_status) { instance_double(Process::Status, success?: false) }
+      let(:stderr) { '' }
+      let(:no_tasks_stdout) { JSON.dump(error: 'NoTasksStarted') }
+      let(:success_stdout) { JSON.dump(cluster: 'barbeque', task_arn: task_arn) }
+
+      before do
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.jsonnet").and_return(false)
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.yml").and_return(true)
+        allow(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr)
+      end
+
+      context 'when it succeeds after some retries' do
+        before do
+          allow(Open3).to receive(:capture3).and_return(
+            [no_tasks_stdout, stderr, failed_status],
+            [no_tasks_stdout, stderr, failed_status],
+            [success_stdout, stderr, success_status],
+          )
+        end
+
+        it 'retries and sets running status' do
+          executor.start_execution(job_execution, envs)
+          job_execution.reload
+          expect(job_execution).to be_running
+          expect(Barbeque::EcsHakoTask.where(message_id: job_execution.message_id, cluster: 'barbeque', task_arn: task_arn)).to be_exists
+          expect(Open3).to have_received(:capture3).exactly(3).times
+        end
+      end
+
+      context 'when it keeps failing with NoTasksStarted' do
+        before do
+          allow(Open3).to receive(:capture3).and_return([no_tasks_stdout, stderr, failed_status])
+        end
+
+        it 'gives up and sets failed status after the max retries' do
+          executor.start_execution(job_execution, envs)
+          job_execution.reload
+          expect(job_execution).to be_failed
+          expect(Barbeque::EcsHakoTask.count).to eq(0)
+          expect(Open3).to have_received(:capture3).exactly(10).times
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            executor.start_execution(job_execution, envs)
+            job_execution.reload
+            expect(job_execution).to be_retried
+            expect(Barbeque::EcsHakoTask.count).to eq(0)
+          end
+        end
+      end
+    end
+
     describe '#poll_execution' do
       before do
         Barbeque::EcsHakoTask.create!(message_id: job_execution.message_id, cluster: 'barbeque', task_arn: task_arn)
@@ -347,6 +407,71 @@ describe Barbeque::Executor::Hako do
 
         it 'raises error' do
           expect { executor.start_retry(job_retry, envs) }.to raise_error(Barbeque::Executor::Hako::HakoCommandError)
+        end
+      end
+    end
+
+    describe '#start_retry when hako oneshot fails with NoTasksStarted' do
+      let(:success_status) { instance_double(Process::Status, success?: true) }
+      let(:failed_status) { instance_double(Process::Status, success?: false) }
+      let(:no_tasks_stdout) { JSON.dump(error: 'NoTasksStarted') }
+      let(:success_stdout) { JSON.dump(cluster: 'barbeque', task_arn: task_arn) }
+
+      before do
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.jsonnet").and_return(false)
+        allow(File).to receive(:readable?).with("/yamls/#{app_name}.yml").and_return(true)
+        allow(Barbeque::ExecutionLog).to receive(:try_save_stdout_and_stderr)
+      end
+
+      context 'when it succeeds after some retries' do
+        before do
+          allow(Open3).to receive(:capture3).and_return(
+            [no_tasks_stdout, stderr, failed_status],
+            [no_tasks_stdout, stderr, failed_status],
+            [success_stdout, stderr, success_status],
+          )
+        end
+
+        it 'retries and sets running status' do
+          executor.start_retry(job_retry, envs)
+          job_retry.reload
+          job_execution.reload
+          expect(job_retry).to be_running
+          expect(job_execution).to be_retried
+          expect(Barbeque::EcsHakoTask.where(message_id: job_retry.message_id, cluster: 'barbeque', task_arn: task_arn)).to be_exists
+          expect(Open3).to have_received(:capture3).exactly(3).times
+        end
+      end
+
+      context 'when it keeps failing with NoTasksStarted' do
+        before do
+          allow(Open3).to receive(:capture3).and_return([no_tasks_stdout, stderr, failed_status])
+        end
+
+        it 'gives up and sets failed status after the max retries' do
+          executor.start_retry(job_retry, envs)
+          job_retry.reload
+          job_execution.reload
+          expect(job_retry).to be_failed
+          expect(job_execution).to be_failed
+          expect(Barbeque::EcsHakoTask.count).to eq(0)
+          expect(Open3).to have_received(:capture3).exactly(10).times
+        end
+
+        context 'with retry_config' do
+          before do
+            FactoryBot.create(:retry_config, job_definition: job_definition)
+          end
+
+          it 'performs retry' do
+            expect(Barbeque::MessageRetryingService.sqs_client).to receive(:send_message).with(queue_url: a_kind_of(String), message_body: a_kind_of(String), delay_seconds: a_kind_of(Integer))
+            executor.start_retry(job_retry, envs)
+            job_retry.reload
+            job_execution.reload
+            expect(job_retry).to be_failed
+            expect(job_execution).to be_retried
+            expect(Barbeque::EcsHakoTask.count).to eq(0)
+          end
         end
       end
     end
