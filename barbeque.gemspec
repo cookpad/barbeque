@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib,vendor}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  s.required_ruby_version = '>= 3.0.0'
+  s.required_ruby_version = '>= 3.3.0'
 
   s.add_dependency "aws-sdk-cloudwatch"
   s.add_dependency "aws-sdk-ecs"
