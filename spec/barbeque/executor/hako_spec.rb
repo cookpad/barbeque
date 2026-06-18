@@ -177,7 +177,7 @@ describe Barbeque::Executor::Hako do
           job_execution.reload
           expect(job_execution).to be_failed
           expect(Barbeque::EcsHakoTask.count).to eq(0)
-          expect(Open3).to have_received(:capture3).exactly(10).times
+          expect(Open3).to have_received(:capture3).exactly(described_class::MAX_NO_TASKS_STARTED_RETRIES).times
         end
 
         context 'with retry_config' do
@@ -455,7 +455,7 @@ describe Barbeque::Executor::Hako do
           expect(job_retry).to be_failed
           expect(job_execution).to be_failed
           expect(Barbeque::EcsHakoTask.count).to eq(0)
-          expect(Open3).to have_received(:capture3).exactly(10).times
+          expect(Open3).to have_received(:capture3).exactly(described_class::MAX_NO_TASKS_STARTED_RETRIES).times
         end
 
         context 'with retry_config' do
