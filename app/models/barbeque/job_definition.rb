@@ -6,6 +6,7 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   has_one :retry_config, dependent: :destroy
 
   validates :job, uniqueness: { scope: :app_id }
+  validates :command, presence: true
 
   attr_readonly :app_id
   attr_readonly :job
