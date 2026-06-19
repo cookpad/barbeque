@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency "hamlit"
   s.add_dependency "jquery-rails"
   s.add_dependency "kaminari", ">= 1.2.1"
-  s.add_dependency "rails", "~> 7.0.5"
+  s.add_dependency "rails", "~> 7.1.5"
   s.add_dependency "rinku"
   s.add_dependency "serverengine"
   s.add_dependency "sprockets-rails"

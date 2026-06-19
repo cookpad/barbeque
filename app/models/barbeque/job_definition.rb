@@ -10,7 +10,7 @@ class Barbeque::JobDefinition < Barbeque::ApplicationRecord
   attr_readonly :app_id
   attr_readonly :job
 
-  serialize :command, Array
+  serialize :command, type: Array, coder: JSON
 
   accepts_nested_attributes_for :slack_notification, allow_destroy: true
   accepts_nested_attributes_for :retry_config, allow_destroy: true
